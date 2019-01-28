@@ -158,7 +158,7 @@ const SubmitButton = () => (
                                         const itemsToSubmit = createItemSubmissionList(
                                             items
                                         )
-                                        if (itemsToSubmit) {
+                                        if (itemsToSubmit.length === 0) {
                                             alert(
                                                 "You have not selected any items to enter!"
                                             )
