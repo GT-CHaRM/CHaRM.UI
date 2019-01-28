@@ -26,7 +26,7 @@ const parseInteger = (str: string) => {
     return parseInt(str)
 }
 
-const ItemRight = ({id, count}: {id: string; count: number}) => (
+const ItemCountSelector = ({id, count}: {id: string; count: number}) => (
     <UpdateItemSelectedCountComponent>
         {updateItemSelectedCount => (
             <ButtonGroup
@@ -99,7 +99,7 @@ const ItemEntry = ({item: {id, name, selectedCount}}: {item: ItemsItems}) => (
     <ListItem
         title={name}
         onLongPress={() => alert(name)}
-        rightIcon={<ItemRight id={id} count={selectedCount} />}
+        rightIcon={<ItemCountSelector id={id} count={selectedCount} />}
     />
 )
 
