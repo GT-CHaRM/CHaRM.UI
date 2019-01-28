@@ -1,0 +1,35 @@
+{
+    "main": "node_modules/expo/AppEntry.js",
+    "scripts": {
+        "generate": "gql-gen",
+        "start": "expo start",
+        "android": "expo start --android",
+        "ios": "expo start --ios",
+        "eject": "expo eject"
+    },
+    "dependencies": {
+        "apollo-boost": "^0.1.27",
+        "expo": "^32.0.0",
+        "graphql": "^14.1.1",
+        "moment": "^2.24.0",
+        "react": "16.5.0",
+        "react-apollo": "^2.4.0",
+        "react-native": "https://github.com/expo/react-native/archive/sdk-32.0.0.tar.gz",
+        "react-native-elements": "^0.19.1",
+        "tslib": "^1.9.3"
+    },
+    "devDependencies": {
+        "@types/expo": "^31.0.8",
+        "@types/expo__vector-icons": "^6.2.3",
+        "@types/react": "^16.7.21",
+        "@types/react-native": "^0.57.32",
+        "babel-preset-expo": "^5.0.0",
+        "graphql-code-generator": "^0.16.0",
+        "graphql-codegen-typescript-client": "^0.16.0",
+        "graphql-codegen-typescript-common": "^0.16.0",
+        "graphql-codegen-typescript-react-apollo": "^0.16.0",
+        "graphql-tag": "^2.10.1",
+        "typescript": "^3.2.4"
+    },
+    "private": true
+}

@@ -1,0 +1,18 @@
+overwrite: true
+generates:
+    ./src/graphql/index.tsx:
+        schema:
+            - http://charm.nima.sh:5000/graphql
+            - client.graphql
+        documents: ./src/graphql/**/*.graphql
+        config:
+            noNamespaces: true
+            scalars:
+                Date: Date
+                Decimal: number
+                Seconds: number
+                Milliseconds: number
+        plugins:
+            - typescript-common
+            - typescript-client
+            - typescript-react-apollo

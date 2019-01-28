@@ -1,0 +1,3 @@
+mutation UpdateItemSelectedCount($id: ID!, $selectedCount: Int!) {
+    updateItemSelectedCount(id: $id, selectedCount: $selectedCount) @client
+}

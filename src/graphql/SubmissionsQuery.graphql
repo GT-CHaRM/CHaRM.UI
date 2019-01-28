@@ -1,0 +1,13 @@
+query Submissions {
+    submissions {
+        id
+        items {
+            count
+            item {
+                id
+                name
+            }
+        }
+        submitted
+    }
+}

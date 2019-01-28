@@ -1,0 +1,13 @@
+type ItemType {
+    selectedCount: Int!
+}
+
+type Query {
+    currentTab: Int!
+}
+
+type Mutation {
+    resetItemSelectedCounts: Boolean!
+    updateItemSelectedCount(id: ID!, selectedCount: Int!): Int!
+    setCurrentTab(tab: Int!): Int!
+}

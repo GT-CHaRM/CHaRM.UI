@@ -1,0 +1,13 @@
+mutation NewItem($items: [ID!]!) {
+    createSubmission(items: $items) {
+        id
+        items {
+            count
+            item {
+                id
+                name
+            }
+        }
+        submitted
+    }
+}
