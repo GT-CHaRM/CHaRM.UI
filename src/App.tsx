@@ -1,12 +1,12 @@
-import React from "react"
+import ApolloClient, {InMemoryCache} from "apollo-boost"
+import React, {Suspense} from "react"
+import {ApolloProvider} from "react-apollo-hooks"
 import {View} from "react-native"
-import {Text, Header, ButtonGroup, Icon} from "react-native-elements"
-import ApolloClient, {gql, InMemoryCache} from "apollo-boost"
-import {ApolloProvider} from "react-apollo"
+import {ButtonGroup, Header, Icon, Text} from "react-native-elements"
+import {useCurrentTab, useSetCurrentTab} from "./graphql"
+import {Submissions, Submit} from "./pages"
+import {defaults, resolvers} from "./resolvers"
 import {colors} from "./theme"
-import {Submit, Submissions} from "./pages"
-import {CurrentTabComponent, SetCurrentTabComponent} from "./graphql"
-import {resolvers, defaults} from "./resolvers"
 
 const cache = new InMemoryCache({
     dataIdFromObject: x => x.id
@@ -60,59 +60,64 @@ const tabs: ITab[] = [
     }
 ]
 
-export const App = () => (
-    <ApolloProvider client={client}>
-        <CurrentTabComponent>
-            {({data: {currentTab}}) => (
-                <SetCurrentTabComponent>
-                    {setCurrentTab => (
-                        <View style={{flex: 1}}>
-                            <Header
-                                backgroundColor={colors.primary}
-                                centerComponent={{
-                                    text: tabs[currentTab].name.toUpperCase(),
-                                    style: {
-                                        fontSize: 20,
-                                        color: "#fff"
-                                    }
-                                }}
-                            />
-                            {tabs[currentTab].component}
-                            <ButtonGroup
-                                onPress={index =>
-                                    setCurrentTab({
-                                        variables: {tab: index}
-                                    })
-                                }
-                                selectedIndex={currentTab}
-                                buttons={tabs.map(
-                                    ({buttonName, icon: {name, type}}) => ({
-                                        element: () => (
-                                            <View>
-                                                <Icon name={name} type={type} />
-                                                <Text
-                                                    style={{
-                                                        marginTop: 5,
-                                                        fontSize: 12
-                                                    }}>
-                                                    {buttonName}
-                                                </Text>
-                                            </View>
-                                        )
-                                    })
-                                )}
-                                containerStyle={{
-                                    height: 65,
-                                    marginRight: 0,
-                                    marginLeft: 0,
-                                    marginBottom: 0,
-                                    marginTop: 0
-                                }}
-                            />
+function MainView() {
+    const {
+        data: {currentTab}
+    } = useCurrentTab()
+    const setCurrentTab = useSetCurrentTab()
+
+    return (
+        <View style={{flex: 1}}>
+            <Header
+                backgroundColor={colors.primary}
+                centerComponent={{
+                    text: tabs[currentTab].name.toUpperCase(),
+                    style: {
+                        fontSize: 20,
+                        color: "#fff"
+                    }
+                }}
+            />
+            {tabs[currentTab].component}
+            <ButtonGroup
+                onPress={index =>
+                    setCurrentTab({
+                        variables: {tab: index}
+                    })
+                }
+                selectedIndex={currentTab}
+                buttons={tabs.map(({buttonName, icon: {name, type}}) => ({
+                    element: () => (
+                        <View>
+                            <Icon name={name} type={type} />
+                            <Text
+                                style={{
+                                    marginTop: 5,
+                                    fontSize: 12
+                                }}>
+                                {buttonName}
+                            </Text>
                         </View>
-                    )}
-                </SetCurrentTabComponent>
-            )}
-        </CurrentTabComponent>
-    </ApolloProvider>
-)
+                    )
+                }))}
+                containerStyle={{
+                    height: 65,
+                    marginRight: 0,
+                    marginLeft: 0,
+                    marginBottom: 0,
+                    marginTop: 0
+                }}
+            />
+        </View>
+    )
+}
+
+export function App() {
+    return (
+        <ApolloProvider client={client}>
+            <Suspense fallback={<Text>Loading...</Text>}>
+                <MainView />
+            </Suspense>
+        </ApolloProvider>
+    )
+}
