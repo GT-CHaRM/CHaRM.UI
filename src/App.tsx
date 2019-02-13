@@ -7,6 +7,7 @@ import {colors} from "./theme"
 import {Submit, Submissions} from "./pages"
 import {CurrentTabComponent, SetCurrentTabComponent} from "./graphql"
 import {resolvers, defaults} from "./resolvers"
+import Login from "./pages/Login";
 
 const cache = new InMemoryCache({
     dataIdFromObject: x => x.id
@@ -57,6 +58,15 @@ const tabs: ITab[] = [
             type: "font-awesome"
         },
         component: <View style={{flex: 1}} />
+    }, 
+    {
+        name: "Login",
+        buttonName: "LOGIN",
+        icon: {
+            name: "plus-square",
+            type: "font-awesome"
+        },
+        component: <Login />
     }
 ]
 
