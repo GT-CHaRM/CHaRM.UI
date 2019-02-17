@@ -20,14 +20,6 @@ export type Seconds = number
 // Documents
 // ====================================================
 
-export type CurrentTabVariables = {}
-
-export type CurrentTabQuery = {
-    __typename?: "Query"
-
-    currentTab: number
-}
-
 export type ItemsVariables = {}
 
 export type ItemsQuery = {
@@ -88,16 +80,6 @@ export type ResetItemSelectedCountsMutation = {
     __typename?: "Mutation"
 
     resetItemSelectedCounts: boolean
-}
-
-export type SetCurrentTabVariables = {
-    tab: number
-}
-
-export type SetCurrentTabMutation = {
-    __typename?: "Mutation"
-
-    setCurrentTab: number
 }
 
 export type SubmissionsVariables = {}
@@ -170,50 +152,18 @@ export type UpdateItemSelectedCountMutation = {
 import * as ReactApollo from "react-apollo"
 import * as React from "react"
 
+import {
+    useQuery as useApolloQuery,
+    useMutation as useApolloMutation,
+    QueryHookOptions,
+    MutationHookOptions
+} from "react-apollo-hooks"
 import gql from "graphql-tag"
 
 // ====================================================
 // Components
 // ====================================================
 
-export const CurrentTabDocument = gql`
-    query CurrentTab {
-        currentTab @client
-    }
-`
-export class CurrentTabComponent extends React.Component<
-    Partial<ReactApollo.QueryProps<CurrentTabQuery, CurrentTabVariables>>
-> {
-    render() {
-        return (
-            <ReactApollo.Query<CurrentTabQuery, CurrentTabVariables>
-                query={CurrentTabDocument}
-                {...(this as any)["props"] as any}
-            />
-        )
-    }
-}
-export type CurrentTabProps<TChildProps = any> = Partial<
-    ReactApollo.DataProps<CurrentTabQuery, CurrentTabVariables>
-> &
-    TChildProps
-export function CurrentTabHOC<TProps, TChildProps = any>(
-    operationOptions:
-        | ReactApollo.OperationOption<
-              TProps,
-              CurrentTabQuery,
-              CurrentTabVariables,
-              CurrentTabProps<TChildProps>
-          >
-        | undefined
-) {
-    return ReactApollo.graphql<
-        TProps,
-        CurrentTabQuery,
-        CurrentTabVariables,
-        CurrentTabProps<TChildProps>
-    >(CurrentTabDocument, operationOptions)
-}
 export const ItemsDocument = gql`
     query Items {
         items {
@@ -223,38 +173,11 @@ export const ItemsDocument = gql`
         }
     }
 `
-export class ItemsComponent extends React.Component<
-    Partial<ReactApollo.QueryProps<ItemsQuery, ItemsVariables>>
-> {
-    render() {
-        return (
-            <ReactApollo.Query<ItemsQuery, ItemsVariables>
-                query={ItemsDocument}
-                {...(this as any)["props"] as any}
-            />
-        )
-    }
-}
-export type ItemsProps<TChildProps = any> = Partial<
-    ReactApollo.DataProps<ItemsQuery, ItemsVariables>
-> &
-    TChildProps
-export function ItemsHOC<TProps, TChildProps = any>(
-    operationOptions:
-        | ReactApollo.OperationOption<
-              TProps,
-              ItemsQuery,
-              ItemsVariables,
-              ItemsProps<TChildProps>
-          >
-        | undefined
-) {
-    return ReactApollo.graphql<
-        TProps,
-        ItemsQuery,
-        ItemsVariables,
-        ItemsProps<TChildProps>
-    >(ItemsDocument, operationOptions)
+export function useItems(baseOptions?: QueryHookOptions<ItemsVariables>) {
+    return useApolloQuery<ItemsQuery, ItemsVariables>(
+        ItemsDocument,
+        baseOptions
+    )
 }
 export const NewItemDocument = gql`
     mutation NewItem($items: [ID!]!) {
@@ -271,139 +194,29 @@ export const NewItemDocument = gql`
         }
     }
 `
-export class NewItemComponent extends React.Component<
-    Partial<ReactApollo.MutationProps<NewItemMutation, NewItemVariables>>
-> {
-    render() {
-        return (
-            <ReactApollo.Mutation<NewItemMutation, NewItemVariables>
-                mutation={NewItemDocument}
-                {...(this as any)["props"] as any}
-            />
-        )
-    }
-}
-export type NewItemProps<TChildProps = any> = Partial<
-    ReactApollo.MutateProps<NewItemMutation, NewItemVariables>
-> &
-    TChildProps
-export type NewItemMutationFn = ReactApollo.MutationFn<
-    NewItemMutation,
-    NewItemVariables
->
-export function NewItemHOC<TProps, TChildProps = any>(
-    operationOptions:
-        | ReactApollo.OperationOption<
-              TProps,
-              NewItemMutation,
-              NewItemVariables,
-              NewItemProps<TChildProps>
-          >
-        | undefined
+export function useNewItem(
+    baseOptions?: MutationHookOptions<NewItemMutation, NewItemVariables>
 ) {
-    return ReactApollo.graphql<
-        TProps,
-        NewItemMutation,
-        NewItemVariables,
-        NewItemProps<TChildProps>
-    >(NewItemDocument, operationOptions)
+    return useApolloMutation<NewItemMutation, NewItemVariables>(
+        NewItemDocument,
+        baseOptions
+    )
 }
 export const ResetItemSelectedCountsDocument = gql`
     mutation ResetItemSelectedCounts {
         resetItemSelectedCounts @client
     }
 `
-export class ResetItemSelectedCountsComponent extends React.Component<
-    Partial<
-        ReactApollo.MutationProps<
-            ResetItemSelectedCountsMutation,
-            ResetItemSelectedCountsVariables
-        >
-    >
-> {
-    render() {
-        return (
-            <ReactApollo.Mutation<
-                ResetItemSelectedCountsMutation,
-                ResetItemSelectedCountsVariables
-            >
-                mutation={ResetItemSelectedCountsDocument}
-                {...(this as any)["props"] as any}
-            />
-        )
-    }
-}
-export type ResetItemSelectedCountsProps<TChildProps = any> = Partial<
-    ReactApollo.MutateProps<
+export function useResetItemSelectedCounts(
+    baseOptions?: MutationHookOptions<
         ResetItemSelectedCountsMutation,
         ResetItemSelectedCountsVariables
     >
-> &
-    TChildProps
-export type ResetItemSelectedCountsMutationFn = ReactApollo.MutationFn<
-    ResetItemSelectedCountsMutation,
-    ResetItemSelectedCountsVariables
->
-export function ResetItemSelectedCountsHOC<TProps, TChildProps = any>(
-    operationOptions:
-        | ReactApollo.OperationOption<
-              TProps,
-              ResetItemSelectedCountsMutation,
-              ResetItemSelectedCountsVariables,
-              ResetItemSelectedCountsProps<TChildProps>
-          >
-        | undefined
 ) {
-    return ReactApollo.graphql<
-        TProps,
+    return useApolloMutation<
         ResetItemSelectedCountsMutation,
-        ResetItemSelectedCountsVariables,
-        ResetItemSelectedCountsProps<TChildProps>
-    >(ResetItemSelectedCountsDocument, operationOptions)
-}
-export const SetCurrentTabDocument = gql`
-    mutation SetCurrentTab($tab: Int!) {
-        setCurrentTab(tab: $tab) @client
-    }
-`
-export class SetCurrentTabComponent extends React.Component<
-    Partial<
-        ReactApollo.MutationProps<SetCurrentTabMutation, SetCurrentTabVariables>
-    >
-> {
-    render() {
-        return (
-            <ReactApollo.Mutation<SetCurrentTabMutation, SetCurrentTabVariables>
-                mutation={SetCurrentTabDocument}
-                {...(this as any)["props"] as any}
-            />
-        )
-    }
-}
-export type SetCurrentTabProps<TChildProps = any> = Partial<
-    ReactApollo.MutateProps<SetCurrentTabMutation, SetCurrentTabVariables>
-> &
-    TChildProps
-export type SetCurrentTabMutationFn = ReactApollo.MutationFn<
-    SetCurrentTabMutation,
-    SetCurrentTabVariables
->
-export function SetCurrentTabHOC<TProps, TChildProps = any>(
-    operationOptions:
-        | ReactApollo.OperationOption<
-              TProps,
-              SetCurrentTabMutation,
-              SetCurrentTabVariables,
-              SetCurrentTabProps<TChildProps>
-          >
-        | undefined
-) {
-    return ReactApollo.graphql<
-        TProps,
-        SetCurrentTabMutation,
-        SetCurrentTabVariables,
-        SetCurrentTabProps<TChildProps>
-    >(SetCurrentTabDocument, operationOptions)
+        ResetItemSelectedCountsVariables
+    >(ResetItemSelectedCountsDocument, baseOptions)
 }
 export const SubmissionsDocument = gql`
     query Submissions {
@@ -420,38 +233,13 @@ export const SubmissionsDocument = gql`
         }
     }
 `
-export class SubmissionsComponent extends React.Component<
-    Partial<ReactApollo.QueryProps<SubmissionsQuery, SubmissionsVariables>>
-> {
-    render() {
-        return (
-            <ReactApollo.Query<SubmissionsQuery, SubmissionsVariables>
-                query={SubmissionsDocument}
-                {...(this as any)["props"] as any}
-            />
-        )
-    }
-}
-export type SubmissionsProps<TChildProps = any> = Partial<
-    ReactApollo.DataProps<SubmissionsQuery, SubmissionsVariables>
-> &
-    TChildProps
-export function SubmissionsHOC<TProps, TChildProps = any>(
-    operationOptions:
-        | ReactApollo.OperationOption<
-              TProps,
-              SubmissionsQuery,
-              SubmissionsVariables,
-              SubmissionsProps<TChildProps>
-          >
-        | undefined
+export function useSubmissions(
+    baseOptions?: QueryHookOptions<SubmissionsVariables>
 ) {
-    return ReactApollo.graphql<
-        TProps,
-        SubmissionsQuery,
-        SubmissionsVariables,
-        SubmissionsProps<TChildProps>
-    >(SubmissionsDocument, operationOptions)
+    return useApolloQuery<SubmissionsQuery, SubmissionsVariables>(
+        SubmissionsDocument,
+        baseOptions
+    )
 }
 export const SubmitItemsDocument = gql`
     mutation SubmitItems($items: [ID!]!) {
@@ -462,95 +250,27 @@ export const SubmitItemsDocument = gql`
         }
     }
 `
-export class SubmitItemsComponent extends React.Component<
-    Partial<
-        ReactApollo.MutationProps<SubmitItemsMutation, SubmitItemsVariables>
-    >
-> {
-    render() {
-        return (
-            <ReactApollo.Mutation<SubmitItemsMutation, SubmitItemsVariables>
-                mutation={SubmitItemsDocument}
-                {...(this as any)["props"] as any}
-            />
-        )
-    }
-}
-export type SubmitItemsProps<TChildProps = any> = Partial<
-    ReactApollo.MutateProps<SubmitItemsMutation, SubmitItemsVariables>
-> &
-    TChildProps
-export type SubmitItemsMutationFn = ReactApollo.MutationFn<
-    SubmitItemsMutation,
-    SubmitItemsVariables
->
-export function SubmitItemsHOC<TProps, TChildProps = any>(
-    operationOptions:
-        | ReactApollo.OperationOption<
-              TProps,
-              SubmitItemsMutation,
-              SubmitItemsVariables,
-              SubmitItemsProps<TChildProps>
-          >
-        | undefined
+export function useSubmitItems(
+    baseOptions?: MutationHookOptions<SubmitItemsMutation, SubmitItemsVariables>
 ) {
-    return ReactApollo.graphql<
-        TProps,
-        SubmitItemsMutation,
-        SubmitItemsVariables,
-        SubmitItemsProps<TChildProps>
-    >(SubmitItemsDocument, operationOptions)
+    return useApolloMutation<SubmitItemsMutation, SubmitItemsVariables>(
+        SubmitItemsDocument,
+        baseOptions
+    )
 }
 export const UpdateItemSelectedCountDocument = gql`
     mutation UpdateItemSelectedCount($id: ID!, $selectedCount: Int!) {
         updateItemSelectedCount(id: $id, selectedCount: $selectedCount) @client
     }
 `
-export class UpdateItemSelectedCountComponent extends React.Component<
-    Partial<
-        ReactApollo.MutationProps<
-            UpdateItemSelectedCountMutation,
-            UpdateItemSelectedCountVariables
-        >
-    >
-> {
-    render() {
-        return (
-            <ReactApollo.Mutation<
-                UpdateItemSelectedCountMutation,
-                UpdateItemSelectedCountVariables
-            >
-                mutation={UpdateItemSelectedCountDocument}
-                {...(this as any)["props"] as any}
-            />
-        )
-    }
-}
-export type UpdateItemSelectedCountProps<TChildProps = any> = Partial<
-    ReactApollo.MutateProps<
+export function useUpdateItemSelectedCount(
+    baseOptions?: MutationHookOptions<
         UpdateItemSelectedCountMutation,
         UpdateItemSelectedCountVariables
     >
-> &
-    TChildProps
-export type UpdateItemSelectedCountMutationFn = ReactApollo.MutationFn<
-    UpdateItemSelectedCountMutation,
-    UpdateItemSelectedCountVariables
->
-export function UpdateItemSelectedCountHOC<TProps, TChildProps = any>(
-    operationOptions:
-        | ReactApollo.OperationOption<
-              TProps,
-              UpdateItemSelectedCountMutation,
-              UpdateItemSelectedCountVariables,
-              UpdateItemSelectedCountProps<TChildProps>
-          >
-        | undefined
 ) {
-    return ReactApollo.graphql<
-        TProps,
+    return useApolloMutation<
         UpdateItemSelectedCountMutation,
-        UpdateItemSelectedCountVariables,
-        UpdateItemSelectedCountProps<TChildProps>
-    >(UpdateItemSelectedCountDocument, operationOptions)
+        UpdateItemSelectedCountVariables
+    >(UpdateItemSelectedCountDocument, baseOptions)
 }

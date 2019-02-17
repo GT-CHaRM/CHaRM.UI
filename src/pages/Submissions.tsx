@@ -1,74 +1,84 @@
+import moment from "moment"
 import React from "react"
-import {View, ViewStyle, StyleProp, FlatList} from "react-native"
-import {Badge, List, ListItem, Card} from "react-native-elements"
+import {FlatList, StyleProp, View, ViewStyle} from "react-native"
+import {Badge, Card, ListItem} from "react-native-elements"
+import {WithHeader} from "../components"
 import {
-    SubmissionsComponent,
+    SubmissionsItem,
     SubmissionsSubmissions,
-    SubmissionsItem
+    useSubmissions
 } from "../graphql"
 import {colors} from "../theme"
-import moment from "moment"
 
-const SubmissionItemEntry = ({
+// TODO: Auto reload page when we switch tabs
+// TODO: Add units to the history page
+
+function SubmissionItemEntry({
     item: {id, name},
     count
 }: {
     item: SubmissionsItem
     count: number
-}) => (
-    <ListItem
-        key={id}
-        avatar={<Badge value={count} />}
-        title={name}
-        containerStyle={{backgroundColor: colors.primaryLight}}
-        rightIcon={<View />}
-    />
-)
+}) {
+    return (
+        <ListItem
+            key={id}
+            avatar={<Badge value={count} />}
+            title={name}
+            containerStyle={{backgroundColor: colors.primaryLight}}
+            rightIcon={<View />}
+        />
+    )
+}
 
-const SubmissionEntry = ({
+function SubmissionEntry({
     submission: {items, submitted}
 }: {
     submission: SubmissionsSubmissions
-}) => (
-    <Card title={`Visited ${moment(submitted).fromNow()}`}>
-        <FlatList
-            data={items}
-            renderItem={({item: {item, count}}) => (
-                <SubmissionItemEntry item={item} count={count} />
-            )}
-            keyExtractor={({item: {id}}) => id}
-        />
-    </Card>
-)
-
-const SubmissionList = ({style}: {style?: StyleProp<ViewStyle>}) => (
-    <View style={[style, {backgroundColor: colors.background}]}>
-        <List
-            containerStyle={{
-                backgroundColor: colors.background,
-                marginTop: 0
-            }}>
-            <SubmissionsComponent>
-                {({data: {submissions}, loading, refetch}) => (
-                    <FlatList
-                        data={submissions || []}
-                        renderItem={({item}) => (
-                            <SubmissionEntry key={item.id} submission={item} />
-                        )}
-                        keyExtractor={({id}) => id}
-                        refreshing={loading}
-                        onRefresh={refetch}
-                    />
-                )}
-            </SubmissionsComponent>
-        </List>
-    </View>
-)
-
-export const Submissions = () => {
+}) {
     return (
-        <View style={{flex: 1}}>
-            <SubmissionList style={{flex: 1}} />
+        <Card title={`Visited ${moment(submitted).fromNow()}`}>
+            <FlatList
+                data={items}
+                renderItem={({item: {item, count}}) => (
+                    <SubmissionItemEntry item={item} count={count} />
+                )}
+                keyExtractor={({item: {id}}) => id}
+            />
+        </Card>
+    )
+}
+
+function SubmissionList({style}: {style?: StyleProp<ViewStyle>}) {
+    const {
+        data: {submissions},
+        loading,
+        refetch
+    } = useSubmissions()
+
+    return (
+        <View style={[style, {backgroundColor: colors.background}]}>
+            <FlatList
+                contentContainerStyle={{
+                    backgroundColor: colors.background,
+                    marginTop: 0
+                }}
+                data={submissions || []}
+                renderItem={({item}) => (
+                    <SubmissionEntry key={item.id} submission={item} />
+                )}
+                keyExtractor={({id}) => id}
+                refreshing={loading}
+                onRefresh={refetch}
+            />
         </View>
+    )
+}
+
+export function Submissions() {
+    return (
+        <WithHeader>
+            <SubmissionList style={{flex: 1}} />
+        </WithHeader>
     )
 }

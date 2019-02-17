@@ -12,10 +12,13 @@
         "expo": "^32.0.0",
         "graphql": "^14.1.1",
         "moment": "^2.24.0",
-        "react": "16.5.0",
+        "react": "16.8.2",
         "react-apollo": "^2.4.0",
-        "react-native": "https://github.com/expo/react-native/archive/sdk-32.0.0.tar.gz",
+        "react-apollo-hooks": "^0.4.0",
+        "react-native": "npm:@brunolemos/react-native@latest",
         "react-native-elements": "^0.19.1",
+        "react-navigation": "^3.3.0",
+        "react-navigation-hooks": "^1.0.0-alpha.2",
         "tslib": "^1.9.3"
     },
     "devDependencies": {
@@ -23,6 +26,7 @@
         "@types/expo__vector-icons": "^6.2.3",
         "@types/react": "^16.7.21",
         "@types/react-native": "^0.57.32",
+        "@types/react-navigation": "^3.0.2",
         "babel-preset-expo": "^5.0.0",
         "graphql-code-generator": "^0.16.0",
         "graphql-codegen-typescript-client": "^0.16.0",
