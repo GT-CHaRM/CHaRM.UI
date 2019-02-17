@@ -48,12 +48,20 @@ export function Login() {
                             button: styles.primaryButton,
                             label: styles.buttonWhiteText
                         }}
+                        onPress={() => {
+                            alert(
+                                this.state.username + " " + this.state.password
+                            )
+                        }}
                     />
                 </Container>
                 <Container>
                     <Button
                         label="CANCEL"
                         styles={{label: styles.buttonBlackText}}
+                        onPress={() => {
+                            alert("Don't Panic!")
+                        }}
                     />
                 </Container>
             </ScrollView>
