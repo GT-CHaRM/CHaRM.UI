@@ -49,9 +49,7 @@ export function Login() {
                             label: styles.buttonWhiteText
                         }}
                         onPress={() => {
-                            alert(
-                                this.state.username + " " + this.state.password
-                            )
+                            alert(username + " : " + password)
                         }}
                     />
                 </Container>
