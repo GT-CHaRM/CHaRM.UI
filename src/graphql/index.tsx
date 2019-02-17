@@ -20,14 +20,6 @@ export type Seconds = number
 // Documents
 // ====================================================
 
-export type CurrentTabVariables = {}
-
-export type CurrentTabQuery = {
-    __typename?: "Query"
-
-    currentTab: number
-}
-
 export type ItemsVariables = {}
 
 export type ItemsQuery = {
@@ -88,16 +80,6 @@ export type ResetItemSelectedCountsMutation = {
     __typename?: "Mutation"
 
     resetItemSelectedCounts: boolean
-}
-
-export type SetCurrentTabVariables = {
-    tab: number
-}
-
-export type SetCurrentTabMutation = {
-    __typename?: "Mutation"
-
-    setCurrentTab: number
 }
 
 export type SubmissionsVariables = {}
@@ -182,19 +164,6 @@ import gql from "graphql-tag"
 // Components
 // ====================================================
 
-export const CurrentTabDocument = gql`
-    query CurrentTab {
-        currentTab @client
-    }
-`
-export function useCurrentTab(
-    baseOptions?: QueryHookOptions<CurrentTabVariables>
-) {
-    return useApolloQuery<CurrentTabQuery, CurrentTabVariables>(
-        CurrentTabDocument,
-        baseOptions
-    )
-}
 export const ItemsDocument = gql`
     query Items {
         items {
@@ -248,22 +217,6 @@ export function useResetItemSelectedCounts(
         ResetItemSelectedCountsMutation,
         ResetItemSelectedCountsVariables
     >(ResetItemSelectedCountsDocument, baseOptions)
-}
-export const SetCurrentTabDocument = gql`
-    mutation SetCurrentTab($tab: Int!) {
-        setCurrentTab(tab: $tab) @client
-    }
-`
-export function useSetCurrentTab(
-    baseOptions?: MutationHookOptions<
-        SetCurrentTabMutation,
-        SetCurrentTabVariables
-    >
-) {
-    return useApolloMutation<SetCurrentTabMutation, SetCurrentTabVariables>(
-        SetCurrentTabDocument,
-        baseOptions
-    )
 }
 export const SubmissionsDocument = gql`
     query Submissions {

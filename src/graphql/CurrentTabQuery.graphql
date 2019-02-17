@@ -1,3 +1,0 @@
-query CurrentTab {
-    currentTab @client
-}

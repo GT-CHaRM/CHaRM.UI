@@ -1,18 +1,16 @@
-import React, {Component} from "react"
-
-import {StyleSheet, Text, View, TextInput, ScrollView} from "react-native"
-
-import Container from "../components/Container"
+import React, {useState} from "react"
+import {ScrollView, StyleSheet, TextInput} from "react-native"
+import {WithHeader} from "../components"
 import Button from "../components/Button"
+import Container from "../components/Container"
 import Label from "../components/Label"
 
-export default class Login extends Component<
-    {},
-    {username: string; password: string}
-> {
-    state = {username: "", password: ""}
-    render() {
-        return (
+export function Login() {
+    const [username, setUsername] = useState("")
+    const [password, setPassword] = useState("")
+
+    return (
+        <WithHeader>
             <ScrollView style={styles.scroll}>
                 <Container>
                     <Button
@@ -21,30 +19,25 @@ export default class Login extends Component<
                             button: styles.alignRight,
                             label: styles.label
                         }}
-                        onPress={() => {
-                            alert("hello")
-                        }}
                     />
                 </Container>
 
                 <Container>
                     <Label text="Username or email" />
                     <TextInput
-                        ref="username"
                         style={styles.textInput}
-                        onChangeText={text => this.setState({username: text})}
-                        value={this.state.username}
+                        onChangeText={username => setUsername(username)}
+                        value={username}
                     />
                 </Container>
 
                 <Container>
                     <Label text="Password" />
                     <TextInput
-                        ref="password"
                         secureTextEntry={true}
                         style={styles.textInput}
-                        onChangeText={text => this.setState({password: text})}
-                        value={this.state.password}
+                        onChangeText={password => setPassword(password)}
+                        value={password}
                     />
                 </Container>
 
@@ -61,12 +54,11 @@ export default class Login extends Component<
                     <Button
                         label="CANCEL"
                         styles={{label: styles.buttonBlackText}}
-                        // onPress={this.press.bind(this)}
                     />
                 </Container>
             </ScrollView>
-        )
-    }
+        </WithHeader>
+    )
 }
 
 const styles = StyleSheet.create({

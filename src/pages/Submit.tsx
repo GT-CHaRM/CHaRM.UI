@@ -1,6 +1,7 @@
 import React from "react"
 import {FlatList, StyleProp, TextInput, View, ViewStyle} from "react-native"
 import {Button, ButtonGroup, Icon, ListItem} from "react-native-elements"
+import {WithHeader} from "../components"
 import {
     ItemsItems,
     useItems,
@@ -143,7 +144,7 @@ function SubmitButton() {
                 flexDirection: "column"
             }}>
             <Button
-                containerStyle={{
+                containerViewStyle={{
                     marginLeft: 0,
                     marginRight: 0
                 }}
@@ -169,9 +170,9 @@ function SubmitButton() {
 
 export function Submit() {
     return (
-        <View style={{flex: 1}}>
+        <WithHeader>
             <SubmissionList style={{flex: 1}} />
             <SubmitButton />
-        </View>
+        </WithHeader>
     )
 }

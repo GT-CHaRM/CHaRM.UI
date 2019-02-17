@@ -2,6 +2,7 @@ import moment from "moment"
 import React from "react"
 import {FlatList, StyleProp, View, ViewStyle} from "react-native"
 import {Badge, Card, ListItem} from "react-native-elements"
+import {WithHeader} from "../components"
 import {
     SubmissionsItem,
     SubmissionsSubmissions,
@@ -22,7 +23,7 @@ function SubmissionItemEntry({
     return (
         <ListItem
             key={id}
-            rightAvatar={<Badge value={count} />}
+            avatar={<Badge value={count} />}
             title={name}
             containerStyle={{backgroundColor: colors.primaryLight}}
             rightIcon={<View />}
@@ -76,8 +77,8 @@ function SubmissionList({style}: {style?: StyleProp<ViewStyle>}) {
 
 export function Submissions() {
     return (
-        <View style={{flex: 1}}>
+        <WithHeader>
             <SubmissionList style={{flex: 1}} />
-        </View>
+        </WithHeader>
     )
 }

@@ -1,3 +1,0 @@
-mutation SetCurrentTab($tab: Int!) {
-    setCurrentTab(tab: $tab) @client
-}
