@@ -55,13 +55,20 @@ export default class Login extends Component<
                             button: styles.primaryButton,
                             label: styles.buttonWhiteText
                         }}
+                        onPress={() => {
+                            alert(
+                                this.state.username + " " + this.state.password
+                            )
+                        }}
                     />
                 </Container>
                 <Container>
                     <Button
                         label="CANCEL"
                         styles={{label: styles.buttonBlackText}}
-                        // onPress={this.press.bind(this)}
+                        onPress={() => {
+                            alert("Don't Panic!")
+                        }}
                     />
                 </Container>
             </ScrollView>
