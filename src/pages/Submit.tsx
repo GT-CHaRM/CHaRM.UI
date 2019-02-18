@@ -144,7 +144,7 @@ function SubmitButton() {
                 flexDirection: "column"
             }}>
             <Button
-                containerViewStyle={{
+                containerStyle={{
                     marginLeft: 0,
                     marginRight: 0
                 }}

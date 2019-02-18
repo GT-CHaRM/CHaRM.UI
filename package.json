@@ -13,10 +13,10 @@
         "graphql": "^14.1.1",
         "moment": "^2.24.0",
         "react": "16.8.2",
-        "react-apollo": "^2.4.0",
+        "react-apollo": "^2.4.1",
         "react-apollo-hooks": "^0.4.0",
         "react-native": "npm:@brunolemos/react-native@latest",
-        "react-native-elements": "^0.19.1",
+        "react-native-elements": "^1.0.0",
         "react-navigation": "^3.3.0",
         "react-navigation-hooks": "^1.0.0-alpha.2",
         "tslib": "^1.9.3"

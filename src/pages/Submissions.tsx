@@ -23,7 +23,7 @@ function SubmissionItemEntry({
     return (
         <ListItem
             key={id}
-            avatar={<Badge value={count} />}
+            rightAvatar={<Badge value={count} />}
             title={name}
             containerStyle={{backgroundColor: colors.primaryLight}}
             rightIcon={<View />}
