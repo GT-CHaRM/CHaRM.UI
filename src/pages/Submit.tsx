@@ -5,6 +5,7 @@ import {WithHeader} from "../components"
 import {
     ItemsItems,
     useItems,
+    useMyZipCode,
     useResetItemSelectedCounts,
     useSubmitItems,
     useUpdateItemSelectedCount
@@ -33,15 +34,15 @@ function ItemCountSelector({id, count}: {id: string; count: number}) {
                 if (selectedIndex === 0) {
                     await updateItemSelectedCount({
                         variables: {
-                            id,
-                            selectedCount: Math.max(count - 1, 0)
+                            Id: id,
+                            SelectedCount: Math.max(count - 1, 0)
                         }
                     })
                 } else if (selectedIndex === 2) {
                     await updateItemSelectedCount({
                         variables: {
-                            id,
-                            selectedCount: count + 1
+                            Id: id,
+                            SelectedCount: count + 1
                         }
                     })
                 }
@@ -70,8 +71,8 @@ function ItemCountSelector({id, count}: {id: string; count: number}) {
 
                                 await updateItemSelectedCount({
                                     variables: {
-                                        id,
-                                        selectedCount: selectedCount
+                                        Id: id,
+                                        SelectedCount: selectedCount
                                     }
                                 })
                             }}
@@ -88,19 +89,19 @@ function ItemCountSelector({id, count}: {id: string; count: number}) {
     )
 }
 
-function ItemEntry({item: {id, name, selectedCount}}: {item: ItemsItems}) {
+function ItemEntry({item: {Id, Name, SelectedCount}}: {item: ItemsItems}) {
     return (
         <ListItem
-            title={name}
-            onLongPress={() => alert(name)}
-            rightIcon={<ItemCountSelector id={id} count={selectedCount} />}
+            title={Name}
+            onLongPress={() => alert(Name)}
+            rightIcon={<ItemCountSelector id={Id} count={SelectedCount} />}
         />
     )
 }
 
 function SubmissionList({style}: {style?: StyleProp<ViewStyle>}) {
     const {
-        data: {items},
+        data: {Items},
         loading
     } = useItems()
 
@@ -111,9 +112,9 @@ function SubmissionList({style}: {style?: StyleProp<ViewStyle>}) {
                     backgroundColor: colors.white,
                     marginTop: 0
                 }}
-                data={items || []}
-                renderItem={({item}) => <ItemEntry key={item.id} item={item} />}
-                keyExtractor={({id}) => id}
+                data={Items || []}
+                renderItem={({item}) => <ItemEntry key={item.Id} item={item} />}
+                keyExtractor={({Id}) => Id}
                 refreshing={loading}
             />
         </View>
@@ -122,9 +123,9 @@ function SubmissionList({style}: {style?: StyleProp<ViewStyle>}) {
 
 function createItemSubmissionList(items: ItemsItems[]) {
     function* innerFn() {
-        for (const {id, selectedCount} of items) {
-            for (let i = 0; i < selectedCount; ++i) {
-                yield id
+        for (const {Id, SelectedCount} of items) {
+            for (let i = 0; i < SelectedCount; ++i) {
+                yield Id
             }
         }
     }
@@ -133,8 +134,13 @@ function createItemSubmissionList(items: ItemsItems[]) {
 
 function SubmitButton() {
     const {
-        data: {items}
+        data: {Items}
     } = useItems()
+    const {
+        data: {
+            Me: {ZipCode}
+        }
+    } = useMyZipCode()
     const submit = useSubmitItems()
     const resetItemSelectedCounts = useResetItemSelectedCounts()
 
@@ -144,19 +150,20 @@ function SubmitButton() {
                 flexDirection: "column"
             }}>
             <Button
-                containerViewStyle={{
+                containerStyle={{
                     marginLeft: 0,
                     marginRight: 0
                 }}
                 onPress={async () => {
-                    const itemsToSubmit = createItemSubmissionList(items)
+                    const itemsToSubmit = createItemSubmissionList(Items)
                     if (itemsToSubmit.length === 0) {
                         alert("You have not selected any items to enter!")
                         return
                     }
                     await submit({
                         variables: {
-                            items: itemsToSubmit
+                            Items: itemsToSubmit,
+                            ZipCode
                         }
                     })
                     await resetItemSelectedCounts({})

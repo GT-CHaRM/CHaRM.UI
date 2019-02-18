@@ -1,8 +1,8 @@
 type ItemType {
-    selectedCount: Int!
+    SelectedCount: Int!
 }
 
 type Mutation {
-    resetItemSelectedCounts: Boolean!
-    updateItemSelectedCount(id: ID!, selectedCount: Int!): Int!
+    ResetItemSelectedCounts: Boolean!
+    UpdateItemSelectedCount(Id: ID!, SelectedCount: Int!): Int!
 }

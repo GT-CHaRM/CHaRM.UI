@@ -1,7 +1,7 @@
 query Items {
-    items {
-        id
-        name
-        selectedCount @client
+    Items {
+        Id
+        Name
+        SelectedCount @client
     }
 }

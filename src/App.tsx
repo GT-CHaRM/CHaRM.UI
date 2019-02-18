@@ -9,14 +9,30 @@ const cache = new InMemoryCache({
     dataIdFromObject: x => x.id
 })
 
-const client = new ApolloClient({
-    cache,
-    uri: "http://charm.nima.sh:5000/graphql",
-    clientState: {
-        resolvers,
-        defaults
-    }
-})
+function makeClient(token: string | undefined) {
+    const headers =
+        token === undefined || token === ""
+            ? {}
+            : {
+                  Authorization: `Bearer: ${token}`
+              }
+
+    return new ApolloClient({
+        cache,
+        uri: "http://localhost:5000/graphql",
+        clientState: {
+            resolvers,
+            defaults
+        },
+        headers
+    })
+}
+
+const client = makeClient(undefined)
+
+function LoadingScreen() {
+    return <Text>Loading...</Text>
+}
 
 export function App() {
     return (

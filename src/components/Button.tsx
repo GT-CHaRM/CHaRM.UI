@@ -1,7 +1,7 @@
 import React from "react"
 import {StyleSheet, Text, TouchableHighlight} from "react-native"
 
-const Button = props => {
+export function Button(props) {
     function getContent() {
         if (props.children) {
             return props.children
@@ -29,5 +29,3 @@ const styles = StyleSheet.create({
         padding: 20
     }
 })
-
-export default Button

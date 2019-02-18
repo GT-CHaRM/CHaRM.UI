@@ -14,7 +14,7 @@ import {colors} from "../theme"
 // TODO: Add units to the history page
 
 function SubmissionItemEntry({
-    item: {id, name},
+    item: {Id, Name},
     count
 }: {
     item: SubmissionsItem
@@ -22,9 +22,9 @@ function SubmissionItemEntry({
 }) {
     return (
         <ListItem
-            key={id}
-            avatar={<Badge value={count} />}
-            title={name}
+            key={Id}
+            rightAvatar={<Badge value={count} />}
+            title={Name}
             containerStyle={{backgroundColor: colors.primaryLight}}
             rightIcon={<View />}
         />
@@ -32,18 +32,18 @@ function SubmissionItemEntry({
 }
 
 function SubmissionEntry({
-    submission: {items, submitted}
+    submission: {Items, Submitted}
 }: {
     submission: SubmissionsSubmissions
 }) {
     return (
-        <Card title={`Visited ${moment(submitted).fromNow()}`}>
+        <Card title={`Visited ${moment(Submitted).fromNow()}`}>
             <FlatList
-                data={items}
-                renderItem={({item: {item, count}}) => (
-                    <SubmissionItemEntry item={item} count={count} />
+                data={Items}
+                renderItem={({item: {Item, Count}}) => (
+                    <SubmissionItemEntry item={Item} count={Count} />
                 )}
-                keyExtractor={({item: {id}}) => id}
+                keyExtractor={({Item: {Id}}) => Id}
             />
         </Card>
     )
@@ -51,7 +51,7 @@ function SubmissionEntry({
 
 function SubmissionList({style}: {style?: StyleProp<ViewStyle>}) {
     const {
-        data: {submissions},
+        data: {Submissions},
         loading,
         refetch
     } = useSubmissions()
@@ -63,11 +63,11 @@ function SubmissionList({style}: {style?: StyleProp<ViewStyle>}) {
                     backgroundColor: colors.background,
                     marginTop: 0
                 }}
-                data={submissions || []}
+                data={Submissions || []}
                 renderItem={({item}) => (
-                    <SubmissionEntry key={item.id} submission={item} />
+                    <SubmissionEntry key={item.Id} submission={item} />
                 )}
-                keyExtractor={({id}) => id}
+                keyExtractor={({Id}) => Id}
                 refreshing={loading}
                 onRefresh={refetch}
             />

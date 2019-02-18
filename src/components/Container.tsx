@@ -1,7 +1,7 @@
 import React from "react"
 import {StyleSheet, View} from "react-native"
 
-const Container = props => {
+export function Container(props) {
     return <View style={styles.labelContainer}>{props.children}</View>
 }
 
@@ -10,5 +10,3 @@ const styles = StyleSheet.create({
         marginBottom: 20
     }
 })
-
-export default Container

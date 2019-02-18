@@ -1,7 +1,7 @@
 import React from "react"
 import {StyleSheet, Text} from "react-native"
 
-const Label = props => {
+export function Label(props) {
     return (
         <Text
             style={
@@ -22,5 +22,3 @@ const styles = StyleSheet.create({
         color: "#595856"
     }
 })
-
-export default Label

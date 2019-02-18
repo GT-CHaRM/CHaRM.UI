@@ -2,7 +2,7 @@ overwrite: true
 generates:
     ./src/graphql/index.tsx:
         schema:
-            - http://charm.nima.sh:5000/graphql
+            - http://localhost:5000/graphql
             - client.graphql
         documents: ./src/graphql/**/*.graphql
         plugins:

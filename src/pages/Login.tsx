@@ -1,9 +1,6 @@
 import React, {useState} from "react"
 import {ScrollView, StyleSheet, TextInput} from "react-native"
-import {WithHeader} from "../components"
-import Button from "../components/Button"
-import Container from "../components/Container"
-import Label from "../components/Label"
+import {Button, Container, Label, WithHeader} from "../components"
 
 export function Login() {
     const [username, setUsername] = useState("")
