@@ -1,7 +1,7 @@
-mutation SubmitItems($items: [ID!]!) {
-    createSubmission(items: $items) {
-        items {
-            count
+mutation SubmitItems($Items: [ID!]!, $ZipCode: String!) {
+    CreateSubmission(Items: $Items, ZipCode: $ZipCode) {
+        Items {
+            Count
         }
     }
 }

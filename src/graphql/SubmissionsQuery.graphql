@@ -1,13 +1,13 @@
 query Submissions {
-    submissions {
-        id
-        items {
-            count
-            item {
-                id
-                name
+    Submissions {
+        Id
+        Items {
+            Count
+            Item {
+                Id
+                Name
             }
         }
-        submitted
+        Submitted
     }
 }

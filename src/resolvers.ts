@@ -7,13 +7,13 @@ export const defaults = {
 
 export const resolvers = {
     ItemType: {
-        selectedCount: ({id}, _, {cache}: {cache: ApolloCache<any>}) => {
+        SelectedCount: ({Id}, _, {cache}: {cache: ApolloCache<any>}) => {
             const count =
                 cache.readFragment({
-                    id,
+                    id: Id,
                     fragment: gql`
                         fragment SelectedCount on ItemType {
-                            selectedCount @client
+                            SelectedCount @client
                         }
                     `
                 }) || 0
@@ -22,7 +22,7 @@ export const resolvers = {
         }
     },
     Mutation: {
-        resetItemSelectedCounts: (
+        ResetItemSelectedCounts: (
             _,
             __,
             {cache}: {cache: ApolloCache<any>}
@@ -41,50 +41,37 @@ export const resolvers = {
                     id,
                     fragment: gql`
                         fragment SelectedCount on ItemType {
-                            selectedCount @client
+                            SelectedCount @client
                         }
                     `,
                     data: {
                         __typename: "ItemType",
-                        selectedCount: 0
+                        SelectedCount: 0
                     }
                 })
             }
             return true
         },
-        setCurrentTab: (_, {tab}, {cache}: {cache: ApolloCache<any>}) => {
-            cache.writeQuery({
-                query: gql`
-                    query GetCurrentTab {
-                        currentTab @client
-                    }
-                `,
-                data: {
-                    __typename: "CurrentTab",
-                    currentTab: tab
-                }
-            })
-            return tab
-        },
-        updateItemSelectedCount: (
+
+        UpdateItemSelectedCount: (
             _,
-            {id, selectedCount},
+            {Id, SelectedCount},
             {cache}: {cache: ApolloCache<any>}
         ) => {
             cache.writeFragment({
-                id,
+                id: Id,
                 fragment: gql`
                     fragment SelectedCount on ItemType {
-                        selectedCount @client
+                        SelectedCount @client
                     }
                 `,
                 data: {
                     __typename: "ItemType",
-                    selectedCount
+                    SelectedCount
                 }
             })
 
-            return selectedCount
+            return SelectedCount
         }
     }
 }

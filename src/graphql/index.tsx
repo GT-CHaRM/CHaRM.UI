@@ -20,58 +20,36 @@ export type Seconds = number
 // Documents
 // ====================================================
 
+export type MyZipCodeVariables = {}
+
+export type MyZipCodeQuery = {
+    __typename?: "Query"
+
+    Me: Maybe<MyZipCodeMe>
+}
+
+export type MyZipCodeMe = {
+    __typename?: "User"
+
+    ZipCode: Maybe<string>
+}
+
 export type ItemsVariables = {}
 
 export type ItemsQuery = {
     __typename?: "Query"
 
-    items: ItemsItems[]
+    Items: ItemsItems[]
 }
 
 export type ItemsItems = {
     __typename?: "ItemType"
 
-    id: string
+    Id: string
 
-    name: string
+    Name: string
 
-    selectedCount: number
-}
-
-export type NewItemVariables = {
-    items: string[]
-}
-
-export type NewItemMutation = {
-    __typename?: "Mutation"
-
-    createSubmission: NewItemCreateSubmission
-}
-
-export type NewItemCreateSubmission = {
-    __typename?: "Submission"
-
-    id: string
-
-    items: NewItemItems[]
-
-    submitted: DateTimeOffset
-}
-
-export type NewItemItems = {
-    __typename?: "ItemSubmissionBatch"
-
-    count: number
-
-    item: NewItemItem
-}
-
-export type NewItemItem = {
-    __typename?: "ItemType"
-
-    id: string
-
-    name: string
+    SelectedCount: number
 }
 
 export type ResetItemSelectedCountsVariables = {}
@@ -79,7 +57,7 @@ export type ResetItemSelectedCountsVariables = {}
 export type ResetItemSelectedCountsMutation = {
     __typename?: "Mutation"
 
-    resetItemSelectedCounts: boolean
+    ResetItemSelectedCounts: boolean
 }
 
 export type SubmissionsVariables = {}
@@ -87,66 +65,67 @@ export type SubmissionsVariables = {}
 export type SubmissionsQuery = {
     __typename?: "Query"
 
-    submissions: SubmissionsSubmissions[]
+    Submissions: SubmissionsSubmissions[]
 }
 
 export type SubmissionsSubmissions = {
     __typename?: "Submission"
 
-    id: string
+    Id: string
 
-    items: SubmissionsItems[]
+    Items: SubmissionsItems[]
 
-    submitted: DateTimeOffset
+    Submitted: DateTimeOffset
 }
 
 export type SubmissionsItems = {
     __typename?: "ItemSubmissionBatch"
 
-    count: number
+    Count: number
 
-    item: SubmissionsItem
+    Item: SubmissionsItem
 }
 
 export type SubmissionsItem = {
     __typename?: "ItemType"
 
-    id: string
+    Id: string
 
-    name: string
+    Name: string
 }
 
 export type SubmitItemsVariables = {
-    items: string[]
+    Items: string[]
+    ZipCode: string
 }
 
 export type SubmitItemsMutation = {
     __typename?: "Mutation"
 
-    createSubmission: SubmitItemsCreateSubmission
+    CreateSubmission: SubmitItemsCreateSubmission
 }
 
 export type SubmitItemsCreateSubmission = {
     __typename?: "Submission"
 
-    items: SubmitItemsItems[]
+    Items: SubmitItemsItems[]
 }
 
 export type SubmitItemsItems = {
     __typename?: "ItemSubmissionBatch"
 
-    count: number
+    Count: number
 }
 
 export type UpdateItemSelectedCountVariables = {
-    id: string
-    selectedCount: number
+    Id: string
+    SelectedCount: number
 }
 
 export type UpdateItemSelectedCountMutation = {
     __typename?: "Mutation"
 
-    updateItemSelectedCount: number
+    UpdateItemSelectedCount: number
 }
 
 import * as ReactApollo from "react-apollo"
@@ -164,12 +143,27 @@ import gql from "graphql-tag"
 // Components
 // ====================================================
 
+export const MyZipCodeDocument = gql`
+    query MyZipCode {
+        Me {
+            ZipCode
+        }
+    }
+`
+export function useMyZipCode(
+    baseOptions?: QueryHookOptions<MyZipCodeVariables>
+) {
+    return useApolloQuery<MyZipCodeQuery, MyZipCodeVariables>(
+        MyZipCodeDocument,
+        baseOptions
+    )
+}
 export const ItemsDocument = gql`
     query Items {
-        items {
-            id
-            name
-            selectedCount @client
+        Items {
+            Id
+            Name
+            SelectedCount @client
         }
     }
 `
@@ -179,32 +173,9 @@ export function useItems(baseOptions?: QueryHookOptions<ItemsVariables>) {
         baseOptions
     )
 }
-export const NewItemDocument = gql`
-    mutation NewItem($items: [ID!]!) {
-        createSubmission(items: $items) {
-            id
-            items {
-                count
-                item {
-                    id
-                    name
-                }
-            }
-            submitted
-        }
-    }
-`
-export function useNewItem(
-    baseOptions?: MutationHookOptions<NewItemMutation, NewItemVariables>
-) {
-    return useApolloMutation<NewItemMutation, NewItemVariables>(
-        NewItemDocument,
-        baseOptions
-    )
-}
 export const ResetItemSelectedCountsDocument = gql`
     mutation ResetItemSelectedCounts {
-        resetItemSelectedCounts @client
+        ResetItemSelectedCounts @client
     }
 `
 export function useResetItemSelectedCounts(
@@ -220,16 +191,16 @@ export function useResetItemSelectedCounts(
 }
 export const SubmissionsDocument = gql`
     query Submissions {
-        submissions {
-            id
-            items {
-                count
-                item {
-                    id
-                    name
+        Submissions {
+            Id
+            Items {
+                Count
+                Item {
+                    Id
+                    Name
                 }
             }
-            submitted
+            Submitted
         }
     }
 `
@@ -242,10 +213,10 @@ export function useSubmissions(
     )
 }
 export const SubmitItemsDocument = gql`
-    mutation SubmitItems($items: [ID!]!) {
-        createSubmission(items: $items) {
-            items {
-                count
+    mutation SubmitItems($Items: [ID!]!, $ZipCode: String!) {
+        CreateSubmission(Items: $Items, ZipCode: $ZipCode) {
+            Items {
+                Count
             }
         }
     }
@@ -259,8 +230,8 @@ export function useSubmitItems(
     )
 }
 export const UpdateItemSelectedCountDocument = gql`
-    mutation UpdateItemSelectedCount($id: ID!, $selectedCount: Int!) {
-        updateItemSelectedCount(id: $id, selectedCount: $selectedCount) @client
+    mutation UpdateItemSelectedCount($Id: ID!, $SelectedCount: Int!) {
+        UpdateItemSelectedCount(Id: $Id, SelectedCount: $SelectedCount) @client
     }
 `
 export function useUpdateItemSelectedCount(
