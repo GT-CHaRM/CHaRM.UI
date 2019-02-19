@@ -1,0 +1,3 @@
+mutation LoginMutation($Username: String!, $Password: String!) {
+    Login(Username: $Username, Password: $Password)
+}

@@ -20,6 +20,20 @@ export type Seconds = number
 // Documents
 // ====================================================
 
+export type MyUsernameVariables = {}
+
+export type MyUsernameQuery = {
+    __typename?: "Query"
+
+    Me: Maybe<MyUsernameMe>
+}
+
+export type MyUsernameMe = {
+    __typename?: "User"
+
+    UserName: string
+}
+
 export type MyZipCodeVariables = {}
 
 export type MyZipCodeQuery = {
@@ -50,6 +64,29 @@ export type ItemsItems = {
     Name: string
 
     SelectedCount: number
+}
+
+export type LoginMutationVariables = {
+    Username: string
+    Password: string
+}
+
+export type LoginMutationMutation = {
+    __typename?: "Mutation"
+
+    Login: string
+}
+
+export type RegisterMutationVariables = {
+    Username: string
+    Password: string
+    Email: string
+}
+
+export type RegisterMutationMutation = {
+    __typename?: "Mutation"
+
+    Register: string
 }
 
 export type ResetItemSelectedCountsVariables = {}
@@ -143,6 +180,21 @@ import gql from "graphql-tag"
 // Components
 // ====================================================
 
+export const MyUsernameDocument = gql`
+    query MyUsername {
+        Me {
+            UserName
+        }
+    }
+`
+export function useMyUsername(
+    baseOptions?: QueryHookOptions<MyUsernameVariables>
+) {
+    return useApolloQuery<MyUsernameQuery, MyUsernameVariables>(
+        MyUsernameDocument,
+        baseOptions
+    )
+}
 export const MyZipCodeDocument = gql`
     query MyZipCode {
         Me {
@@ -172,6 +224,42 @@ export function useItems(baseOptions?: QueryHookOptions<ItemsVariables>) {
         ItemsDocument,
         baseOptions
     )
+}
+export const LoginMutationDocument = gql`
+    mutation LoginMutation($Username: String!, $Password: String!) {
+        Login(Username: $Username, Password: $Password)
+    }
+`
+export function useLoginMutation(
+    baseOptions?: MutationHookOptions<
+        LoginMutationMutation,
+        LoginMutationVariables
+    >
+) {
+    return useApolloMutation<LoginMutationMutation, LoginMutationVariables>(
+        LoginMutationDocument,
+        baseOptions
+    )
+}
+export const RegisterMutationDocument = gql`
+    mutation RegisterMutation(
+        $Username: String!
+        $Password: String!
+        $Email: String!
+    ) {
+        Register(Username: $Username, Password: $Password, Email: $Email)
+    }
+`
+export function useRegisterMutation(
+    baseOptions?: MutationHookOptions<
+        RegisterMutationMutation,
+        RegisterMutationVariables
+    >
+) {
+    return useApolloMutation<
+        RegisterMutationMutation,
+        RegisterMutationVariables
+    >(RegisterMutationDocument, baseOptions)
 }
 export const ResetItemSelectedCountsDocument = gql`
     mutation ResetItemSelectedCounts {

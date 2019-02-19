@@ -1,0 +1,7 @@
+mutation RegisterMutation(
+    $Username: String!
+    $Password: String!
+    $Email: String!
+) {
+    Register(Username: $Username, Password: $Password, Email: $Email)
+}

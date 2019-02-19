@@ -5,7 +5,6 @@ import {WithHeader} from "../components"
 import {
     ItemsItems,
     useItems,
-    useMyZipCode,
     useResetItemSelectedCounts,
     useSubmitItems,
     useUpdateItemSelectedCount
@@ -136,11 +135,12 @@ function SubmitButton() {
     const {
         data: {Items}
     } = useItems()
-    const {
-        data: {
-            Me: {ZipCode}
-        }
-    } = useMyZipCode()
+    // const {
+    //     data: {
+    //         Me: {ZipCode}
+    //     }
+    // } = useMyZipCode()
+    const ZipCode = ""
     const submit = useSubmitItems()
     const resetItemSelectedCounts = useResetItemSelectedCounts()
 

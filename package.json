@@ -17,6 +17,7 @@
         "react-apollo-hooks": "^0.4.0",
         "react-native": "npm:@brunolemos/react-native@latest",
         "react-native-elements": "^1.0.0",
+        "react-native-keyboard-spacer": "^0.4.1",
         "react-navigation": "^3.3.0",
         "react-navigation-hooks": "^1.0.0-alpha.2",
         "tslib": "^1.9.3"
