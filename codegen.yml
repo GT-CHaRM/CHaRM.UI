@@ -8,7 +8,7 @@ generates:
         plugins:
             - typescript-common
             - typescript-client
-            - ./typescript-react-apollo.js
+            - typescript-react-apollo
         config:
             withHooks: true
             noHOC: true

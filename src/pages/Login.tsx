@@ -1,5 +1,5 @@
 import React, {useContext, useState} from "react"
-import {ScrollView, View} from "react-native"
+import {AsyncStorage, ScrollView, View} from "react-native"
 import {Button, Icon, Image} from "react-native-elements"
 import {useNavigation} from "react-navigation-hooks"
 import {WithHeader} from "../components"
@@ -39,8 +39,8 @@ export function Login() {
                     }
                 })
                 alert(`Logged in as ${username}`)
-                console.log(token)
                 setToken(token)
+                await AsyncStorage.setItem("Token", token)
                 navigate("Submit")
                 // alert(`Your token is ${Login}`)
             } catch {

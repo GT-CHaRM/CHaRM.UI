@@ -1,5 +1,11 @@
 export type Maybe<T> = T | null
 
+export enum UserType {
+    Visitor = "Visitor",
+    Employee = "Employee",
+    Administrator = "Administrator"
+}
+
 /** The `DateTimeOffset` scalar type represents a date, time and offset from UTC. `DateTimeOffset` expects timestamps to be formatted in accordance with the [ISO-8601](https://en.wikipedia.org/wiki/ISO_8601) standard. */
 export type DateTimeOffset = any
 
@@ -74,7 +80,7 @@ export type LoginMutationVariables = {
 export type LoginMutationMutation = {
     __typename?: "Mutation"
 
-    Login: string
+    Login: Maybe<string>
 }
 
 export type RegisterMutationVariables = {
@@ -86,7 +92,7 @@ export type RegisterMutationVariables = {
 export type RegisterMutationMutation = {
     __typename?: "Mutation"
 
-    Register: string
+    Register: Maybe<string>
 }
 
 export type ResetItemSelectedCountsVariables = {}
@@ -165,16 +171,8 @@ export type UpdateItemSelectedCountMutation = {
     UpdateItemSelectedCount: number
 }
 
-import * as ReactApollo from "react-apollo"
-import * as React from "react"
-
-import {
-    useQuery as useApolloQuery,
-    useMutation as useApolloMutation,
-    QueryHookOptions,
-    MutationHookOptions
-} from "react-apollo-hooks"
 import gql from "graphql-tag"
+import * as ReactApolloHooks from "react-apollo-hooks"
 
 // ====================================================
 // Components
@@ -188,9 +186,9 @@ export const MyUsernameDocument = gql`
     }
 `
 export function useMyUsername(
-    baseOptions?: QueryHookOptions<MyUsernameVariables>
+    baseOptions?: ReactApolloHooks.QueryHookOptions<MyUsernameVariables>
 ) {
-    return useApolloQuery<MyUsernameQuery, MyUsernameVariables>(
+    return ReactApolloHooks.useQuery<MyUsernameQuery, MyUsernameVariables>(
         MyUsernameDocument,
         baseOptions
     )
@@ -203,9 +201,9 @@ export const MyZipCodeDocument = gql`
     }
 `
 export function useMyZipCode(
-    baseOptions?: QueryHookOptions<MyZipCodeVariables>
+    baseOptions?: ReactApolloHooks.QueryHookOptions<MyZipCodeVariables>
 ) {
-    return useApolloQuery<MyZipCodeQuery, MyZipCodeVariables>(
+    return ReactApolloHooks.useQuery<MyZipCodeQuery, MyZipCodeVariables>(
         MyZipCodeDocument,
         baseOptions
     )
@@ -219,8 +217,10 @@ export const ItemsDocument = gql`
         }
     }
 `
-export function useItems(baseOptions?: QueryHookOptions<ItemsVariables>) {
-    return useApolloQuery<ItemsQuery, ItemsVariables>(
+export function useItems(
+    baseOptions?: ReactApolloHooks.QueryHookOptions<ItemsVariables>
+) {
+    return ReactApolloHooks.useQuery<ItemsQuery, ItemsVariables>(
         ItemsDocument,
         baseOptions
     )
@@ -231,15 +231,15 @@ export const LoginMutationDocument = gql`
     }
 `
 export function useLoginMutation(
-    baseOptions?: MutationHookOptions<
+    baseOptions?: ReactApolloHooks.MutationHookOptions<
         LoginMutationMutation,
         LoginMutationVariables
     >
 ) {
-    return useApolloMutation<LoginMutationMutation, LoginMutationVariables>(
-        LoginMutationDocument,
-        baseOptions
-    )
+    return ReactApolloHooks.useMutation<
+        LoginMutationMutation,
+        LoginMutationVariables
+    >(LoginMutationDocument, baseOptions)
 }
 export const RegisterMutationDocument = gql`
     mutation RegisterMutation(
@@ -251,12 +251,12 @@ export const RegisterMutationDocument = gql`
     }
 `
 export function useRegisterMutation(
-    baseOptions?: MutationHookOptions<
+    baseOptions?: ReactApolloHooks.MutationHookOptions<
         RegisterMutationMutation,
         RegisterMutationVariables
     >
 ) {
-    return useApolloMutation<
+    return ReactApolloHooks.useMutation<
         RegisterMutationMutation,
         RegisterMutationVariables
     >(RegisterMutationDocument, baseOptions)
@@ -267,12 +267,12 @@ export const ResetItemSelectedCountsDocument = gql`
     }
 `
 export function useResetItemSelectedCounts(
-    baseOptions?: MutationHookOptions<
+    baseOptions?: ReactApolloHooks.MutationHookOptions<
         ResetItemSelectedCountsMutation,
         ResetItemSelectedCountsVariables
     >
 ) {
-    return useApolloMutation<
+    return ReactApolloHooks.useMutation<
         ResetItemSelectedCountsMutation,
         ResetItemSelectedCountsVariables
     >(ResetItemSelectedCountsDocument, baseOptions)
@@ -293,9 +293,9 @@ export const SubmissionsDocument = gql`
     }
 `
 export function useSubmissions(
-    baseOptions?: QueryHookOptions<SubmissionsVariables>
+    baseOptions?: ReactApolloHooks.QueryHookOptions<SubmissionsVariables>
 ) {
-    return useApolloQuery<SubmissionsQuery, SubmissionsVariables>(
+    return ReactApolloHooks.useQuery<SubmissionsQuery, SubmissionsVariables>(
         SubmissionsDocument,
         baseOptions
     )
@@ -310,12 +310,15 @@ export const SubmitItemsDocument = gql`
     }
 `
 export function useSubmitItems(
-    baseOptions?: MutationHookOptions<SubmitItemsMutation, SubmitItemsVariables>
+    baseOptions?: ReactApolloHooks.MutationHookOptions<
+        SubmitItemsMutation,
+        SubmitItemsVariables
+    >
 ) {
-    return useApolloMutation<SubmitItemsMutation, SubmitItemsVariables>(
-        SubmitItemsDocument,
-        baseOptions
-    )
+    return ReactApolloHooks.useMutation<
+        SubmitItemsMutation,
+        SubmitItemsVariables
+    >(SubmitItemsDocument, baseOptions)
 }
 export const UpdateItemSelectedCountDocument = gql`
     mutation UpdateItemSelectedCount($Id: ID!, $SelectedCount: Int!) {
@@ -323,12 +326,12 @@ export const UpdateItemSelectedCountDocument = gql`
     }
 `
 export function useUpdateItemSelectedCount(
-    baseOptions?: MutationHookOptions<
+    baseOptions?: ReactApolloHooks.MutationHookOptions<
         UpdateItemSelectedCountMutation,
         UpdateItemSelectedCountVariables
     >
 ) {
-    return useApolloMutation<
+    return ReactApolloHooks.useMutation<
         UpdateItemSelectedCountMutation,
         UpdateItemSelectedCountVariables
     >(UpdateItemSelectedCountDocument, baseOptions)

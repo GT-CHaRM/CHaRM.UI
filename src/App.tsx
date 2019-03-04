@@ -7,7 +7,7 @@ import {defaults, resolvers} from "./resolvers"
 import {TokenContext} from "./TokenContext"
 
 const cache = new InMemoryCache({
-    dataIdFromObject: x => x.id
+    dataIdFromObject: x => x.Id
 })
 
 function makeClient(token: string | undefined) {

@@ -1,4 +1,4 @@
-import React from "react"
+import React, {useContext, useEffect} from "react"
 import {ActivityIndicator, AsyncStorage, StatusBar, View} from "react-native"
 import {Icon} from "react-native-elements"
 import {
@@ -7,6 +7,7 @@ import {
     createSwitchNavigator
 } from "react-navigation"
 import {Login, Profile, Register, Submissions, Submit} from "./pages"
+import {TokenContext} from "./TokenContext"
 
 const AuthNavigator = createBottomTabNavigator(
     {
@@ -90,10 +91,19 @@ const TabNavigatorContainer = createAppContainer(
             App: AppNavigator,
             Auth: AuthNavigator
         },
-        {initialRouteName: "Auth"}
+        {initialRouteName: "AuthLoading"}
     )
 )
 
 export function MainView() {
+    const setToken = useContext(TokenContext)
+    useEffect(() => {
+        ;(async () => {
+            const userToken = await AsyncStorage.getItem("Token")
+            if (userToken) {
+                setToken(userToken)
+            }
+        })()
+    })
     return <TabNavigatorContainer />
 }

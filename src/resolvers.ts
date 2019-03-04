@@ -1,9 +1,7 @@
 import {ApolloCache} from "apollo-cache"
 import gql from "graphql-tag"
 
-export const defaults = {
-    currentTab: 0
-}
+export const defaults = {}
 
 export const resolvers = {
     ItemType: {
@@ -30,15 +28,15 @@ export const resolvers = {
             const {items} = cache.readQuery({
                 query: gql`
                     query GetAllItems {
-                        items {
-                            id
+                        Items {
+                            Id
                         }
                     }
                 `
             })
-            for (const {id} of items) {
+            for (const {Id} of items) {
                 cache.writeFragment({
-                    id,
+                    id: Id,
                     fragment: gql`
                         fragment SelectedCount on ItemType {
                             SelectedCount @client
