@@ -13,7 +13,7 @@ const cache = new InMemoryCache({
 function makeClient(token: string | undefined) {
     return new ApolloClient({
         cache,
-        uri: "http://143.215.121.136:5000/graphql",
+        uri: "http://143.215.127.168:5000/graphql",
         clientState: {
             resolvers,
             defaults
