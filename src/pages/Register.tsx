@@ -72,7 +72,7 @@ export function Register() {
                 <FormInput
                     value={zipCode}
                     setValue={setZipCode}
-                    keyboardType="phone-pad"
+                    keyboardType="numbers-and-punctuation"
                     placeholder="Zip Code"
                     iconName="map-marker"
                     onSubmitEditing={tryRegister}

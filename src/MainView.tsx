@@ -14,14 +14,14 @@ const AuthNavigator = createBottomTabNavigator(
             screen: Login,
             navigationOptions: {
                 title: "Login",
-                tabBarIcon: <Icon type="font-awesome" name="plus-square" />
+                tabBarIcon: <Icon type="font-awesome" name="sign-in" />
             }
         },
         Register: {
             screen: Register,
             navigationOptions: {
                 title: "Register",
-                tabBarIcon: <Icon type="font-awesome" name="plus-square" />
+                tabBarIcon: <Icon type="font-awesome" name="user-plus" />
             }
         }
     },
@@ -36,21 +36,21 @@ const AppNavigator = createBottomTabNavigator(
             screen: Submit,
             navigationOptions: {
                 title: "Submit",
-                tabBarIcon: <Icon type="font-awesome" name="plus-square" />
+                tabBarIcon: <Icon type="font-awesome" name="cart-plus" />
             }
         },
         Submissions: {
             screen: Submissions,
             navigationOptions: {
-                title: "Submissions",
-                tabBarIcon: <Icon type="font-awesome" name="history" />
+                title: "History",
+                tabBarIcon: <Icon type="font-awesome" name="list-alt" />
             }
         },
         Profile: {
             screen: Profile,
             navigationOptions: {
                 title: "Profile",
-                tabBarIcon: <Icon type="font-awesome" name="history" />
+                tabBarIcon: <Icon type="font-awesome" name="user" />
             }
         }
     },

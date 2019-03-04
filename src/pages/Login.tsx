@@ -21,7 +21,8 @@ export function Login() {
 
     const tryLogin = async () => {
         if (guestMode) {
-            await loginAsGuest(zipCode)
+            setToken("")
+            navigate("Submit")
         } else {
             if (!username || !password) {
                 alert("Username and password fields cannot be empty!")
@@ -70,8 +71,10 @@ export function Login() {
                     <FormInput
                         value={zipCode}
                         setValue={setZipCode}
+                        keyboardType="numbers-and-punctuation"
                         placeholder="Zip Code"
                         iconName="map-marker"
+                        onSubmitEditing={tryLogin}
                     />
                 ) : (
                     <View>
