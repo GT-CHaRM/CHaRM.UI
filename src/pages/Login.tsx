@@ -57,6 +57,7 @@ export function Login() {
                     <Button
                         label="CANCEL"
                         styles={{label: styles.buttonBlackText}}
+                        type="outline"
                         onPress={() => {
                             alert("Don't Panic!")
                         }}
