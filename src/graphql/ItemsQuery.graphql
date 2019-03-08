@@ -1,7 +1,0 @@
-query Items {
-    Items {
-        Id
-        Name
-        SelectedCount @client
-    }
-}

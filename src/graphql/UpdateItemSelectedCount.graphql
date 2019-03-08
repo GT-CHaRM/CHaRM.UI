@@ -1,3 +1,0 @@
-mutation UpdateItemSelectedCount($Id: ID!, $SelectedCount: Int!) {
-    UpdateItemSelectedCount(Id: $Id, SelectedCount: $SelectedCount) @client
-}

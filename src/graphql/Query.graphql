@@ -1,0 +1,43 @@
+query MyUsername {
+    Me {
+        UserName
+    }
+}
+
+query MyZipCode {
+    Me {
+        ZipCode
+    }
+}
+
+query Items {
+    Items {
+        Id
+        Name
+        SelectedCount @client
+    }
+}
+
+query Submissions {
+    Submissions {
+        Id
+        Items {
+            Count
+            Item {
+                Id
+                Name
+            }
+        }
+        Submitted
+    }
+}
+
+query MyUserType {
+    Me {
+        Type
+    }
+}
+
+query AllSubmissions {
+
+}

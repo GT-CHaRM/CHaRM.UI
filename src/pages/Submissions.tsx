@@ -1,12 +1,13 @@
 import moment from "moment"
 import React from "react"
 import {FlatList, StyleProp, View, ViewStyle} from "react-native"
-import {Badge, Card, ListItem} from "react-native-elements"
+import {Badge, Button, Card, ListItem} from "react-native-elements"
 import {WithHeader} from "../components"
 import {
     SubmissionsItem,
     SubmissionsSubmissions,
     useSubmissions
+    // useRemoveSubmissionMutation
 } from "../graphql"
 import {colors} from "../theme"
 
@@ -21,6 +22,7 @@ function SubmissionItemEntry({
     count: number
 }) {
     return (
+        // EACH LINE ITEM IN THE SUBMISSION CARD //
         <ListItem
             key={Id}
             rightAvatar={<Badge value={count} />}
@@ -31,13 +33,44 @@ function SubmissionItemEntry({
     )
 }
 
+// https://react-native-training.github.io/react-native-elements/docs/card.html
 function SubmissionEntry({
     submission: {Items, Submitted}
 }: {
     submission: SubmissionsSubmissions
 }) {
     return (
+        //card holds one entire submission
         <Card title={`Visited ${moment(Submitted).fromNow()}`}>
+            <Button
+                // icon={<Icon name="code" color="#ff0000" />}
+                type="solid"
+                color="#ff5c5c"
+                backgroundColor="rgb(255,0,0)"
+                buttonStyle={{
+                    borderRadius: 0,
+                    marginLeft: 0,
+                    marginRight: 0,
+                    marginBottom: 0
+                }}
+                title="Delete submission"
+
+                /*
+                 * We need to finish onPress - but first, we need the mutation and hook to be generated.
+                 */
+
+                // onPress={async () => {
+                //     //delete card
+                //     const data={Items}
+                //     const removeSubmission = useRemoveSubmissionMutation()
+                //     await submit({
+                //         variables: {
+                //             Items: itemsToSubmit,
+                //             ZipCode
+                //         }
+                //     })
+                // }}
+            />
             <FlatList
                 data={Items}
                 renderItem={({item: {Item, Count}}) => (
@@ -56,23 +89,29 @@ function SubmissionList({style}: {style?: StyleProp<ViewStyle>}) {
         refetch
     } = useSubmissions()
 
-    return (
-        <View style={[style, {backgroundColor: colors.background}]}>
-            <FlatList
-                contentContainerStyle={{
-                    backgroundColor: colors.background,
-                    marginTop: 0
-                }}
-                data={Submissions || []}
-                renderItem={({item}) => (
-                    <SubmissionEntry key={item.Id} submission={item} />
-                )}
-                keyExtractor={({Id}) => Id}
-                refreshing={loading}
-                onRefresh={refetch}
-            />
-        </View>
-    )
+    const isEmployee = useIsEmployeeOrAdmin()
+
+    if (isEmployee) {
+        return <View>{/* TODO: add a view option for Visitors */}</View>
+    } else {
+        return (
+            <View style={[style, {backgroundColor: colors.background}]}>
+                <FlatList
+                    contentContainerStyle={{
+                        backgroundColor: colors.background,
+                        marginTop: 0
+                    }}
+                    data={Submissions || []}
+                    renderItem={({item}) => (
+                        <SubmissionEntry key={item.Id} submission={item} />
+                    )}
+                    keyExtractor={({Id}) => Id}
+                    refreshing={loading}
+                    onRefresh={refetch}
+                />
+            </View>
+        )
+    }
 }
 
 export function Submissions() {

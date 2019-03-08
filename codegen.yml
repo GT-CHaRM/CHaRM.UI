@@ -9,11 +9,16 @@ generates:
             - typescript-common
             - typescript-client
             - typescript-react-apollo
+            - typescript-server
+            - typescript-resolvers
         config:
+            noNamespaces: true
+
+            contextType: ./context#GraphQLContext
+
             withHooks: true
             noHOC: true
             noComponents: true
-            noNamespaces: true
             scalars:
                 Date: Date
                 Decimal: number

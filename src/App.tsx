@@ -13,7 +13,7 @@ const cache = new InMemoryCache({
 function makeClient(token: string | undefined) {
     return new ApolloClient({
         cache,
-        uri: "http://143.215.127.168:5000/graphql",
+        uri: "http://localhost:5000/graphql",
         clientState: {
             resolvers,
             defaults
@@ -24,6 +24,7 @@ function makeClient(token: string | undefined) {
     })
 }
 
+// https://react-native-training.github.io/react-native-elements/docs/customization.html
 export function App() {
     const [token, setToken] = useState("")
 

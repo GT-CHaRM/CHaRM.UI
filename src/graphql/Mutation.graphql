@@ -1,0 +1,37 @@
+mutation LoginMutation($Username: String!, $Password: String!) {
+    Login(Username: $Username, Password: $Password)
+}
+
+mutation RegisterMutation(
+    $Username: String!
+    $Password: String!
+    $Email: String!
+) {
+    Register(Username: $Username, Password: $Password, Email: $Email)
+}
+
+mutation ResetItemSelectedCounts {
+    ResetItemSelectedCounts @client
+}
+
+mutation SubmitItems($Items: [ID!]!, $ZipCode: String!) {
+    CreateSubmission(Items: $Items, ZipCode: $ZipCode) {
+        Items {
+            Count
+        }
+    }
+}
+
+mutation UpdateItemSelectedCount($Id: ID!, $SelectedCount: Int!) {
+    UpdateItemSelectedCount(Id: $Id, SelectedCount: $SelectedCount) @client
+}
+
+mutation RemoveSubmissionMutation(
+    $Id: ID!
+    $Items: [ItemSubmissionBatch!]!
+    $Submitted: DateTimeOffset!
+    $Visitor: User!
+    $Zipcode: String
+) {
+    RemoveSubmission(Id: $Id)
+}

@@ -1,13 +1,13 @@
-import {ApolloCache} from "apollo-cache"
 import gql from "graphql-tag"
+import {IResolvers} from "./graphql"
 
 export const defaults = {}
 
-export const resolvers = {
+export const resolvers: IResolvers = {
     ItemType: {
-        SelectedCount: ({Id}, _, {cache}: {cache: ApolloCache<any>}) => {
+        SelectedCount: ({Id}, _, {cache}) => {
             const count =
-                cache.readFragment({
+                cache.readFragment<number>({
                     id: Id,
                     fragment: gql`
                         fragment SelectedCount on ItemType {
@@ -20,11 +20,7 @@ export const resolvers = {
         }
     },
     Mutation: {
-        ResetItemSelectedCounts: (
-            _,
-            __,
-            {cache}: {cache: ApolloCache<any>}
-        ) => {
+        ResetItemSelectedCounts: (_, __, {cache}) => {
             const {items} = cache.readQuery({
                 query: gql`
                     query GetAllItems {
@@ -51,11 +47,7 @@ export const resolvers = {
             return true
         },
 
-        UpdateItemSelectedCount: (
-            _,
-            {Id, SelectedCount},
-            {cache}: {cache: ApolloCache<any>}
-        ) => {
+        UpdateItemSelectedCount: (_, {Id, SelectedCount}, {cache}) => {
             cache.writeFragment({
                 id: Id,
                 fragment: gql`
