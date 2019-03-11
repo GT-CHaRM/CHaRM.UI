@@ -4,6 +4,17 @@ import {Header as RNHeader} from "react-native-elements"
 import {useNavigationState} from "react-navigation-hooks"
 import {colors} from "../theme"
 
+function resolveTitle(routeName: string) {
+    switch (routeName.toLowerCase()) {
+        case "submit":
+            return "Submit Items"
+        case "submissions":
+            return "Submission History"
+        default:
+            return routeName
+    }
+}
+
 function Header() {
     const {routeName} = useNavigationState()
 
@@ -11,9 +22,9 @@ function Header() {
         <RNHeader
             backgroundColor={colors.primary}
             centerComponent={{
-                text: routeName.toUpperCase(),
+                text: resolveTitle(routeName).toUpperCase(),
                 style: {
-                    fontSize: 20,
+                    fontSize: 18,
                     color: "#fff"
                 }
             }}

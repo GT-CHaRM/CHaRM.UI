@@ -22,6 +22,15 @@ query MyUserType {
     }
 }
 
+query MyInformation {
+    User {
+        Me {
+            UserName
+            Type
+        }
+    }
+}
+
 query Items {
     Item {
         All {

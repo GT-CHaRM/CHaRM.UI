@@ -1,6 +1,6 @@
 import React, {useState} from "react"
 import {ScrollView, View} from "react-native"
-import {Button, Icon, Image} from "react-native-elements"
+import {Button, Icon, Image, Text, Tooltip} from "react-native-elements"
 import {useNavigation} from "react-navigation-hooks"
 import {WithHeader} from "../components"
 import {FormInput} from "../components/FormInput"
@@ -70,14 +70,36 @@ export function Register() {
                     placeholder="Email"
                     iconName="envelope-o"
                 />
-                <FormInput
-                    value={zipCode}
-                    setValue={setZipCode}
-                    keyboardType="numbers-and-punctuation"
-                    placeholder="Zip Code"
-                    iconName="map-marker"
-                    onSubmitEditing={tryRegister}
-                />
+                <View style={{flexDirection: "row"}}>
+                    <FormInput
+                        style={{flex: 1}}
+                        value={zipCode}
+                        setValue={setZipCode}
+                        keyboardType="numbers-and-punctuation"
+                        placeholder="Zip Code"
+                        iconName="map-marker"
+                        onSubmitEditing={tryRegister}
+                    />
+                    <Tooltip
+                        popover={
+                            <Text style={{color: "white"}}>
+                                We collect your zip code in order to request
+                                grant money from the government.
+                            </Text>
+                        }
+                        width={250}
+                        height={80}>
+                        <Icon
+                            name="question-circle"
+                            type="font-awesome"
+                            size={35}
+                            containerStyle={{
+                                marginRight: 10,
+                                marginLeft: 5
+                            }}
+                        />
+                    </Tooltip>
+                </View>
             </ScrollView>
             <View style={{flex: 1}} />
             <Button

@@ -1,5 +1,6 @@
 export type Maybe<T> = T | null
 
+/** A specific type of user */
 export enum UserType {
     Visitor = "Visitor",
     Employee = "Employee",
@@ -187,6 +188,28 @@ export type MyUserTypeUser = {
 
 export type MyUserTypeMe = {
     __typename?: "User"
+
+    Type: UserType
+}
+
+export type MyInformationVariables = {}
+
+export type MyInformationQuery = {
+    __typename?: "Query"
+
+    User: MyInformationUser
+}
+
+export type MyInformationUser = {
+    __typename?: "UserQuery"
+
+    Me: Maybe<MyInformationMe>
+}
+
+export type MyInformationMe = {
+    __typename?: "User"
+
+    UserName: string
 
     Type: UserType
 }
@@ -423,6 +446,24 @@ export function useMyUserType(
         baseOptions
     )
 }
+export const MyInformationDocument = gql`
+    query MyInformation {
+        User {
+            Me {
+                UserName
+                Type
+            }
+        }
+    }
+`
+export function useMyInformation(
+    baseOptions?: ReactApolloHooks.QueryHookOptions<MyInformationVariables>
+) {
+    return ReactApolloHooks.useQuery<
+        MyInformationQuery,
+        MyInformationVariables
+    >(MyInformationDocument, baseOptions)
+}
 export const ItemsDocument = gql`
     query Items {
         Item {
@@ -476,6 +517,7 @@ export function useSubmissions(
 // Types
 // ====================================================
 
+/** The queriesss accepted in this GraphQL API. */
 export interface Query {
     Item: ItemQuery
 
@@ -487,64 +529,73 @@ export interface Query {
 export interface ItemQuery {
     /** List of items available to submit */
     All: ItemType[]
-
+    /** A single item identified by its GUID */
     Single?: Maybe<ItemType>
 }
 
+/** A type that represents a specific acceptable item in our database. */
 export interface ItemType {
+    /** The item's unique GUID */
     Id: string
-
+    /** The item's name */
     Name: string
 
     SelectedCount: number
 }
 
 export interface SubmissionQuery {
+    /** List all submissions in the system */
     All: Submission[]
-
+    /** List of all submissions by the current user */
     AllMine: Submission[]
-
+    /** A single submission identified by its GUID */
     Get?: Maybe<Submission>
-
+    /** A single submission by the current user identified by its GUID */
     GetMine?: Maybe<Submission>
 }
 
+/** The list of items submitted in a single visit to CHaRM */
 export interface Submission {
+    /** The unique id of this submission */
     Id: string
-
+    /** The list of items (+ counts) submitted */
     Items: ItemSubmissionBatch[]
-
+    /** The date of submission */
     Submitted: DateTimeOffset
-
+    /** The visitor who performed the submission */
     Visitor: User
-
+    /** The zip code of the visitor who performed the submission. */
     ZipCode?: Maybe<string>
 }
 
+/** A type that represents a unique submission for a specific item, including the item id and the count submitted. */
 export interface ItemSubmissionBatch {
+    /** The count of the item that was submitted. */
     Count: number
-
+    /** The item batch's unique GUID */
     Id: string
-
+    /** The item submitted */
     Item: ItemType
 }
 
+/** A user registered with CHaRM */
 export interface User {
-    NormalizedEmail: string
-
-    Submissions: Submission[]
-
+    /** The user's email */
+    Email: string
+    /** The type of the user */
     Type: UserType
-
+    /** The user's unique username */
     UserName: string
-
+    /** The user's zip code */
     ZipCode?: Maybe<string>
 }
 
 export interface UserQuery {
+    /** The current user */
     Me?: Maybe<User>
 }
 
+/** The mutations accepted in this GraphQL API. */
 export interface Mutation {
     Item: ItemMutation
 
@@ -558,20 +609,23 @@ export interface Mutation {
 }
 
 export interface ItemMutation {
+    /** Adds a new item that can be submitted */
     Create?: Maybe<ItemType>
 }
 
 export interface SubmissionMutation {
+    /** Adds a new submission for the current user */
     CreateSelf?: Maybe<Submission>
-
+    /** Modifies the contents of an existing submission */
     Modify?: Maybe<Submission>
-
+    /** Removes an existing submission */
     Remove?: Maybe<Submission>
 }
 
 export interface UserMutation {
+    /** Attempts to login with the provided username and password and returns a JSON web token (JWT) on success. */
     Login?: Maybe<string>
-
+    /** Attempts to register with the provided information and returns a JSON web token (JWT) on success. */
     Register?: Maybe<string>
 }
 
@@ -580,12 +634,15 @@ export interface UserMutation {
 // ====================================================
 
 export interface SingleItemQueryArgs {
+    /** The GUID of the item */
     Id: string
 }
 export interface GetSubmissionQueryArgs {
+    /** The GUID of the submission */
     Id: string
 }
 export interface GetMineSubmissionQueryArgs {
+    /** The GUID of the submission */
     Id: string
 }
 export interface UpdateItemSelectedCountMutationArgs {
@@ -594,33 +651,41 @@ export interface UpdateItemSelectedCountMutationArgs {
     SelectedCount: number
 }
 export interface CreateItemMutationArgs {
+    /** The name of the item */
     Name: string
 }
 export interface CreateSelfSubmissionMutationArgs {
+    /** The list of the GUIDs of the items being submitted */
     Items: string[]
-
+    /** The zip code of the visitor */
     ZipCode: string
 }
 export interface ModifySubmissionMutationArgs {
+    /** The Id of the initial submission */
     Id: string
-
+    /** The new list of the GUIDs for the submission */
     Items: string[]
-
+    /** The new time of submission */
     Time: DateTimeOffset
+    /** The new zip code of the visitor for the submission */
+    ZipCode: string
 }
 export interface RemoveSubmissionMutationArgs {
+    /** The Id of the submission */
     Id: string
 }
 export interface LoginUserMutationArgs {
+    /** The user's password */
     Password: string
-
+    /** The user's uesrname */
     Username: string
 }
 export interface RegisterUserMutationArgs {
+    /** The user's email */
     Email: string
-
+    /** The user's password */
     Password: string
-
+    /** The user's username */
     Username: string
 }
 
@@ -681,6 +746,7 @@ export type DirectiveResolverFn<TResult, TArgs = {}, TContext = {}> = (
     info: GraphQLResolveInfo
 ) => TResult | Promise<TResult>
 
+/** The queriesss accepted in this GraphQL API. */
 export interface QueryResolvers<TContext = GraphQLContext, TypeParent = {}> {
     Item?: QueryItemResolver<ItemQuery, TypeParent, TContext>
 
@@ -711,7 +777,7 @@ export interface ItemQueryResolvers<
 > {
     /** List of items available to submit */
     All?: ItemQueryAllResolver<ItemType[], TypeParent, TContext>
-
+    /** A single item identified by its GUID */
     Single?: ItemQuerySingleResolver<Maybe<ItemType>, TypeParent, TContext>
 }
 
@@ -726,15 +792,18 @@ export type ItemQuerySingleResolver<
     TContext = GraphQLContext
 > = Resolver<R, Parent, TContext, ItemQuerySingleArgs>
 export interface ItemQuerySingleArgs {
+    /** The GUID of the item */
     Id: string
 }
 
+/** A type that represents a specific acceptable item in our database. */
 export interface ItemTypeResolvers<
     TContext = GraphQLContext,
     TypeParent = ItemType
 > {
+    /** The item's unique GUID */
     Id?: ItemTypeIdResolver<string, TypeParent, TContext>
-
+    /** The item's name */
     Name?: ItemTypeNameResolver<string, TypeParent, TContext>
 
     SelectedCount?: ItemTypeSelectedCountResolver<number, TypeParent, TContext>
@@ -760,12 +829,13 @@ export interface SubmissionQueryResolvers<
     TContext = GraphQLContext,
     TypeParent = SubmissionQuery
 > {
+    /** List all submissions in the system */
     All?: SubmissionQueryAllResolver<Submission[], TypeParent, TContext>
-
+    /** List of all submissions by the current user */
     AllMine?: SubmissionQueryAllMineResolver<Submission[], TypeParent, TContext>
-
+    /** A single submission identified by its GUID */
     Get?: SubmissionQueryGetResolver<Maybe<Submission>, TypeParent, TContext>
-
+    /** A single submission by the current user identified by its GUID */
     GetMine?: SubmissionQueryGetMineResolver<
         Maybe<Submission>,
         TypeParent,
@@ -789,6 +859,7 @@ export type SubmissionQueryGetResolver<
     TContext = GraphQLContext
 > = Resolver<R, Parent, TContext, SubmissionQueryGetArgs>
 export interface SubmissionQueryGetArgs {
+    /** The GUID of the submission */
     Id: string
 }
 
@@ -798,25 +869,28 @@ export type SubmissionQueryGetMineResolver<
     TContext = GraphQLContext
 > = Resolver<R, Parent, TContext, SubmissionQueryGetMineArgs>
 export interface SubmissionQueryGetMineArgs {
+    /** The GUID of the submission */
     Id: string
 }
 
+/** The list of items submitted in a single visit to CHaRM */
 export interface SubmissionResolvers<
     TContext = GraphQLContext,
     TypeParent = Submission
 > {
+    /** The unique id of this submission */
     Id?: SubmissionIdResolver<string, TypeParent, TContext>
-
+    /** The list of items (+ counts) submitted */
     Items?: SubmissionItemsResolver<ItemSubmissionBatch[], TypeParent, TContext>
-
+    /** The date of submission */
     Submitted?: SubmissionSubmittedResolver<
         DateTimeOffset,
         TypeParent,
         TContext
     >
-
+    /** The visitor who performed the submission */
     Visitor?: SubmissionVisitorResolver<User, TypeParent, TContext>
-
+    /** The zip code of the visitor who performed the submission. */
     ZipCode?: SubmissionZipCodeResolver<Maybe<string>, TypeParent, TContext>
 }
 
@@ -845,15 +919,16 @@ export type SubmissionZipCodeResolver<
     Parent = Submission,
     TContext = GraphQLContext
 > = Resolver<R, Parent, TContext>
-
+/** A type that represents a unique submission for a specific item, including the item id and the count submitted. */
 export interface ItemSubmissionBatchResolvers<
     TContext = GraphQLContext,
     TypeParent = ItemSubmissionBatch
 > {
+    /** The count of the item that was submitted. */
     Count?: ItemSubmissionBatchCountResolver<number, TypeParent, TContext>
-
+    /** The item batch's unique GUID */
     Id?: ItemSubmissionBatchIdResolver<string, TypeParent, TContext>
-
+    /** The item submitted */
     Item?: ItemSubmissionBatchItemResolver<ItemType, TypeParent, TContext>
 }
 
@@ -872,26 +947,20 @@ export type ItemSubmissionBatchItemResolver<
     Parent = ItemSubmissionBatch,
     TContext = GraphQLContext
 > = Resolver<R, Parent, TContext>
-
+/** A user registered with CHaRM */
 export interface UserResolvers<TContext = GraphQLContext, TypeParent = User> {
-    NormalizedEmail?: UserNormalizedEmailResolver<string, TypeParent, TContext>
-
-    Submissions?: UserSubmissionsResolver<Submission[], TypeParent, TContext>
-
+    /** The user's email */
+    Email?: UserEmailResolver<string, TypeParent, TContext>
+    /** The type of the user */
     Type?: UserTypeResolver<UserType, TypeParent, TContext>
-
+    /** The user's unique username */
     UserName?: UserUserNameResolver<string, TypeParent, TContext>
-
+    /** The user's zip code */
     ZipCode?: UserZipCodeResolver<Maybe<string>, TypeParent, TContext>
 }
 
-export type UserNormalizedEmailResolver<
+export type UserEmailResolver<
     R = string,
-    Parent = User,
-    TContext = GraphQLContext
-> = Resolver<R, Parent, TContext>
-export type UserSubmissionsResolver<
-    R = Submission[],
     Parent = User,
     TContext = GraphQLContext
 > = Resolver<R, Parent, TContext>
@@ -915,6 +984,7 @@ export interface UserQueryResolvers<
     TContext = GraphQLContext,
     TypeParent = UserQuery
 > {
+    /** The current user */
     Me?: UserQueryMeResolver<Maybe<User>, TypeParent, TContext>
 }
 
@@ -923,7 +993,7 @@ export type UserQueryMeResolver<
     Parent = UserQuery,
     TContext = GraphQLContext
 > = Resolver<R, Parent, TContext>
-
+/** The mutations accepted in this GraphQL API. */
 export interface MutationResolvers<TContext = GraphQLContext, TypeParent = {}> {
     Item?: MutationItemResolver<ItemMutation, TypeParent, TContext>
 
@@ -983,6 +1053,7 @@ export interface ItemMutationResolvers<
     TContext = GraphQLContext,
     TypeParent = ItemMutation
 > {
+    /** Adds a new item that can be submitted */
     Create?: ItemMutationCreateResolver<Maybe<ItemType>, TypeParent, TContext>
 }
 
@@ -992,6 +1063,7 @@ export type ItemMutationCreateResolver<
     TContext = GraphQLContext
 > = Resolver<R, Parent, TContext, ItemMutationCreateArgs>
 export interface ItemMutationCreateArgs {
+    /** The name of the item */
     Name: string
 }
 
@@ -999,18 +1071,19 @@ export interface SubmissionMutationResolvers<
     TContext = GraphQLContext,
     TypeParent = SubmissionMutation
 > {
+    /** Adds a new submission for the current user */
     CreateSelf?: SubmissionMutationCreateSelfResolver<
         Maybe<Submission>,
         TypeParent,
         TContext
     >
-
+    /** Modifies the contents of an existing submission */
     Modify?: SubmissionMutationModifyResolver<
         Maybe<Submission>,
         TypeParent,
         TContext
     >
-
+    /** Removes an existing submission */
     Remove?: SubmissionMutationRemoveResolver<
         Maybe<Submission>,
         TypeParent,
@@ -1024,8 +1097,9 @@ export type SubmissionMutationCreateSelfResolver<
     TContext = GraphQLContext
 > = Resolver<R, Parent, TContext, SubmissionMutationCreateSelfArgs>
 export interface SubmissionMutationCreateSelfArgs {
+    /** The list of the GUIDs of the items being submitted */
     Items: string[]
-
+    /** The zip code of the visitor */
     ZipCode: string
 }
 
@@ -1035,11 +1109,14 @@ export type SubmissionMutationModifyResolver<
     TContext = GraphQLContext
 > = Resolver<R, Parent, TContext, SubmissionMutationModifyArgs>
 export interface SubmissionMutationModifyArgs {
+    /** The Id of the initial submission */
     Id: string
-
+    /** The new list of the GUIDs for the submission */
     Items: string[]
-
+    /** The new time of submission */
     Time: DateTimeOffset
+    /** The new zip code of the visitor for the submission */
+    ZipCode: string
 }
 
 export type SubmissionMutationRemoveResolver<
@@ -1048,6 +1125,7 @@ export type SubmissionMutationRemoveResolver<
     TContext = GraphQLContext
 > = Resolver<R, Parent, TContext, SubmissionMutationRemoveArgs>
 export interface SubmissionMutationRemoveArgs {
+    /** The Id of the submission */
     Id: string
 }
 
@@ -1055,8 +1133,9 @@ export interface UserMutationResolvers<
     TContext = GraphQLContext,
     TypeParent = UserMutation
 > {
+    /** Attempts to login with the provided username and password and returns a JSON web token (JWT) on success. */
     Login?: UserMutationLoginResolver<Maybe<string>, TypeParent, TContext>
-
+    /** Attempts to register with the provided information and returns a JSON web token (JWT) on success. */
     Register?: UserMutationRegisterResolver<Maybe<string>, TypeParent, TContext>
 }
 
@@ -1066,8 +1145,9 @@ export type UserMutationLoginResolver<
     TContext = GraphQLContext
 > = Resolver<R, Parent, TContext, UserMutationLoginArgs>
 export interface UserMutationLoginArgs {
+    /** The user's password */
     Password: string
-
+    /** The user's uesrname */
     Username: string
 }
 
@@ -1077,10 +1157,11 @@ export type UserMutationRegisterResolver<
     TContext = GraphQLContext
 > = Resolver<R, Parent, TContext, UserMutationRegisterArgs>
 export interface UserMutationRegisterArgs {
+    /** The user's email */
     Email: string
-
+    /** The user's password */
     Password: string
-
+    /** The user's username */
     Username: string
 }
 

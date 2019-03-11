@@ -2,18 +2,12 @@ import React from "react"
 import {
     KeyboardTypeOptions,
     NativeSyntheticEvent,
-    TextInputSubmitEditingEventData
+    TextInputSubmitEditingEventData,
+    ViewStyle
 } from "react-native"
 import {Icon, Input} from "react-native-elements"
-export function FormInput({
-    placeholder,
-    iconName,
-    value,
-    setValue,
-    keyboardType,
-    secureTextEntry,
-    onSubmitEditing
-}: {
+export interface FormInputProps {
+    style?: ViewStyle
     placeholder: string
     iconName: string
     value: string
@@ -23,7 +17,17 @@ export function FormInput({
     onSubmitEditing?: (
         event: NativeSyntheticEvent<TextInputSubmitEditingEventData>
     ) => void
-}) {
+}
+export const FormInput: React.FC<FormInputProps> = ({
+    style,
+    placeholder,
+    iconName,
+    value,
+    setValue,
+    keyboardType,
+    secureTextEntry,
+    onSubmitEditing
+}) => {
     return (
         <Input
             value={value}
@@ -31,11 +35,14 @@ export function FormInput({
             inputContainerStyle={{
                 borderBottomWidth: 0
             }}
-            containerStyle={{
-                marginBottom: 20,
-                backgroundColor: "rgba(0, 0, 0, 0.10)",
-                borderRadius: 20
-            }}
+            containerStyle={[
+                {
+                    marginBottom: 20,
+                    backgroundColor: "rgba(0, 0, 0, 0.10)",
+                    borderRadius: 20
+                },
+                style
+            ]}
             inputStyle={{
                 fontSize: 24
             }}

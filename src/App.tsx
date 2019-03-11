@@ -2,21 +2,27 @@ import {
     InMemoryCache,
     IntrospectionFragmentMatcher
 } from "apollo-cache-inmemory"
-import {ApolloClient} from "apollo-client"
+import {ApolloClient, ApolloQueryResult} from "apollo-client"
 import {ApolloLink} from "apollo-link"
 import {onError} from "apollo-link-error"
 import {HttpLink} from "apollo-link-http"
 import React, {useEffect} from "react"
 import {ApolloProvider} from "react-apollo-hooks"
-import {ActivityIndicator, AsyncStorage, StatusBar, View} from "react-native"
+import {ActivityIndicator, StatusBar, View} from "react-native"
 import {Icon, ThemeProvider} from "react-native-elements"
 import {
     createAppContainer,
     createBottomTabNavigator,
     createSwitchNavigator,
+    NavigationScreenProp,
     NavigationScreenProps
 } from "react-navigation"
-import introspectionQueryResultData from "./graphql"
+import {useNavigation} from "react-navigation-hooks"
+import introspectionQueryResultData, {
+    MyInformationDocument,
+    MyInformationQuery,
+    UserType
+} from "./graphql"
 import {
     Login,
     ProfilePage as Profile,
@@ -27,7 +33,7 @@ import {
 import {resolvers} from "./resolvers"
 import {tokenExpired} from "./util"
 
-function makeClient(token: string | undefined) {
+function makeClient(token?: string) {
     return new ApolloClient({
         connectToDevTools: true,
         link: ApolloLink.from([
@@ -113,17 +119,79 @@ const AppNavigator = createBottomTabNavigator(
     }
 )
 
-function AuthLoadingScreen(props: NavigationScreenProps) {
-    useEffect(() => {
-        ;(async () => {
-            const identityToken = await AsyncStorage.getItem("Token")
-            if (!identityToken || tokenExpired(identityToken)) {
-                props.navigation.navigate("Auth", {identityToken: undefined})
-            } else {
-                props.navigation.navigate("App", {identityToken})
+const EmployeeAppNavigator = createBottomTabNavigator(
+    {
+        Submit: {
+            screen: Submit,
+            navigationOptions: {
+                title: "SubmitE",
+                tabBarIcon: <Icon type="font-awesome" name="cart-plus" />
             }
-        })()
-    }, [])
+        },
+        Submissions: {
+            screen: Submissions,
+            navigationOptions: {
+                title: "HistoryE",
+                tabBarIcon: <Icon type="font-awesome" name="list-alt" />
+            }
+        },
+        Profile: {
+            screen: Profile,
+            navigationOptions: {
+                title: "ProfileE",
+                tabBarIcon: <Icon type="font-awesome" name="user" />
+            }
+        }
+    },
+    {
+        initialRouteName: "Submit"
+    }
+)
+
+async function clientEffect(navigation: NavigationScreenProp<{}>) {
+    const identityToken = ""
+    // const identityToken = await AsyncStorage.getItem("Token")
+
+    if (!identityToken || tokenExpired(identityToken)) {
+        navigation.navigate("Auth", {client: makeClient()})
+    } else {
+        const client = makeClient(identityToken)
+        const {
+            data,
+            errors
+        }: ApolloQueryResult<MyInformationQuery> = await client.query({
+            query: MyInformationDocument,
+            fetchPolicy: "network-only"
+        })
+
+        // TODO: Wait for loading to finish?
+
+        if (errors || !data.User.Me) {
+            navigation.navigate("Auth", {client})
+        } else if (
+            data.User.Me.Type === UserType.Employee ||
+            data.User.Me.Type === UserType.Administrator
+        ) {
+            alert(`Logged in as employee ${data.User.Me.UserName}`)
+            navigation.navigate("EmployeeApp", {client})
+        } else {
+            alert(`Logged in as visitor ${data.User.Me.UserName}`)
+            navigation.navigate("App", {client})
+        }
+    }
+}
+
+function useClientEffect() {
+    const navigation = useNavigation()
+
+    useEffect(() => {
+        clientEffect(navigation)
+    })
+}
+
+function AuthLoadingScreen() {
+    useClientEffect()
+
     return (
         <View>
             <ActivityIndicator />
@@ -134,8 +202,7 @@ function AuthLoadingScreen(props: NavigationScreenProps) {
 
 function AuthWrapper(props: NavigationScreenProps) {
     return (
-        <ApolloProvider
-            client={makeClient(props.navigation.state.params.identityToken)}>
+        <ApolloProvider client={props.navigation.state.params.client}>
             <AuthNavigator {...props} />
         </ApolloProvider>
     )
@@ -144,8 +211,7 @@ AuthWrapper.router = AuthNavigator.router
 
 function AppWrapper(props: NavigationScreenProps) {
     return (
-        <ApolloProvider
-            client={makeClient(props.navigation.state.params.identityToken)}>
+        <ApolloProvider client={props.navigation.state.params.client}>
             <AppNavigator {...props} />
         </ApolloProvider>
     )
