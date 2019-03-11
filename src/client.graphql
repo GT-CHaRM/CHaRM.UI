@@ -1,8 +1,8 @@
-type ItemType {
+extend type ItemType {
     SelectedCount: Int!
 }
 
-type Mutation {
+extend type Mutation {
     ResetItemSelectedCounts: Boolean!
     UpdateItemSelectedCount(Id: ID!, SelectedCount: Int!): Int!
 }

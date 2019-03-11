@@ -21,11 +21,15 @@ export const resolvers: IResolvers = {
     },
     Mutation: {
         ResetItemSelectedCounts: (_, __, {cache}) => {
-            const {items} = cache.readQuery({
+            const {
+                Item: {All: items}
+            } = cache.readQuery({
                 query: gql`
                     query GetAllItems {
-                        Items {
-                            Id
+                        Item {
+                            All {
+                                Id
+                            }
                         }
                     }
                 `

@@ -1,11 +1,11 @@
-import React, {useContext, useState} from "react"
-import {AsyncStorage, ScrollView, View} from "react-native"
+import React, {useState} from "react"
+import {ScrollView, View} from "react-native"
 import {Button, Icon, Image} from "react-native-elements"
 import {useNavigation} from "react-navigation-hooks"
 import {WithHeader} from "../components"
 import {FormInput} from "../components/FormInput"
-import {useLoginMutation} from "../graphql"
-import {TokenContext} from "../TokenContext"
+import {useLogin} from "../graphql"
+import {saveToken} from "../util"
 
 async function loginAsGuest(zipCode: string) {
     // alert(`sup guest ${zipCode}`)
@@ -16,12 +16,11 @@ export function Login() {
     const [zipCode, setZipCode] = useState("")
     const [guestMode, setGuestMode] = useState(false)
     const {navigate} = useNavigation()
-    const login = useLoginMutation()
-    const setToken = useContext(TokenContext)
+    const login = useLogin()
 
     const tryLogin = async () => {
         if (guestMode) {
-            setToken("")
+            await saveToken("")
             navigate("Submit")
         } else {
             if (!username || !password) {
@@ -31,7 +30,9 @@ export function Login() {
 
             try {
                 const {
-                    data: {Login: token}
+                    data: {
+                        User: {Login: token}
+                    }
                 } = await login({
                     variables: {
                         Username: username,
@@ -39,9 +40,8 @@ export function Login() {
                     }
                 })
                 alert(`Logged in as ${username}`)
-                setToken(token)
-                await AsyncStorage.setItem("Token", token)
-                navigate("Submit")
+                await saveToken(token)
+                navigate("AuthLoading")
                 // alert(`Your token is ${Login}`)
             } catch {
                 alert(

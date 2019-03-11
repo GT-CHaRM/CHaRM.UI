@@ -3,7 +3,7 @@ generates:
     ./src/graphql/index.tsx:
         schema:
             - http://localhost:5000/graphql
-            - client.graphql
+            - ./src/client.graphql
         documents: ./src/graphql/**/*.graphql
         plugins:
             - typescript-common
@@ -11,6 +11,7 @@ generates:
             - typescript-react-apollo
             - typescript-server
             - typescript-resolvers
+            - fragment-matcher
         config:
             noNamespaces: true
 

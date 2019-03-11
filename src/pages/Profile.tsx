@@ -1,16 +1,25 @@
-import React, {useContext} from "react"
-import {Text, View} from "react-native"
+import React from "react"
+import {ActivityIndicator, Text, View} from "react-native"
 import {Button, Image} from "react-native-elements"
 import {useNavigation} from "react-navigation-hooks"
 import {WithHeader} from "../components"
-import {TokenContext} from "../TokenContext"
+import {useMyUsername} from "../graphql"
+import {saveToken} from "../util"
 
-export function Profile() {
-    const setToken = useContext(TokenContext)
+function ProfileInformation() {
     const {navigate} = useNavigation()
+    const {data, loading} = useMyUsername()
+    if (loading) {
+        return <ActivityIndicator />
+    }
+    const {
+        User: {
+            Me: {UserName}
+        }
+    } = data
 
     return (
-        <WithHeader>
+        <>
             <View style={{flex: 1}}>
                 <Image
                     source={{
@@ -20,7 +29,7 @@ export function Profile() {
                     style={{width: 600, height: 400, alignSelf: "center"}}
                 />
                 <Text style={{fontSize: 18, textAlign: "center"}}>
-                    You are logged in as Chris
+                    You are logged in as {UserName}
                 </Text>
             </View>
 
@@ -34,12 +43,20 @@ export function Profile() {
                         marginRight: 0
                     }}
                     title="LOG OUT"
-                    onPress={() => {
-                        setToken("")
-                        navigate("Login")
+                    onPress={async () => {
+                        await saveToken("")
+                        navigate("AuthLoading")
                     }}
                 />
             </View>
+        </>
+    )
+}
+
+export function ProfilePage() {
+    return (
+        <WithHeader>
+            <ProfileInformation />
         </WithHeader>
     )
 }

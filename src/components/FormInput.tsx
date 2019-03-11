@@ -20,7 +20,9 @@ export function FormInput({
     setValue: React.Dispatch<React.SetStateAction<string>>
     keyboardType?: KeyboardTypeOptions
     secureTextEntry?: boolean
-    onSubmitEditing?: NativeSyntheticEvent<TextInputSubmitEditingEventData>
+    onSubmitEditing?: (
+        event: NativeSyntheticEvent<TextInputSubmitEditingEventData>
+    ) => void
 }) {
     return (
         <Input

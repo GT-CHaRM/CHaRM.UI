@@ -1,11 +1,11 @@
-import React, {useContext, useState} from "react"
+import React, {useState} from "react"
 import {ScrollView, View} from "react-native"
 import {Button, Icon, Image} from "react-native-elements"
 import {useNavigation} from "react-navigation-hooks"
 import {WithHeader} from "../components"
 import {FormInput} from "../components/FormInput"
-import {useRegisterMutation} from "../graphql"
-import {TokenContext} from "../TokenContext"
+import {useRegister} from "../graphql"
+import {saveToken} from "../util"
 
 export function Register() {
     const [username, setUsername] = useState("")
@@ -13,8 +13,7 @@ export function Register() {
     const [email, setEmail] = useState("")
     const [zipCode, setZipCode] = useState("")
     const {navigate} = useNavigation()
-    const register = useRegisterMutation()
-    const setToken = useContext(TokenContext)
+    const register = useRegister()
 
     const tryRegister = async () => {
         if (!username || !password || !email || !zipCode) {
@@ -23,7 +22,9 @@ export function Register() {
         }
 
         const {
-            data: {Register: token}
+            data: {
+                User: {Register: token}
+            }
         } = await register({
             variables: {
                 Username: username,
@@ -32,8 +33,8 @@ export function Register() {
             }
         })
         alert(`Successfully registered ${username}`)
-        setToken(token)
-        navigate("Submit")
+        await saveToken(token)
+        navigate("AuthLoading")
     }
     return (
         <WithHeader>

@@ -1,13 +1,19 @@
 import moment from "moment"
 import React from "react"
-import {FlatList, StyleProp, View, ViewStyle} from "react-native"
+import {
+    ActivityIndicator,
+    FlatList,
+    StyleProp,
+    View,
+    ViewStyle
+} from "react-native"
 import {Badge, Button, Card, ListItem} from "react-native-elements"
 import {WithHeader} from "../components"
 import {
-    SubmissionsItem,
-    SubmissionsSubmissions,
-    useSubmissions
+    SubmissionsAllMine,
     // useRemoveSubmissionMutation
+    SubmissionsItem,
+    useSubmissions
 } from "../graphql"
 import {colors} from "../theme"
 
@@ -37,7 +43,7 @@ function SubmissionItemEntry({
 function SubmissionEntry({
     submission: {Items, Submitted}
 }: {
-    submission: SubmissionsSubmissions
+    submission: SubmissionsAllMine
 }) {
     return (
         //card holds one entire submission
@@ -45,8 +51,10 @@ function SubmissionEntry({
             <Button
                 // icon={<Icon name="code" color="#ff0000" />}
                 type="solid"
-                color="#ff5c5c"
-                backgroundColor="rgb(255,0,0)"
+                style={{
+                    color: "#ff5c5c",
+                    backgroundColor: "rgb(255,0,0)"
+                }}
                 buttonStyle={{
                     borderRadius: 0,
                     marginLeft: 0,
@@ -83,35 +91,29 @@ function SubmissionEntry({
 }
 
 function SubmissionList({style}: {style?: StyleProp<ViewStyle>}) {
-    const {
-        data: {Submissions},
-        loading,
-        refetch
-    } = useSubmissions()
+    const {data, loading, refetch} = useSubmissions()
 
-    const isEmployee = useIsEmployeeOrAdmin()
-
-    if (isEmployee) {
-        return <View>{/* TODO: add a view option for Visitors */}</View>
-    } else {
-        return (
-            <View style={[style, {backgroundColor: colors.background}]}>
-                <FlatList
-                    contentContainerStyle={{
-                        backgroundColor: colors.background,
-                        marginTop: 0
-                    }}
-                    data={Submissions || []}
-                    renderItem={({item}) => (
-                        <SubmissionEntry key={item.Id} submission={item} />
-                    )}
-                    keyExtractor={({Id}) => Id}
-                    refreshing={loading}
-                    onRefresh={refetch}
-                />
-            </View>
-        )
+    if (loading) {
+        return <ActivityIndicator />
     }
+
+    return (
+        <View style={[style, {backgroundColor: colors.background}]}>
+            <FlatList
+                contentContainerStyle={{
+                    backgroundColor: colors.background,
+                    marginTop: 0
+                }}
+                data={loading ? [] : data.Submission.AllMine}
+                renderItem={({item}) => (
+                    <SubmissionEntry key={item.Id} submission={item} />
+                )}
+                keyExtractor={({Id}) => Id}
+                refreshing={loading}
+                onRefresh={refetch}
+            />
+        </View>
+    )
 }
 
 export function Submissions() {

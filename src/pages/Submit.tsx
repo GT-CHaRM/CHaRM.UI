@@ -1,9 +1,9 @@
-import React from "react"
+import React, {useRef} from "react"
 import {FlatList, StyleProp, TextInput, View, ViewStyle} from "react-native"
 import {Button, ButtonGroup, Icon, ListItem} from "react-native-elements"
 import {WithHeader} from "../components"
 import {
-    ItemsItems,
+    ItemsAll,
     useItems,
     useResetItemSelectedCounts,
     useSubmitItems,
@@ -24,29 +24,43 @@ function parseInteger(str: string) {
 }
 
 function ItemCountSelector({id, count}: {id: string; count: number}) {
+    const inputRef = useRef<TextInput>()
     const updateItemSelectedCount = useUpdateItemSelectedCount()
 
     return (
         <ButtonGroup
-            containerStyle={{width: 125}}
+            containerStyle={{
+                width: 125
+            }}
             onPress={async selectedIndex => {
-                if (selectedIndex === 0) {
-                    await updateItemSelectedCount({
-                        variables: {
-                            Id: id,
-                            SelectedCount: Math.max(count - 1, 0)
+                switch (selectedIndex) {
+                    case 0:
+                        await updateItemSelectedCount({
+                            variables: {
+                                Id: id,
+                                SelectedCount: Math.max(count - 1, 0)
+                            }
+                        })
+                        break
+                    case 1:
+                        if (inputRef.current) {
+                            inputRef.current.focus()
                         }
-                    })
-                } else if (selectedIndex === 2) {
-                    await updateItemSelectedCount({
-                        variables: {
-                            Id: id,
-                            SelectedCount: count + 1
-                        }
-                    })
+                        break
+                    case 2:
+                        await updateItemSelectedCount({
+                            variables: {
+                                Id: id,
+                                SelectedCount: count + 1
+                            }
+                        })
+                        break
                 }
             }}
             selectedIndex={1}
+            selectedButtonStyle={{
+                backgroundColor: "rgba(0, 0, 0, 0.1)"
+            }}
             buttons={[
                 {
                     element: () => (
@@ -56,6 +70,7 @@ function ItemCountSelector({id, count}: {id: string; count: number}) {
                 {
                     element: () => (
                         <TextInput
+                            ref={ref => (inputRef.current = ref)}
                             value={count.toString()}
                             onChangeText={async count => {
                                 if (count === "") {
@@ -88,7 +103,7 @@ function ItemCountSelector({id, count}: {id: string; count: number}) {
     )
 }
 
-function ItemEntry({item: {Id, Name, SelectedCount}}: {item: ItemsItems}) {
+function ItemEntry({item: {Id, Name, SelectedCount}}: {item: ItemsAll}) {
     return (
         <ListItem
             title={Name}
@@ -99,10 +114,8 @@ function ItemEntry({item: {Id, Name, SelectedCount}}: {item: ItemsItems}) {
 }
 
 function SubmissionList({style}: {style?: StyleProp<ViewStyle>}) {
-    const {
-        data: {Items},
-        loading
-    } = useItems()
+    const {data, loading} = useItems()
+    const items = loading ? [] : data.Item.All
 
     return (
         <View style={[style, {backgroundColor: colors.background}]}>
@@ -111,7 +124,7 @@ function SubmissionList({style}: {style?: StyleProp<ViewStyle>}) {
                     backgroundColor: colors.white,
                     marginTop: 0
                 }}
-                data={Items || []}
+                data={items || []}
                 renderItem={({item}) => <ItemEntry key={item.Id} item={item} />}
                 keyExtractor={({Id}) => Id}
                 refreshing={loading}
@@ -132,17 +145,16 @@ function createItemSubmissionList(items: ItemsItems[]) {
 }
 
 function SubmitButton() {
-    const {
-        data: {Items}
-    } = useItems()
-    // const {
-    //     data: {
-    //         Me: {ZipCode}
-    //     }
-    // } = useMyZipCode()
-    const ZipCode = ""
+    const {data, loading} = useItems()
     const submit = useSubmitItems()
     const resetItemSelectedCounts = useResetItemSelectedCounts()
+    if (loading) {
+        return <View />
+    }
+
+    const {
+        Item: {All: items}
+    } = data
 
     return (
         <View
@@ -155,7 +167,7 @@ function SubmitButton() {
                     marginRight: 0
                 }}
                 onPress={async () => {
-                    const itemsToSubmit = createItemSubmissionList(Items)
+                    const itemsToSubmit = createItemSubmissionList(items)
                     if (itemsToSubmit.length === 0) {
                         alert("You have not selected any items to enter!")
                         return
@@ -163,7 +175,7 @@ function SubmitButton() {
                     await submit({
                         variables: {
                             Items: itemsToSubmit,
-                            ZipCode
+                            ZipCode: "" // TODO: Check this
                         }
                     })
                     await resetItemSelectedCounts({})
