@@ -278,6 +278,54 @@ export type SubmissionsItem = {
     Name: string
 }
 
+export type EmployeeSubmissionsVariables = {}
+
+export type EmployeeSubmissionsQuery = {
+    __typename?: "Query"
+
+    Submission: EmployeeSubmissionsSubmission
+}
+
+export type EmployeeSubmissionsSubmission = {
+    __typename?: "SubmissionQuery"
+
+    All: EmployeeSubmissionsAll[]
+}
+
+export type EmployeeSubmissionsAll = {
+    __typename?: "Submission"
+
+    Id: string
+
+    Items: EmployeeSubmissionsItems[]
+
+    Visitor: EmployeeSubmissionsVisitor
+
+    Submitted: DateTimeOffset
+}
+
+export type EmployeeSubmissionsItems = {
+    __typename?: "ItemSubmissionBatch"
+
+    Count: number
+
+    Item: EmployeeSubmissionsItem
+}
+
+export type EmployeeSubmissionsItem = {
+    __typename?: "ItemType"
+
+    Id: string
+
+    Name: string
+}
+
+export type EmployeeSubmissionsVisitor = {
+    __typename?: "User"
+
+    UserName: string
+}
+
 import gql from "graphql-tag"
 import * as ReactApolloHooks from "react-apollo-hooks"
 
@@ -507,6 +555,36 @@ export function useSubmissions(
         SubmissionsDocument,
         baseOptions
     )
+}
+export const EmployeeSubmissionsDocument = gql`
+    query EmployeeSubmissions {
+        Submission {
+            All {
+                Id
+                Items {
+                    Count
+                    Item {
+                        Id
+                        Name
+                    }
+                }
+                Visitor {
+                    UserName
+                }
+                Submitted
+            }
+        }
+    }
+`
+export function useEmployeeSubmissions(
+    baseOptions?: ReactApolloHooks.QueryHookOptions<
+        EmployeeSubmissionsVariables
+    >
+) {
+    return ReactApolloHooks.useQuery<
+        EmployeeSubmissionsQuery,
+        EmployeeSubmissionsVariables
+    >(EmployeeSubmissionsDocument, baseOptions)
 }
 
 // ====================================================

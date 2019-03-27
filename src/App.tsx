@@ -8,7 +8,7 @@ import {onError} from "apollo-link-error"
 import {HttpLink} from "apollo-link-http"
 import React, {useEffect} from "react"
 import {ApolloProvider} from "react-apollo-hooks"
-import {ActivityIndicator, StatusBar, View} from "react-native"
+import {ActivityIndicator, AsyncStorage, StatusBar, View} from "react-native"
 import {Icon, ThemeProvider} from "react-native-elements"
 import {
     createAppContainer,
@@ -24,6 +24,7 @@ import introspectionQueryResultData, {
     UserType
 } from "./graphql"
 import {
+    EmployeeSubmissions,
     Login,
     ProfilePage as Profile,
     Register,
@@ -121,36 +122,37 @@ const AppNavigator = createBottomTabNavigator(
 
 const EmployeeAppNavigator = createBottomTabNavigator(
     {
+        Submissions: {
+            screen: EmployeeSubmissions,
+            navigationOptions: {
+                title: "History",
+                tabBarIcon: <Icon type="font-awesome" name="list-alt" />
+            }
+        },
         Submit: {
             screen: Submit,
             navigationOptions: {
-                title: "SubmitE",
+                title: "Submit",
                 tabBarIcon: <Icon type="font-awesome" name="cart-plus" />
-            }
-        },
-        Submissions: {
-            screen: Submissions,
-            navigationOptions: {
-                title: "HistoryE",
-                tabBarIcon: <Icon type="font-awesome" name="list-alt" />
             }
         },
         Profile: {
             screen: Profile,
             navigationOptions: {
-                title: "ProfileE",
+                title: "Profile",
                 tabBarIcon: <Icon type="font-awesome" name="user" />
             }
         }
     },
     {
-        initialRouteName: "Submit"
+        initialRouteName: "Submissions"
     }
 )
 
 async function clientEffect(navigation: NavigationScreenProp<{}>) {
-    const identityToken = ""
-    // const identityToken = await AsyncStorage.getItem("Token")
+    // const identityToken = ""
+    const identityToken = await AsyncStorage.getItem("Token")
+    console.log({identityToken})
 
     if (!identityToken || tokenExpired(identityToken)) {
         navigation.navigate("Auth", {client: makeClient()})
@@ -218,11 +220,21 @@ function AppWrapper(props: NavigationScreenProps) {
 }
 AppWrapper.router = AppNavigator.router
 
+function EmployeeAppWrapper(props: NavigationScreenProps) {
+    return (
+        <ApolloProvider client={props.navigation.state.params.client}>
+            <EmployeeAppNavigator {...props} />
+        </ApolloProvider>
+    )
+}
+EmployeeAppWrapper.router = EmployeeAppNavigator.router
+
 const TabNavigatorContainer = createAppContainer(
     createSwitchNavigator(
         {
             AuthLoading: AuthLoadingScreen,
             App: AppWrapper,
+            EmployeeApp: EmployeeAppWrapper,
             Auth: AuthWrapper
         },
         {

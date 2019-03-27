@@ -56,3 +56,22 @@ query Submissions {
         }
     }
 }
+
+query EmployeeSubmissions {
+    Submission {
+        All {
+            Id
+            Items {
+                Count
+                Item {
+                    Id
+                    Name
+                }
+            }
+            Visitor {
+                UserName
+            }
+            Submitted
+        }
+    }
+}

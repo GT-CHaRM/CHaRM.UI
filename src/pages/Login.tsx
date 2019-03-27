@@ -39,7 +39,6 @@ export function Login() {
                         Password: password
                     }
                 })
-                alert(`Logged in as ${username}`)
                 await saveToken(token)
                 navigate("AuthLoading")
                 // alert(`Your token is ${Login}`)
