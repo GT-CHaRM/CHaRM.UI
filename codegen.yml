@@ -1,4 +1,3 @@
-overwrite: true
 generates:
     ./src/graphql/index.tsx:
         schema:
@@ -6,20 +5,18 @@ generates:
             - ./src/client.graphql
         documents: ./src/graphql/**/*.graphql
         plugins:
-            - typescript-common
-            - typescript-client
-            - typescript-react-apollo
-            - typescript-server
+            - typescript
+            - typescript-operations
             - typescript-resolvers
+            - typescript-react-apollo
             - fragment-matcher
         config:
-            noNamespaces: true
-
+            namingConvention: keep
+            immutableTypes: true
             contextType: ./context#GraphQLContext
-
             withHooks: true
-            noHOC: true
-            noComponents: true
+            withHOC: false
+            withComponent: false
             scalars:
                 Date: Date
                 Decimal: number

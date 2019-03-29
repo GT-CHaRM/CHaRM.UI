@@ -1,13 +1,31 @@
 mutation Login($Username: String!, $Password: String!) {
-    User {
-        Login(Username: $Username, Password: $Password)
-    }
+    LoginUser(Username: $Username, Password: $Password)
 }
 
-mutation Register($Username: String!, $Password: String!, $Email: String!) {
-    User {
-        Register(Username: $Username, Password: $Password, Email: $Email)
-    }
+mutation Register(
+    $Username: String!
+    $Password: String!
+    $Email: String!
+    $ZipCode: String!
+) {
+    RegisterUser(
+        Username: $Username
+        Password: $Password
+        Email: $Email
+        ZipCode: $ZipCode
+    )
+}
+
+mutation RegisterEmployee(
+    $Username: String!
+    $Password: String!
+    $Email: String!
+) {
+    CreateEmployeeAccount(
+        Username: $Username
+        Password: $Password
+        Email: $Email
+    )
 }
 
 mutation ResetItemSelectedCounts {
@@ -15,12 +33,17 @@ mutation ResetItemSelectedCounts {
 }
 
 mutation SubmitItems($Items: [ID!]!, $ZipCode: String!) {
-    Submission {
-        CreateSelf(Items: $Items, ZipCode: $ZipCode) {
-            Items {
-                Count
+    CreateSubmissionSelf(Items: $Items, ZipCode: $ZipCode) {
+        Id
+        Items {
+            Count
+            Item {
+                Id
+                Name
+                Description
             }
         }
+        Submitted
     }
 }
 
@@ -28,10 +51,43 @@ mutation UpdateItemSelectedCount($Id: ID!, $SelectedCount: Int!) {
     UpdateItemSelectedCount(Id: $Id, SelectedCount: $SelectedCount) @client
 }
 
+# TODO: Distinguish between RemoveSubmissionSelf and RemoveSubmission
 mutation RemoveSubmission($Id: ID!) {
-    Submission {
-        Remove(Id: $Id) {
+    RemoveSubmission(Id: $Id) {
+        Id
+    }
+}
+
+mutation ChangeMyZip($ZipCode: String!) {
+    ChangeMyZipCode(ZipCode: $ZipCode) {
+        ZipCode
+    }
+}
+
+mutation ChangeMyPassword($NewPassword: String!) {
+    ChangeMyPassword(NewPassword: $NewPassword) {
+        Id
+    }
+}
+
+mutation UpdateExistingSubmission(
+    $Id: ID!
+    $Items: [ID!]!
+    $Time: DateTimeOffset!
+    $ZipCode: String!
+) {
+    ModifySubmission(Id: $Id, Items: $Items, Time: $Time, ZipCode: $ZipCode) {
+        Id
+        Submitted
+        ZipCode
+        Items {
             Id
+            Count
+            Item {
+                Id
+                Description
+                Name
+            }
         }
     }
 }

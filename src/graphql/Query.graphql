@@ -1,77 +1,80 @@
 query MyUsername {
-    User {
-        Me {
-            UserName
-        }
+    MyUser {
+        UserName
     }
 }
 
 query MyZipCode {
-    User {
-        Me {
-            ZipCode
-        }
+    MyUser {
+        ZipCode
     }
 }
 
 query MyUserType {
-    User {
-        Me {
-            Type
-        }
+    MyUser {
+        Type
     }
 }
 
 query MyInformation {
-    User {
-        Me {
-            UserName
-            Type
-        }
+    MyUser {
+        UserName
+        Type
     }
 }
 
 query Items {
-    Item {
-        All {
-            Id
-            Name
-            SelectedCount @client
-        }
+    Items {
+        Id
+        Name
+        Description
+        SelectedCount @client
     }
 }
 
 query Submissions {
-    Submission {
-        AllMine {
-            Id
-            Items {
-                Count
-                Item {
-                    Id
-                    Name
-                }
+    MySubmissions {
+        Id
+        Items {
+            Count
+            Item {
+                Id
+                Name
+                Description
             }
-            Submitted
         }
+        Submitted
+    }
+}
+
+query Submission($Id: ID!) {
+    MySubmission(Id: $Id) {
+        Id
+        Items {
+            Count
+            Item {
+                Id
+                Name
+                Description
+            }
+        }
+        Submitted
     }
 }
 
 query EmployeeSubmissions {
-    Submission {
-        All {
-            Id
-            Items {
-                Count
-                Item {
-                    Id
-                    Name
-                }
+    AllSubmissions {
+        Id
+        Items {
+            Count
+            Item {
+                Id
+                Name
             }
-            Visitor {
-                UserName
-            }
-            Submitted
         }
+        Visitor {
+            UserName
+        }
+        Submitted
     }
 }

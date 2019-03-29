@@ -8,16 +8,17 @@ import {onError} from "apollo-link-error"
 import {HttpLink} from "apollo-link-http"
 import React, {useEffect} from "react"
 import {ApolloProvider} from "react-apollo-hooks"
-import {ActivityIndicator, AsyncStorage, StatusBar, View} from "react-native"
-import {Icon, ThemeProvider} from "react-native-elements"
+import {ActivityIndicator, Alert, StatusBar, View} from "react-native"
+import {Icon, Text, ThemeProvider} from "react-native-elements"
 import {
     createAppContainer,
     createBottomTabNavigator,
+    createStackNavigator,
     createSwitchNavigator,
+    NavigationInjectedProps,
     NavigationScreenProp,
     NavigationScreenProps
 } from "react-navigation"
-import {useNavigation} from "react-navigation-hooks"
 import introspectionQueryResultData, {
     MyInformationDocument,
     MyInformationQuery,
@@ -32,7 +33,7 @@ import {
     Submit
 } from "./pages"
 import {resolvers} from "./resolvers"
-import {tokenExpired} from "./util"
+import {getToken, tokenExpired} from "./util"
 
 function makeClient(token?: string) {
     return new ApolloClient({
@@ -41,12 +42,13 @@ function makeClient(token?: string) {
             onError(({graphQLErrors, networkError}) => {
                 if (graphQLErrors)
                     graphQLErrors.map(({message, locations, path}) =>
-                        console.log(
-                            `[GraphQL error]: Message: ${message}, Location: ${locations}, Path: ${path}`
+                        Alert.alert(
+                            "GraphQL Error",
+                            `Message: ${message}, Location: ${locations}, Path: ${path}`
                         )
                     )
                 if (networkError) {
-                    console.log(`[Network error]: ${networkError}`)
+                    Alert.alert("GraphQL Network Error", `${networkError}`)
                 }
             }),
             new HttpLink({
@@ -91,17 +93,40 @@ const AuthNavigator = createBottomTabNavigator(
     }
 )
 
+const SubmitNavigator = createStackNavigator({
+    Submit: {
+        screen: Submit,
+        navigationOptions: {
+            title: "Submit"
+        }
+    }
+})
+
+const SubmissionsNavigator = createStackNavigator({
+    Submissions: {
+        screen: Submissions,
+        navigationOptions: {
+            title: "Submissions"
+        }
+    },
+    EditSubmissions: {
+        screen: Submit,
+        navigationOptions: {title: "Edit Submission"}
+    }
+})
+
+// FIXME: If start page is Submissions, then manually navigating to the Submit page causes errors
 const AppNavigator = createBottomTabNavigator(
     {
         Submit: {
-            screen: Submit,
+            screen: SubmitNavigator,
             navigationOptions: {
                 title: "Submit",
                 tabBarIcon: <Icon type="font-awesome" name="cart-plus" />
             }
         },
         Submissions: {
-            screen: Submissions,
+            screen: SubmissionsNavigator,
             navigationOptions: {
                 title: "History",
                 tabBarIcon: <Icon type="font-awesome" name="list-alt" />
@@ -111,6 +136,13 @@ const AppNavigator = createBottomTabNavigator(
             screen: Profile,
             navigationOptions: {
                 title: "Profile",
+                tabBarIcon: <Icon type="font-awesome" name="user" />
+            }
+        },
+        "Create Account": {
+            screen: Register,
+            navigationOptions: {
+                title: "Users",
                 tabBarIcon: <Icon type="font-awesome" name="user" />
             }
         }
@@ -145,13 +177,13 @@ const EmployeeAppNavigator = createBottomTabNavigator(
         }
     },
     {
-        initialRouteName: "Submissions"
+        initialRouteName: "Profile"
     }
 )
 
 async function clientEffect(navigation: NavigationScreenProp<{}>) {
     // const identityToken = ""
-    const identityToken = await AsyncStorage.getItem("Token")
+    const identityToken = await getToken()
     console.log({identityToken})
 
     if (!identityToken || tokenExpired(identityToken)) {
@@ -168,31 +200,33 @@ async function clientEffect(navigation: NavigationScreenProp<{}>) {
 
         // TODO: Wait for loading to finish?
 
-        if (errors || !data.User.Me) {
+        if (errors || !data.MyUser) {
             navigation.navigate("Auth", {client})
         } else if (
-            data.User.Me.Type === UserType.Employee ||
-            data.User.Me.Type === UserType.Administrator
+            data.MyUser.Type === UserType.Employee ||
+            data.MyUser.Type === UserType.Administrator
         ) {
-            alert(`Logged in as employee ${data.User.Me.UserName}`)
+            // Alert.alert("Login Success", `Logged in as employee ${data.MyUser.UserName}`)
             navigation.navigate("EmployeeApp", {client})
         } else {
-            alert(`Logged in as visitor ${data.User.Me.UserName}`)
+            // Alert.alert("Login Success", `Logged in as visitor ${data.MyUser.UserName}`)
             navigation.navigate("App", {client})
         }
     }
 }
 
-function useClientEffect() {
-    const navigation = useNavigation()
-
+function useClientEffect(navigation: NavigationScreenProps["navigation"]) {
     useEffect(() => {
         clientEffect(navigation)
-    })
+    }, [])
 }
 
-function AuthLoadingScreen() {
-    useClientEffect()
+export interface AuthLoadingScreenProps {}
+
+export const AuthLoadingScreen: React.FC<
+    AuthLoadingScreenProps & NavigationInjectedProps
+> = ({navigation}) => {
+    useClientEffect(navigation)
 
     return (
         <View>
@@ -245,13 +279,15 @@ const TabNavigatorContainer = createAppContainer(
 
 export function App() {
     return (
-        <ThemeProvider
-            theme={{
-                colors: {
-                    primary: "green"
-                }
-            }}>
-            <TabNavigatorContainer />
-        </ThemeProvider>
+        <React.Suspense fallback={<Text>Loading...</Text>}>
+            <ThemeProvider
+                theme={{
+                    colors: {
+                        primary: "green"
+                    }
+                }}>
+                <TabNavigatorContainer />
+            </ThemeProvider>
+        </React.Suspense>
     )
 }

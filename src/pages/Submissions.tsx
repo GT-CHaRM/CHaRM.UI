@@ -1,19 +1,13 @@
 import moment from "moment"
 import React from "react"
-import {
-    ActivityIndicator,
-    FlatList,
-    StyleProp,
-    View,
-    ViewStyle
-} from "react-native"
+import {Alert, FlatList, StyleProp, View, ViewStyle} from "react-native"
 import {Badge, Button, Card, ListItem} from "react-native-elements"
-import {WithHeader} from "../components"
+import {NavigationInjectedProps} from "react-navigation"
 import {
-    SubmissionsAllMine,
-    // useRemoveSubmissionMutation
-    SubmissionsItem,
-    useSubmissions
+    SubmissionsDocument,
+    SubmissionsQuery,
+    useRemoveSubmissionMutation,
+    useSubmissionsQuery
 } from "../graphql"
 import {colors} from "../theme"
 
@@ -21,17 +15,19 @@ import {colors} from "../theme"
 // TODO: Add units to the history page
 
 function SubmissionItemEntry({
-    item: {Id, Name},
-    count
+    batch: {
+        Count,
+        Item: {Id, Description, Name}
+    }
 }: {
-    item: SubmissionsItem
-    count: number
+    batch: SubmissionsQuery["MySubmissions"][0]["Items"][0]
 }) {
     return (
         // EACH LINE ITEM IN THE SUBMISSION CARD //
         <ListItem
             key={Id}
-            rightAvatar={<Badge value={count} />}
+            onPress={() => Alert.alert(Name, Description)}
+            rightAvatar={<Badge value={Count} />}
             title={Name}
             containerStyle={{backgroundColor: colors.primaryLight}}
             rightIcon={<View />}
@@ -39,50 +35,106 @@ function SubmissionItemEntry({
     )
 }
 
-// https://react-native-training.github.io/react-native-elements/docs/card.html
-function SubmissionEntry({
-    submission: {Items, Submitted}
-}: {
-    submission: SubmissionsAllMine
-}) {
+export interface SubmissionEntryProps {
+    submission: SubmissionsQuery["MySubmissions"][0]
+}
+
+export const SubmissionEntry: React.FC<
+    SubmissionEntryProps & NavigationInjectedProps
+> = ({navigation, submission: {Id, Items, Submitted}}) => {
+    const remove = useRemoveSubmissionMutation({
+        update: (cache, {data}) => {
+            try {
+                if (!data || !data.RemoveSubmission) {
+                    return
+                }
+                const {
+                    RemoveSubmission: {Id}
+                } = data
+
+                const submissionsData = cache.readQuery<SubmissionsQuery>({
+                    query: SubmissionsDocument
+                })
+                if (!submissionsData) {
+                    return
+                }
+
+                cache.writeQuery<SubmissionsQuery>({
+                    query: SubmissionsDocument,
+                    data: {
+                        MySubmissions: [
+                            ...submissionsData.MySubmissions.filter(
+                                submission => submission.Id !== Id
+                            )
+                        ]
+                    }
+                })
+            } catch {}
+        }
+    })
+
     return (
         //card holds one entire submission
         <Card title={`Visited ${moment(Submitted).fromNow()}`}>
-            <Button
-                // icon={<Icon name="code" color="#ff0000" />}
-                type="solid"
-                style={{
-                    color: "#ff5c5c",
-                    backgroundColor: "rgb(255,0,0)"
-                }}
-                buttonStyle={{
-                    borderRadius: 0,
-                    marginLeft: 0,
-                    marginRight: 0,
-                    marginBottom: 0
-                }}
-                title="Delete submission"
-
-                /*
-                 * We need to finish onPress - but first, we need the mutation and hook to be generated.
-                 */
-
-                // onPress={async () => {
-                //     //delete card
-                //     const data={Items}
-                //     const removeSubmission = useRemoveSubmissionMutation()
-                //     await submit({
-                //         variables: {
-                //             Items: itemsToSubmit,
-                //             ZipCode
-                //         }
-                //     })
-                // }}
-            />
+            <View style={{flexDirection: "row"}}>
+                <Button
+                    type="solid"
+                    style={{
+                        color: "#ff5c5c",
+                        backgroundColor: "rgb(255,0,0)"
+                    }}
+                    containerStyle={{
+                        flex: 1
+                    }}
+                    buttonStyle={{
+                        borderRadius: 0,
+                        marginLeft: 0,
+                        marginRight: 0,
+                        marginBottom: 0
+                    }}
+                    title="Edit"
+                    onPress={() => {
+                        navigation.navigate("EditSubmissions", {
+                            submissionId: Id
+                        })
+                    }}
+                />
+                <Button
+                    type="solid"
+                    style={{
+                        color: "#ff5c5c",
+                        backgroundColor: "rgb(255,0,0)"
+                    }}
+                    containerStyle={{
+                        flex: 1
+                    }}
+                    buttonStyle={{
+                        borderRadius: 0,
+                        marginLeft: 0,
+                        marginRight: 0,
+                        marginBottom: 0
+                    }}
+                    title="Delete"
+                    onPress={() => {
+                        Alert.alert(
+                            "Remove Submission",
+                            "Are you sure you want to remove this submission?",
+                            [
+                                {text: "No"},
+                                {
+                                    text: "Yes",
+                                    onPress: async () =>
+                                        await remove({variables: {Id}})
+                                }
+                            ]
+                        )
+                    }}
+                />
+            </View>
             <FlatList
                 data={Items}
-                renderItem={({item: {Item, Count}}) => (
-                    <SubmissionItemEntry item={Item} count={Count} />
+                renderItem={({item: batch}) => (
+                    <SubmissionItemEntry batch={batch} />
                 )}
                 keyExtractor={({Item: {Id}}) => Id}
             />
@@ -90,12 +142,14 @@ function SubmissionEntry({
     )
 }
 
-function SubmissionList({style}: {style?: StyleProp<ViewStyle>}) {
-    const {data, loading, refetch} = useSubmissions()
+export interface SubmissionListProps {
+    style?: StyleProp<ViewStyle>
+}
 
-    if (loading) {
-        return <ActivityIndicator />
-    }
+export const SubmissionList: React.FC<
+    SubmissionListProps & NavigationInjectedProps
+> = ({navigation, style}) => {
+    const {data, loading, refetch} = useSubmissionsQuery()
 
     return (
         <View style={[style, {backgroundColor: colors.background}]}>
@@ -104,9 +158,13 @@ function SubmissionList({style}: {style?: StyleProp<ViewStyle>}) {
                     backgroundColor: colors.background,
                     marginTop: 0
                 }}
-                data={loading ? [] : data.Submission.AllMine}
+                data={loading || !data ? [] : data.MySubmissions}
                 renderItem={({item}) => (
-                    <SubmissionEntry key={item.Id} submission={item} />
+                    <SubmissionEntry
+                        key={item.Id}
+                        navigation={navigation}
+                        submission={item}
+                    />
                 )}
                 keyExtractor={({Id}) => Id}
                 refreshing={loading}
@@ -116,10 +174,10 @@ function SubmissionList({style}: {style?: StyleProp<ViewStyle>}) {
     )
 }
 
-export function Submissions() {
-    return (
-        <WithHeader>
-            <SubmissionList style={{flex: 1}} />
-        </WithHeader>
-    )
+export interface SubmissionsNavigationProps {}
+
+export const Submissions: React.FC<
+    NavigationInjectedProps<SubmissionsNavigationProps>
+> = ({navigation}) => {
+    return <SubmissionList navigation={navigation} style={{flex: 1}} />
 }
