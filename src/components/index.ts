@@ -1,4 +1,5 @@
 export * from "./Button"
 export * from "./Container"
+export * from "./FormInput"
 export * from "./Header"
 export * from "./Label"

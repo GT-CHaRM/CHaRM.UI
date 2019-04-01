@@ -23,8 +23,12 @@ const useRegister = (
     >,
     cleanup?: () => void
 ) => {
-    const register = useRegisterMutation()
-    const registerEmployee = useRegisterEmployeeMutation()
+    const register = useRegisterMutation({
+        fetchPolicy: "no-cache"
+    })
+    const registerEmployee = useRegisterEmployeeMutation({
+        fetchPolicy: "no-cache"
+    })
 
     return async (
         isEmployee: boolean,

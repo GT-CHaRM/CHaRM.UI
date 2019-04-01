@@ -1,3 +1,5 @@
+export * from "./ChangePassword"
+export * from "./DeleteMyAccount"
 export * from "./EmployeeSubmissions"
 export * from "./Login"
 export * from "./Profile"

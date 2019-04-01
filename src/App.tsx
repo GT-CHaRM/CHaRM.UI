@@ -52,7 +52,7 @@ function makeClient(token?: string) {
                 }
             }),
             new HttpLink({
-                uri: "http://192.168.0.117:5000/graphql",
+                uri: "http://143.215.123.201:5000/graphql",
                 credentials: "include",
 
                 headers: {
@@ -115,6 +115,15 @@ const SubmissionsNavigator = createStackNavigator({
     }
 })
 
+const ProfileNavigator = createStackNavigator({
+    Profile: {
+        screen: Profile,
+        navigationOptions: {
+            title: "Profile"
+        }
+    }
+})
+
 // FIXME: If start page is Submissions, then manually navigating to the Submit page causes errors
 const AppNavigator = createBottomTabNavigator(
     {
@@ -133,7 +142,7 @@ const AppNavigator = createBottomTabNavigator(
             }
         },
         Profile: {
-            screen: Profile,
+            screen: ProfileNavigator,
             navigationOptions: {
                 title: "Profile",
                 tabBarIcon: <Icon type="font-awesome" name="user" />
@@ -183,6 +192,7 @@ const EmployeeAppNavigator = createBottomTabNavigator(
 
 async function clientEffect(navigation: NavigationScreenProp<{}>) {
     // const identityToken = ""
+    // await saveToken("")
     const identityToken = await getToken()
     console.log({identityToken})
 

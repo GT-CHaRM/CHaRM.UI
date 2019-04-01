@@ -1,7 +1,11 @@
-import React, {useState} from "react"
+import React, {useContext, useState} from "react"
 import {ActivityIndicator, KeyboardTypeOptions, Text, View} from "react-native"
 import {Button, Image, Input, ListItem} from "react-native-elements"
-import {NavigationInjectedProps} from "react-navigation"
+import {
+    NavigationInjectedProps,
+    NavigationRoute,
+    NavigationScreenProp
+} from "react-navigation"
 import {WithHeader} from "../components"
 import {
     MyZipCodeDocument,
@@ -107,6 +111,8 @@ const InlineTextInput: React.FC<InlineFormProps> = ({
 
 interface ConfigureAccountProps {}
 const ConfigureAccount: React.FC<ConfigureAccountProps> = () => {
+    const navigation = useNavigation()
+
     const {data, loading} = useMyZipCodeQuery()
     const changePassword = useChangeMyPasswordMutation()
     const changeZipCode = useChangeMyZipMutation()
@@ -189,14 +195,20 @@ const ConfigureAccount: React.FC<ConfigureAccountProps> = () => {
                     rightTitle={data.MyUser.ZipCode || ""}
                 />
             )}
+
+            <ListItem
+                containerStyle={{minHeight: 65}}
+                title="Delete My Account"
+                leftIcon={{name: "av-timer"}}
+                onPress={() => navigation.navigate("DeleteMyAccount")}
+            />
         </View>
     )
 }
 interface LogoutButtonProps {}
 
-const LogoutButton: React.FC<
-    LogoutButtonProps & NavigationInjectedProps<ProfileNavigationProps>
-> = ({navigation}) => {
+const LogoutButton: React.FC<LogoutButtonProps> = () => {
+    const navigation = useNavigation()
     return (
         <View
             style={{
@@ -217,15 +229,32 @@ const LogoutButton: React.FC<
     )
 }
 
+const NavigationContext = React.createContext<
+    | NavigationScreenProp<
+          NavigationRoute<ProfileNavigationProps>,
+          ProfileNavigationProps
+      >
+    | undefined
+>(undefined)
+const useNavigation = () => {
+    const ctx = useContext(NavigationContext)
+    if (ctx === undefined) {
+        throw new Error("Make sure you register the proper provider!")
+    }
+    return ctx
+}
+
 export interface ProfileNavigationProps {}
 export const ProfilePage: React.FC<
     NavigationInjectedProps<ProfileNavigationProps>
 > = ({navigation}) => {
     return (
         <WithHeader>
-            <ProfileInformation />
-            <ConfigureAccount />
-            <LogoutButton navigation={navigation} />
+            <NavigationContext.Provider value={navigation}>
+                <ProfileInformation />
+                <ConfigureAccount />
+                <LogoutButton />
+            </NavigationContext.Provider>
         </WithHeader>
     )
 }

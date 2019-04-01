@@ -61,6 +61,10 @@ export type Mutation = {
     readonly CreateItem?: Maybe<ItemType>
     /** Adds a new submission for the current user */
     readonly CreateSubmissionSelf?: Maybe<Submission>
+    /** Deletes the current account */
+    readonly DeleteAccount?: Maybe<User>
+    /** Deletes the current account */
+    readonly DeleteMyAccount?: Maybe<User>
     /** Attempts to login with the provided username and password and returns a JSON web token (JWT) on success. */
     readonly LoginUser?: Maybe<Scalars["String"]>
     /** Modifies an existing item that can be submitted */
@@ -102,6 +106,16 @@ export type MutationCreateItemArgs = {
 export type MutationCreateSubmissionSelfArgs = {
     Items: ReadonlyArray<Scalars["ID"]>
     ZipCode: Scalars["String"]
+}
+
+/** The mutations accepted in this GraphQL API. */
+export type MutationDeleteAccountArgs = {
+    Id: Scalars["ID"]
+}
+
+/** The mutations accepted in this GraphQL API. */
+export type MutationDeleteMyAccountArgs = {
+    Password: Scalars["String"]
 }
 
 /** The mutations accepted in this GraphQL API. */
@@ -309,6 +323,7 @@ export type ChangeMyZipMutation = {readonly __typename?: "Mutation"} & {
 }
 
 export type ChangeMyPasswordMutationVariables = {
+    OldPassword: Scalars["String"]
     NewPassword: Scalars["String"]
 }
 
@@ -344,6 +359,16 @@ export type UpdateExistingSubmissionMutation = {
                         }
                 >
             }
+    >
+}
+
+export type DeleteMyAccountMutationVariables = {
+    Password: Scalars["String"]
+}
+
+export type DeleteMyAccountMutation = {readonly __typename?: "Mutation"} & {
+    readonly DeleteMyAccount: Maybe<
+        {readonly __typename?: "User"} & Pick<User, "Id">
     >
 }
 
@@ -611,6 +636,18 @@ export type MutationResolvers<
         ParentType,
         Context,
         MutationCreateSubmissionSelfArgs
+    >
+    DeleteAccount?: Resolver<
+        Maybe<User>,
+        ParentType,
+        Context,
+        MutationDeleteAccountArgs
+    >
+    DeleteMyAccount?: Resolver<
+        Maybe<User>,
+        ParentType,
+        Context,
+        MutationDeleteMyAccountArgs
     >
     LoginUser?: Resolver<
         Maybe<Scalars["String"]>,
@@ -899,7 +936,7 @@ export function useChangeMyZipMutation(
     >(ChangeMyZipDocument, baseOptions)
 }
 export const ChangeMyPasswordDocument = gql`
-    mutation ChangeMyPassword($NewPassword: String!) {
+    mutation ChangeMyPassword($OldPassword: String!, $NewPassword: String!) {
         ChangeMyPassword(NewPassword: $NewPassword) {
             Id
         }
@@ -956,6 +993,25 @@ export function useUpdateExistingSubmissionMutation(
         UpdateExistingSubmissionMutation,
         UpdateExistingSubmissionMutationVariables
     >(UpdateExistingSubmissionDocument, baseOptions)
+}
+export const DeleteMyAccountDocument = gql`
+    mutation DeleteMyAccount($Password: String!) {
+        DeleteMyAccount(Password: $Password) {
+            Id
+        }
+    }
+`
+
+export function useDeleteMyAccountMutation(
+    baseOptions?: ReactApolloHooks.MutationHookOptions<
+        DeleteMyAccountMutation,
+        DeleteMyAccountMutationVariables
+    >
+) {
+    return ReactApolloHooks.useMutation<
+        DeleteMyAccountMutation,
+        DeleteMyAccountMutationVariables
+    >(DeleteMyAccountDocument, baseOptions)
 }
 export const MyUsernameDocument = gql`
     query MyUsername {

@@ -64,7 +64,7 @@ mutation ChangeMyZip($ZipCode: String!) {
     }
 }
 
-mutation ChangeMyPassword($NewPassword: String!) {
+mutation ChangeMyPassword($OldPassword: String!, $NewPassword: String!) {
     ChangeMyPassword(NewPassword: $NewPassword) {
         Id
     }
@@ -89,5 +89,11 @@ mutation UpdateExistingSubmission(
                 Name
             }
         }
+    }
+}
+
+mutation DeleteMyAccount($Password: String!) {
+    DeleteMyAccount(Password: $Password) {
+        Id
     }
 }

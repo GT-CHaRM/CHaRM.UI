@@ -20,7 +20,9 @@ const useLogin = (
         LoginNavigationProps
     >
 ) => {
-    const login = useLoginMutation()
+    const login = useLoginMutation({
+        fetchPolicy: "no-cache"
+    })
 
     return async (guestMode: boolean, username?: string, password?: string) => {
         if (guestMode) {
