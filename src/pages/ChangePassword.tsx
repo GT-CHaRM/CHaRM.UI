@@ -17,7 +17,7 @@ const successfullyDeleted = async (
     >
 ) => {
     await saveToken("")
-    navigation.navigate("Auth") // go back to login/signup pages
+    navigation.navigate("AuthLoading") // go back to login/signup pages
 }
 
 export interface ChangeMyPasswordNavigationProps {}

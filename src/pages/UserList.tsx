@@ -152,35 +152,44 @@ const useDeleteUser = () =>
 export interface SingleUserActionsNavigationProps {
     id: Scalars["ID"]
     name: string
+    type?: UserType
 }
 
 export const SingleUserActions: React.FC<
     NavigationInjectedProps<SingleUserActionsNavigationProps>
 > = ({navigation}) => {
-    const [id, name] = [navigation.getParam("id"), navigation.getParam("name")]
+    const [id, name, type] = [
+        navigation.getParam("id"),
+        navigation.getParam("name"),
+        navigation.getParam("type") || UserType.Visitor
+    ]
 
     const deleteUser = useDeleteUser()
 
     return (
         <View style={{flex: 1}}>
-            <ListItem
-                title="Submission Log"
-                onPress={() =>
-                    navigation.navigate("ViewSubmissions", {
-                        userId: id,
-                        name
-                    })
-                }
-            />
+            {type === UserType.Visitor && (
+                <ListItem
+                    title="Submission Log"
+                    onPress={() =>
+                        navigation.navigate("ViewSubmissions", {
+                            userId: id,
+                            name
+                        })
+                    }
+                />
+            )}
 
-            <ListItem
-                title="Change Zip Code"
-                onPress={() =>
-                    navigation.navigate("ChangeUserZipCode", {
-                        id
-                    })
-                }
-            />
+            {type === UserType.Visitor && (
+                <ListItem
+                    title="Change Zip Code"
+                    onPress={() =>
+                        navigation.navigate("ChangeUserZipCode", {
+                            id
+                        })
+                    }
+                />
+            )}
             <ListItem
                 title="Change Password"
                 onPress={() =>
