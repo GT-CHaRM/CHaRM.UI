@@ -23,6 +23,12 @@ query MyInformation {
     }
 }
 
+query UserZipCode($Id: ID!) {
+    User(Id: $Id) {
+        ZipCode
+    }
+}
+
 query Items {
     Items {
         Id
@@ -62,6 +68,21 @@ query Submission($Id: ID!) {
     }
 }
 
+query GetAllSubmissionsOfUser($Id: ID!) {
+    GetAllSubmissionsFromUser(UserId: $Id) {
+        Id
+        Items {
+            Count
+            Item {
+                Id
+                Name
+                Description
+            }
+        }
+        Submitted
+    }
+}
+
 query EmployeeSubmissions {
     AllSubmissions {
         Id
@@ -76,5 +97,13 @@ query EmployeeSubmissions {
             UserName
         }
         Submitted
+    }
+}
+
+query GetAllUsers {
+    AllUsers {
+        Id
+        UserName
+        Type
     }
 }

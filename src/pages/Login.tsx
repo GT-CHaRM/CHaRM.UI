@@ -7,12 +7,9 @@ import {
     NavigationRoute,
     NavigationScreenProp
 } from "react-navigation"
-import {WithHeader} from "../components"
 import {FormInput} from "../components/FormInput"
 import {useLoginMutation} from "../graphql"
 import {saveToken} from "../util"
-
-export interface LoginNavigationProps {}
 
 const useLogin = (
     navigation: NavigationScreenProp<
@@ -60,13 +57,24 @@ const useLogin = (
         }
     }
 }
+export interface LoginNavigationProps {
+    tryLogin: (
+        guestMode: boolean,
+        username?: string | undefined,
+        password?: string | undefined
+    ) => Promise<void>
+}
 
-export const LoginAsGuest: React.FC<
-    NavigationInjectedProps<LoginNavigationProps>
-> = ({navigation}) => {
+export interface LoginAsGustProps {
+    tryLogin: (
+        guestMode: boolean,
+        username?: string | undefined,
+        password?: string | undefined
+    ) => Promise<void>
+}
+
+export const LoginAsGuest: React.FC<LoginAsGustProps> = ({tryLogin}) => {
     const [zipCode, setZipCode] = useState("")
-
-    const tryLogin = useLogin(navigation)
 
     return (
         <FormInput
@@ -79,15 +87,20 @@ export const LoginAsGuest: React.FC<
         />
     )
 }
-export const LoginAsVisitor: React.FC<
-    NavigationInjectedProps<LoginNavigationProps>
-> = ({navigation}) => {
+
+export interface LoginAsVisitorProps {
+    tryLogin: (
+        guestMode: boolean,
+        username?: string | undefined,
+        password?: string | undefined
+    ) => Promise<void>
+}
+
+export const LoginAsVisitor: React.FC<LoginAsVisitorProps> = ({tryLogin}) => {
     const passwordRef = useRef<Input | null>(null)
 
     const [username, setUsername] = useState("")
     const [password, setPassword] = useState("")
-
-    const tryLogin = useLogin(navigation)
 
     return (
         <View>
@@ -102,6 +115,7 @@ export const LoginAsVisitor: React.FC<
             <FormInput
                 value={password}
                 setValue={setPassword}
+                inputRef={passwordRef}
                 secureTextEntry
                 placeholder="Password"
                 iconName="key"
@@ -111,13 +125,16 @@ export const LoginAsVisitor: React.FC<
     )
 }
 
+export interface LoginNavigationProps {}
 export const Login: React.FC<NavigationInjectedProps<LoginNavigationProps>> = ({
-    ...props
+    navigation
 }) => {
     const [guestMode, setGuestMode] = useState(false)
 
+    const tryLogin = useLogin(navigation)
+
     return (
-        <WithHeader>
+        <View style={{flex: 1}}>
             <View style={{flex: 1}} />
             <ScrollView>
                 <Image
@@ -142,9 +159,9 @@ export const Login: React.FC<NavigationInjectedProps<LoginNavigationProps>> = ({
                 />
 
                 {guestMode ? (
-                    <LoginAsGuest {...props} />
+                    <LoginAsGuest tryLogin={tryLogin} />
                 ) : (
-                    <LoginAsVisitor {...props} />
+                    <LoginAsVisitor tryLogin={tryLogin} />
                 )}
             </ScrollView>
             <Button
@@ -160,6 +177,6 @@ export const Login: React.FC<NavigationInjectedProps<LoginNavigationProps>> = ({
                 title="Submit"
                 onPress={() => {}}
             />
-        </WithHeader>
+        </View>
     )
 }

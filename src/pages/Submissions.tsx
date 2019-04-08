@@ -2,10 +2,16 @@ import moment from "moment"
 import React from "react"
 import {Alert, FlatList, StyleProp, View, ViewStyle} from "react-native"
 import {Badge, Button, Card, ListItem} from "react-native-elements"
-import {NavigationInjectedProps} from "react-navigation"
 import {
+    NavigationInjectedProps,
+    NavigationRoute,
+    NavigationScreenProp
+} from "react-navigation"
+import {
+    Scalars,
     SubmissionsDocument,
     SubmissionsQuery,
+    useGetAllSubmissionsOfUserQuery,
     useRemoveSubmissionMutation,
     useSubmissionsQuery
 } from "../graphql"
@@ -37,11 +43,12 @@ function SubmissionItemEntry({
 
 export interface SubmissionEntryProps {
     submission: SubmissionsQuery["MySubmissions"][0]
+    userId?: Scalars["ID"]
 }
 
 export const SubmissionEntry: React.FC<
     SubmissionEntryProps & NavigationInjectedProps
-> = ({navigation, submission: {Id, Items, Submitted}}) => {
+> = ({navigation, userId, submission: {Id, Items, Submitted}}) => {
     const remove = useRemoveSubmissionMutation({
         update: (cache, {data}) => {
             try {
@@ -95,6 +102,7 @@ export const SubmissionEntry: React.FC<
                     title="Edit"
                     onPress={() => {
                         navigation.navigate("EditSubmissions", {
+                            userId: userId,
                             submissionId: Id
                         })
                     }}
@@ -143,13 +151,43 @@ export const SubmissionEntry: React.FC<
 }
 
 export interface SubmissionListProps {
+    navigation: NavigationScreenProp<
+        NavigationRoute<SubmissionsNavigationProps>,
+        SubmissionsNavigationProps
+    >
     style?: StyleProp<ViewStyle>
 }
 
-export const SubmissionList: React.FC<
-    SubmissionListProps & NavigationInjectedProps
-> = ({navigation, style}) => {
-    const {data, loading, refetch} = useSubmissionsQuery()
+export const SubmissionList: React.FC<SubmissionListProps> = ({
+    navigation,
+    style
+}) => {
+    const [userId] = [navigation.getParam("userId")]
+
+    let data: SubmissionsQuery["MySubmissions"],
+        loading: boolean,
+        refetch: () => Promise<any>
+    if (userId === undefined) {
+        const submissions = useSubmissionsQuery({
+            fetchPolicy: "network-only"
+        })
+        data = submissions.data ? submissions.data.MySubmissions : []
+        loading = submissions.loading
+        refetch = submissions.refetch
+    } else {
+        const submissions = useGetAllSubmissionsOfUserQuery({
+            fetchPolicy: "network-only",
+            variables: {Id: userId}
+        })
+        data = submissions.data
+            ? submissions.data.GetAllSubmissionsFromUser || []
+            : []
+        loading = submissions.loading
+        refetch = submissions.refetch
+    }
+    if (loading) {
+        data = []
+    }
 
     return (
         <View style={[style, {backgroundColor: colors.background}]}>
@@ -158,10 +196,11 @@ export const SubmissionList: React.FC<
                     backgroundColor: colors.background,
                     marginTop: 0
                 }}
-                data={loading || !data ? [] : data.MySubmissions}
+                data={data}
                 renderItem={({item}) => (
                     <SubmissionEntry
                         key={item.Id}
+                        userId={userId}
                         navigation={navigation}
                         submission={item}
                     />
@@ -174,7 +213,9 @@ export const SubmissionList: React.FC<
     )
 }
 
-export interface SubmissionsNavigationProps {}
+export interface SubmissionsNavigationProps {
+    userId?: Scalars["ID"]
+}
 
 export const Submissions: React.FC<
     NavigationInjectedProps<SubmissionsNavigationProps>

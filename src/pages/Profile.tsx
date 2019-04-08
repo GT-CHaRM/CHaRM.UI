@@ -1,19 +1,25 @@
 import React, {useContext, useState} from "react"
-import {ActivityIndicator, KeyboardTypeOptions, Text, View} from "react-native"
+import {
+    ActivityIndicator,
+    Alert,
+    KeyboardTypeOptions,
+    Text,
+    View
+} from "react-native"
 import {Button, Image, Input, ListItem} from "react-native-elements"
 import {
     NavigationInjectedProps,
     NavigationRoute,
     NavigationScreenProp
 } from "react-navigation"
-import {WithHeader} from "../components"
 import {
     MyZipCodeDocument,
     MyZipCodeQuery,
-    useChangeMyPasswordMutation,
     useChangeMyZipMutation,
     useMyUsernameQuery,
-    useMyZipCodeQuery
+    useMyUserTypeQuery,
+    useMyZipCodeQuery,
+    UserType
 } from "../graphql"
 import {saveToken} from "../util"
 
@@ -33,7 +39,7 @@ const ProfileInformation: React.FC<ProfileInformationProps> = () => {
                     uri:
                         "https://www.topupconsultants.com/wp-content/uploads/2016/06/profile.png"
                 }}
-                style={{width: 600, height: 400, alignSelf: "center"}}
+                style={{width: 480, height: 320, alignSelf: "center"}}
             />
             <Text style={{fontSize: 18, textAlign: "center"}}>
                 You are logged in as {data.MyUser.UserName}
@@ -109,15 +115,34 @@ const InlineTextInput: React.FC<InlineFormProps> = ({
     )
 }
 
-interface ConfigureAccountProps {}
-const ConfigureAccount: React.FC<ConfigureAccountProps> = () => {
-    const navigation = useNavigation()
+export interface ChangeMyZipConfigureComponentProps {}
 
+export const ChangeMyZipConfigureComponent: React.FC<
+    ChangeMyZipConfigureComponentProps
+> = ({}) => {
     const {data, loading} = useMyZipCodeQuery()
-    const changePassword = useChangeMyPasswordMutation()
-    const changeZipCode = useChangeMyZipMutation()
+    const changeZipCode = useChangeMyZipMutation({
+        update: (cache, {data}) => {
+            if (!data || !data.ChangeMyZipCode) {
+                return
+            }
+            const result = cache.readQuery<MyZipCodeQuery>({
+                query: MyZipCodeDocument
+            })
+            if (!result || !result.MyUser) {
+                return
+            }
+            cache.writeQuery<MyZipCodeQuery>({
+                query: MyZipCodeDocument,
+                data: {
+                    MyUser: {
+                        ZipCode: data.ChangeMyZipCode.ZipCode
+                    }
+                }
+            })
+        }
+    })
 
-    const [changingPassword, setChangingPassword] = useState(false)
     const [changingZip, setChangingZip] = useState(false)
 
     if (loading) {
@@ -129,28 +154,7 @@ const ConfigureAccount: React.FC<ConfigureAccountProps> = () => {
     }
 
     return (
-        <View style={{backgroundColor: "white"}}>
-            {changingPassword ? (
-                <InlineTextInput
-                    placeholder="Password"
-                    secureTextEntry
-                    onSubmit={async value => {
-                        await changePassword({
-                            variables: {
-                                NewPassword: value
-                            }
-                        })
-                    }}
-                    disable={() => setChangingPassword(false)}
-                />
-            ) : (
-                <ListItem
-                    containerStyle={{minHeight: 65}}
-                    title="Change Password"
-                    leftIcon={{name: "av-timer"}}
-                    onPress={() => setChangingPassword(true)}
-                />
-            )}
+        <>
             {changingZip ? (
                 <InlineTextInput
                     placeholder="Zip Code"
@@ -159,29 +163,7 @@ const ConfigureAccount: React.FC<ConfigureAccountProps> = () => {
                     onSubmit={async value => {
                         try {
                             await changeZipCode({
-                                variables: {ZipCode: value},
-                                update: (cache, {data}) => {
-                                    if (!data || !data.ChangeMyZipCode) {
-                                        return
-                                    }
-                                    const result = cache.readQuery<
-                                        MyZipCodeQuery
-                                    >({
-                                        query: MyZipCodeDocument
-                                    })
-                                    if (!result || !result.MyUser) {
-                                        return
-                                    }
-                                    cache.writeQuery<MyZipCodeQuery>({
-                                        query: MyZipCodeDocument,
-                                        data: {
-                                            MyUser: {
-                                                ZipCode:
-                                                    data.ChangeMyZipCode.ZipCode
-                                            }
-                                        }
-                                    })
-                                }
+                                variables: {ZipCode: value}
                             })
                         } catch {}
                     }}
@@ -195,13 +177,38 @@ const ConfigureAccount: React.FC<ConfigureAccountProps> = () => {
                     rightTitle={data.MyUser.ZipCode || ""}
                 />
             )}
+        </>
+    )
+}
 
+interface ConfigureAccountProps {}
+const ConfigureAccount: React.FC<ConfigureAccountProps> = () => {
+    const myTypeResult = useMyUserTypeQuery()
+    const navigation = useNavigation()
+
+    return (
+        <View style={{backgroundColor: "white"}}>
             <ListItem
                 containerStyle={{minHeight: 65}}
-                title="Delete My Account"
+                title="Change Password"
                 leftIcon={{name: "av-timer"}}
-                onPress={() => navigation.navigate("DeleteMyAccount")}
+                onPress={() => navigation.navigate("ChangePassword")}
             />
+            {(!myTypeResult.data ||
+                !myTypeResult.data.MyUser ||
+                myTypeResult.data.MyUser.Type === UserType.Visitor) && (
+                <ChangeMyZipConfigureComponent />
+            )}
+            {(!myTypeResult.data ||
+                !myTypeResult.data.MyUser ||
+                myTypeResult.data.MyUser.Type !== UserType.Administrator) && (
+                <ListItem
+                    containerStyle={{minHeight: 65}}
+                    title="Delete My Account"
+                    leftIcon={{name: "av-timer"}}
+                    onPress={() => navigation.navigate("DeleteMyAccount")}
+                />
+            )}
         </View>
     )
 }
@@ -220,9 +227,21 @@ const LogoutButton: React.FC<LogoutButtonProps> = () => {
                     marginRight: 0
                 }}
                 title="LOG OUT"
-                onPress={async () => {
-                    await saveToken("")
-                    navigation.navigate("AuthLoading")
+                onPress={() => {
+                    Alert.alert(
+                        "Confirm Log Out",
+                        "Are you sure you want to log out?",
+                        [
+                            {text: "No"},
+                            {
+                                text: "Yes",
+                                onPress: async () => {
+                                    await saveToken("")
+                                    navigation.navigate("AuthLoading")
+                                }
+                            }
+                        ]
+                    )
                 }}
             />
         </View>
@@ -249,12 +268,10 @@ export const ProfilePage: React.FC<
     NavigationInjectedProps<ProfileNavigationProps>
 > = ({navigation}) => {
     return (
-        <WithHeader>
-            <NavigationContext.Provider value={navigation}>
-                <ProfileInformation />
-                <ConfigureAccount />
-                <LogoutButton />
-            </NavigationContext.Provider>
-        </WithHeader>
+        <NavigationContext.Provider value={navigation}>
+            <ProfileInformation />
+            <ConfigureAccount />
+            <LogoutButton />
+        </NavigationContext.Provider>
     )
 }

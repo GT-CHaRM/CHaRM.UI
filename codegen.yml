@@ -17,6 +17,7 @@ generates:
             withHooks: true
             withHOC: false
             withComponent: false
+            hooksImportFrom: "./apollo-hooks"
             scalars:
                 Date: Date
                 Decimal: number

@@ -60,7 +60,7 @@ export const ChangeMyPassword: React.FC<
     const passwordRef = useRef<Input>(null)
     const passwordConfirmRef = useRef<Input>(null)
     return (
-        <View>
+        <View style={{flex: 1}}>
             <FormInput
                 value={oldPassword}
                 setValue={setOldPassword}
@@ -87,6 +87,8 @@ export const ChangeMyPassword: React.FC<
                 iconName="key"
                 onSubmitEditing={submit}
             />
+
+            <View style={{flex: 1}} />
 
             <Button
                 icon={

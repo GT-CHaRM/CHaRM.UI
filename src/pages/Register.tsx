@@ -1,15 +1,13 @@
 import React, {useRef, useState} from "react"
-import {ActivityIndicator, Alert, ScrollView, View} from "react-native"
+import {Alert, ScrollView, View} from "react-native"
 import {Button, Icon, Image, Input, Text, Tooltip} from "react-native-elements"
 import {
     NavigationInjectedProps,
     NavigationRoute,
     NavigationScreenProp
 } from "react-navigation"
-import {WithHeader} from "../components"
 import {FormInput} from "../components/FormInput"
 import {
-    useMyUserTypeQuery,
     useRegisterEmployeeMutation,
     useRegisterMutation,
     UserType
@@ -21,7 +19,9 @@ const useRegister = (
         NavigationRoute<RegisterNavigationProps>,
         RegisterNavigationProps
     >,
-    cleanup?: () => void
+    isSelf: boolean,
+    userType: UserType,
+    cleanup: () => void
 ) => {
     const register = useRegisterMutation({
         fetchPolicy: "no-cache"
@@ -31,7 +31,6 @@ const useRegister = (
     })
 
     return async (
-        isEmployee: boolean,
         username: string,
         password: string,
         email: string,
@@ -41,50 +40,54 @@ const useRegister = (
             Alert.alert("Error", "Fields cannot be empty!")
             return
         }
-
-        if (isEmployee) {
-            const {data} = await registerEmployee({
-                variables: {
-                    Username: username,
-                    Password: password,
-                    Email: email
+        switch (userType) {
+            case UserType.Employee: {
+                const {data} = await registerEmployee({
+                    variables: {
+                        Username: username,
+                        Password: password,
+                        Email: email
+                    }
+                })
+                if (!data || !data.CreateEmployeeAccount) {
+                    return
                 }
-            })
-            if (!data || !data.CreateEmployeeAccount) {
-                return
-            }
-            if (cleanup) {
                 cleanup()
-            }
-            Alert.alert("Success", `Successfully registered ${username}`)
-        } else {
-            if (!zipCode) {
-                Alert.alert("Error", "Fields cannot be empty!")
+                Alert.alert("Success", `Successfully registered ${username}`)
                 return
             }
-            const {data} = await register({
-                variables: {
-                    Username: username,
-                    Password: password,
-                    Email: email,
-                    ZipCode: zipCode
+            case UserType.Administrator: {
+                return
+            }
+            default: {
+                if (!zipCode) {
+                    Alert.alert("Error", "Fields cannot be empty!")
+                    return
                 }
-            })
-            if (!data || !data.RegisterUser) {
-                return
-            }
-            if (cleanup) {
+                const {data} = await register({
+                    variables: {
+                        Username: username,
+                        Password: password,
+                        Email: email,
+                        ZipCode: zipCode
+                    }
+                })
+                if (!data || !data.RegisterUser) {
+                    return
+                }
                 cleanup()
+                Alert.alert("Success", `Successfully registered ${username}`)
+                if (isSelf) {
+                    await saveToken(data.RegisterUser)
+                    navigation.navigate("AuthLoading")
+                }
             }
-            Alert.alert("Success", `Successfully registered ${username}`)
-            await saveToken(data.RegisterUser)
-            navigation.navigate("AuthLoading")
         }
     }
 }
 
 export interface RegisterNavigationProps {
-    employee?: boolean
+    targetUserType?: UserType
 }
 
 export const Register: React.FC<
@@ -99,29 +102,26 @@ export const Register: React.FC<
     const [email, setEmail] = useState("")
     const [zipCode, setZipCode] = useState("")
 
-    const register = useRegister(navigation, () => {
+    const targetUserType = navigation.getParam("targetUserType")
+    const isSelf = targetUserType === undefined
+    const userType = targetUserType || UserType.Visitor
+
+    const register = useRegister(navigation, isSelf, userType, () => {
         setUsername("")
         setPassword("")
         setEmail("")
         setZipCode("")
     })
-    const {data, loading} = useMyUserTypeQuery()
 
-    if (loading) {
-        return <ActivityIndicator />
-    }
-
-    const isEmployee = !!(
-        data &&
-        data.MyUser &&
-        data.MyUser.Type === UserType.Visitor
-    )
+    // if (loading) {
+    //     return <ActivityIndicator />
+    // }
 
     const tryRegister = async () =>
-        await register(isEmployee, username, password, email, zipCode)
+        await register(username, password, email, zipCode)
 
     return (
-        <WithHeader>
+        <View style={{flex: 1}}>
             <ScrollView>
                 <Image
                     style={{
@@ -158,14 +158,14 @@ export const Register: React.FC<
                     placeholder="Email"
                     iconName="envelope-o"
                     onSubmitEditing={() => {
-                        if (isEmployee) {
-                            tryRegister()
-                        } else {
+                        if (userType === UserType.Visitor) {
                             zipCodeRef.current!.focus()
+                        } else {
+                            tryRegister()
                         }
                     }}
                 />
-                {!isEmployee && (
+                {userType === UserType.Visitor && (
                     <View style={{flexDirection: "row"}}>
                         <FormInput
                             inputRef={zipCodeRef}
@@ -213,6 +213,6 @@ export const Register: React.FC<
                 onPress={tryRegister}
                 title="Submit"
             />
-        </WithHeader>
+        </View>
     )
 }

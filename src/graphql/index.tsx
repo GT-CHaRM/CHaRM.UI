@@ -55,6 +55,10 @@ export type Mutation = {
     readonly ChangeMyPassword?: Maybe<User>
     /** Changes the zip code of the current user */
     readonly ChangeMyZipCode?: Maybe<User>
+    /** Changes the zip code of the current user */
+    readonly ChangeUserPassword?: Maybe<User>
+    /** Changes the zip code of the current user */
+    readonly ChangeUserZipCode?: Maybe<User>
     /** Creates an employee account */
     readonly CreateEmployeeAccount?: Maybe<Scalars["String"]>
     /** Adds a new item that can be submitted */
@@ -81,6 +85,7 @@ export type Mutation = {
 
 /** The mutations accepted in this GraphQL API. */
 export type MutationChangeMyPasswordArgs = {
+    OldPassword: Scalars["String"]
     NewPassword: Scalars["String"]
 }
 
@@ -90,16 +95,28 @@ export type MutationChangeMyZipCodeArgs = {
 }
 
 /** The mutations accepted in this GraphQL API. */
+export type MutationChangeUserPasswordArgs = {
+    Id: Scalars["ID"]
+    NewPassword: Scalars["String"]
+}
+
+/** The mutations accepted in this GraphQL API. */
+export type MutationChangeUserZipCodeArgs = {
+    Id: Scalars["ID"]
+    ZipCode: Scalars["String"]
+}
+
+/** The mutations accepted in this GraphQL API. */
 export type MutationCreateEmployeeAccountArgs = {
+    Username: Scalars["String"]
     Email: Scalars["String"]
     Password: Scalars["String"]
-    Username: Scalars["String"]
 }
 
 /** The mutations accepted in this GraphQL API. */
 export type MutationCreateItemArgs = {
-    Description: Scalars["String"]
     Name: Scalars["String"]
+    Description: Scalars["String"]
 }
 
 /** The mutations accepted in this GraphQL API. */
@@ -120,30 +137,30 @@ export type MutationDeleteMyAccountArgs = {
 
 /** The mutations accepted in this GraphQL API. */
 export type MutationLoginUserArgs = {
-    Password: Scalars["String"]
     Username: Scalars["String"]
+    Password: Scalars["String"]
 }
 
 /** The mutations accepted in this GraphQL API. */
 export type MutationModifyItemArgs = {
-    Description: Scalars["String"]
     Id: Scalars["ID"]
     Name: Scalars["String"]
+    Description: Scalars["String"]
 }
 
 /** The mutations accepted in this GraphQL API. */
 export type MutationModifySubmissionArgs = {
     Id: Scalars["ID"]
-    Items: ReadonlyArray<Scalars["ID"]>
     Time: Scalars["DateTimeOffset"]
+    Items: ReadonlyArray<Scalars["ID"]>
     ZipCode: Scalars["String"]
 }
 
 /** The mutations accepted in this GraphQL API. */
 export type MutationRegisterUserArgs = {
+    Username: Scalars["String"]
     Email: Scalars["String"]
     Password: Scalars["String"]
-    Username: Scalars["String"]
     ZipCode: Scalars["String"]
 }
 
@@ -162,6 +179,10 @@ export type MutationUpdateItemSelectedCountArgs = {
 export type Query = {
     /** List all submissions in the system */
     readonly AllSubmissions: ReadonlyArray<Submission>
+    /** List of all users */
+    readonly AllUsers?: Maybe<ReadonlyArray<User>>
+    /** List all submissions in the system */
+    readonly GetAllSubmissionsFromUser?: Maybe<ReadonlyArray<Submission>>
     /** A single item identified by its GUID */
     readonly Item?: Maybe<ItemType>
     /** List of items available to submit */
@@ -174,6 +195,13 @@ export type Query = {
     readonly MyUser?: Maybe<User>
     /** A single submission identified by its GUID */
     readonly Submission?: Maybe<Submission>
+    /** A single user */
+    readonly User?: Maybe<User>
+}
+
+/** The queries accepted in this GraphQL API. */
+export type QueryGetAllSubmissionsFromUserArgs = {
+    UserId: Scalars["ID"]
 }
 
 /** The queries accepted in this GraphQL API. */
@@ -188,6 +216,11 @@ export type QueryMySubmissionArgs = {
 
 /** The queries accepted in this GraphQL API. */
 export type QuerySubmissionArgs = {
+    Id: Scalars["ID"]
+}
+
+/** The queries accepted in this GraphQL API. */
+export type QueryUserArgs = {
     Id: Scalars["ID"]
 }
 
@@ -372,6 +405,38 @@ export type DeleteMyAccountMutation = {readonly __typename?: "Mutation"} & {
     >
 }
 
+export type ChangeUserPasswordMutationVariables = {
+    Id: Scalars["ID"]
+    NewPassword: Scalars["String"]
+}
+
+export type ChangeUserPasswordMutation = {readonly __typename?: "Mutation"} & {
+    readonly ChangeUserPassword: Maybe<
+        {readonly __typename?: "User"} & Pick<User, "Id">
+    >
+}
+
+export type ChangeUserZipCodeMutationVariables = {
+    Id: Scalars["ID"]
+    ZipCode: Scalars["String"]
+}
+
+export type ChangeUserZipCodeMutation = {readonly __typename?: "Mutation"} & {
+    readonly ChangeUserZipCode: Maybe<
+        {readonly __typename?: "User"} & Pick<User, "Id" | "ZipCode">
+    >
+}
+
+export type DeleteUserMutationVariables = {
+    Id: Scalars["ID"]
+}
+
+export type DeleteUserMutation = {readonly __typename?: "Mutation"} & {
+    readonly DeleteAccount: Maybe<
+        {readonly __typename?: "User"} & Pick<User, "Id">
+    >
+}
+
 export type MyUsernameQueryVariables = {}
 
 export type MyUsernameQuery = {readonly __typename?: "Query"} & {
@@ -400,6 +465,14 @@ export type MyInformationQuery = {readonly __typename?: "Query"} & {
     readonly MyUser: Maybe<
         {readonly __typename?: "User"} & Pick<User, "UserName" | "Type">
     >
+}
+
+export type UserZipCodeQueryVariables = {
+    Id: Scalars["ID"]
+}
+
+export type UserZipCodeQuery = {readonly __typename?: "Query"} & {
+    readonly User: Maybe<{readonly __typename?: "User"} & Pick<User, "ZipCode">>
 }
 
 export type ItemsQueryVariables = {}
@@ -459,6 +532,35 @@ export type SubmissionQuery = {readonly __typename?: "Query"} & {
     >
 }
 
+export type GetAllSubmissionsOfUserQueryVariables = {
+    Id: Scalars["ID"]
+}
+
+export type GetAllSubmissionsOfUserQuery = {readonly __typename?: "Query"} & {
+    readonly GetAllSubmissionsFromUser: Maybe<
+        ReadonlyArray<
+            {readonly __typename?: "Submission"} & Pick<
+                Submission,
+                "Id" | "Submitted"
+            > & {
+                    readonly Items: ReadonlyArray<
+                        {readonly __typename?: "ItemSubmissionBatch"} & Pick<
+                            ItemSubmissionBatch,
+                            "Count"
+                        > & {
+                                readonly Item: {
+                                    readonly __typename?: "ItemType"
+                                } & Pick<
+                                    ItemType,
+                                    "Id" | "Name" | "Description"
+                                >
+                            }
+                    >
+                }
+        >
+    >
+}
+
 export type EmployeeSubmissionsQueryVariables = {}
 
 export type EmployeeSubmissionsQuery = {readonly __typename?: "Query"} & {
@@ -482,6 +584,19 @@ export type EmployeeSubmissionsQuery = {readonly __typename?: "Query"} & {
                     "UserName"
                 >
             }
+    >
+}
+
+export type GetAllUsersQueryVariables = {}
+
+export type GetAllUsersQuery = {readonly __typename?: "Query"} & {
+    readonly AllUsers: Maybe<
+        ReadonlyArray<
+            {readonly __typename?: "User"} & Pick<
+                User,
+                "Id" | "UserName" | "Type"
+            >
+        >
     >
 }
 import {GraphQLContext} from "./context"
@@ -619,6 +734,18 @@ export type MutationResolvers<
         Context,
         MutationChangeMyZipCodeArgs
     >
+    ChangeUserPassword?: Resolver<
+        Maybe<User>,
+        ParentType,
+        Context,
+        MutationChangeUserPasswordArgs
+    >
+    ChangeUserZipCode?: Resolver<
+        Maybe<User>,
+        ParentType,
+        Context,
+        MutationChangeUserZipCodeArgs
+    >
     CreateEmployeeAccount?: Resolver<
         Maybe<Scalars["String"]>,
         ParentType,
@@ -695,6 +822,13 @@ export interface ObjectScalarConfig
 
 export type QueryResolvers<Context = GraphQLContext, ParentType = Query> = {
     AllSubmissions?: Resolver<ReadonlyArray<Submission>, ParentType, Context>
+    AllUsers?: Resolver<Maybe<ReadonlyArray<User>>, ParentType, Context>
+    GetAllSubmissionsFromUser?: Resolver<
+        Maybe<ReadonlyArray<Submission>>,
+        ParentType,
+        Context,
+        QueryGetAllSubmissionsFromUserArgs
+    >
     Item?: Resolver<Maybe<ItemType>, ParentType, Context, QueryItemArgs>
     Items?: Resolver<ReadonlyArray<ItemType>, ParentType, Context>
     MySubmission?: Resolver<
@@ -711,6 +845,7 @@ export type QueryResolvers<Context = GraphQLContext, ParentType = Query> = {
         Context,
         QuerySubmissionArgs
     >
+    User?: Resolver<Maybe<User>, ParentType, Context, QueryUserArgs>
 }
 
 export interface SecondsScalarConfig
@@ -760,7 +895,7 @@ export type Resolvers<Context = GraphQLContext> = {
 export type IResolvers<Context = GraphQLContext> = Resolvers<Context>
 
 import gql from "graphql-tag"
-import * as ReactApolloHooks from "react-apollo-hooks"
+import * as ReactApolloHooks from "./apollo-hooks"
 export const SelectedCountFragmentDoc = gql`
     fragment SelectedCount on ItemType {
         SelectedCount @client
@@ -937,7 +1072,7 @@ export function useChangeMyZipMutation(
 }
 export const ChangeMyPasswordDocument = gql`
     mutation ChangeMyPassword($OldPassword: String!, $NewPassword: String!) {
-        ChangeMyPassword(NewPassword: $NewPassword) {
+        ChangeMyPassword(OldPassword: $OldPassword, NewPassword: $NewPassword) {
             Id
         }
     }
@@ -1013,6 +1148,64 @@ export function useDeleteMyAccountMutation(
         DeleteMyAccountMutationVariables
     >(DeleteMyAccountDocument, baseOptions)
 }
+export const ChangeUserPasswordDocument = gql`
+    mutation ChangeUserPassword($Id: ID!, $NewPassword: String!) {
+        ChangeUserPassword(Id: $Id, NewPassword: $NewPassword) {
+            Id
+        }
+    }
+`
+
+export function useChangeUserPasswordMutation(
+    baseOptions?: ReactApolloHooks.MutationHookOptions<
+        ChangeUserPasswordMutation,
+        ChangeUserPasswordMutationVariables
+    >
+) {
+    return ReactApolloHooks.useMutation<
+        ChangeUserPasswordMutation,
+        ChangeUserPasswordMutationVariables
+    >(ChangeUserPasswordDocument, baseOptions)
+}
+export const ChangeUserZipCodeDocument = gql`
+    mutation ChangeUserZipCode($Id: ID!, $ZipCode: String!) {
+        ChangeUserZipCode(Id: $Id, ZipCode: $ZipCode) {
+            Id
+            ZipCode
+        }
+    }
+`
+
+export function useChangeUserZipCodeMutation(
+    baseOptions?: ReactApolloHooks.MutationHookOptions<
+        ChangeUserZipCodeMutation,
+        ChangeUserZipCodeMutationVariables
+    >
+) {
+    return ReactApolloHooks.useMutation<
+        ChangeUserZipCodeMutation,
+        ChangeUserZipCodeMutationVariables
+    >(ChangeUserZipCodeDocument, baseOptions)
+}
+export const DeleteUserDocument = gql`
+    mutation DeleteUser($Id: ID!) {
+        DeleteAccount(Id: $Id) {
+            Id
+        }
+    }
+`
+
+export function useDeleteUserMutation(
+    baseOptions?: ReactApolloHooks.MutationHookOptions<
+        DeleteUserMutation,
+        DeleteUserMutationVariables
+    >
+) {
+    return ReactApolloHooks.useMutation<
+        DeleteUserMutation,
+        DeleteUserMutationVariables
+    >(DeleteUserDocument, baseOptions)
+}
 export const MyUsernameDocument = gql`
     query MyUsername {
         MyUser {
@@ -1077,6 +1270,22 @@ export function useMyInformationQuery(
         MyInformationQuery,
         MyInformationQueryVariables
     >(MyInformationDocument, baseOptions)
+}
+export const UserZipCodeDocument = gql`
+    query UserZipCode($Id: ID!) {
+        User(Id: $Id) {
+            ZipCode
+        }
+    }
+`
+
+export function useUserZipCodeQuery(
+    baseOptions?: ReactApolloHooks.QueryHookOptions<UserZipCodeQueryVariables>
+) {
+    return ReactApolloHooks.useQuery<
+        UserZipCodeQuery,
+        UserZipCodeQueryVariables
+    >(UserZipCodeDocument, baseOptions)
 }
 export const ItemsDocument = gql`
     query Items {
@@ -1147,6 +1356,33 @@ export function useSubmissionQuery(
         baseOptions
     )
 }
+export const GetAllSubmissionsOfUserDocument = gql`
+    query GetAllSubmissionsOfUser($Id: ID!) {
+        GetAllSubmissionsFromUser(UserId: $Id) {
+            Id
+            Items {
+                Count
+                Item {
+                    Id
+                    Name
+                    Description
+                }
+            }
+            Submitted
+        }
+    }
+`
+
+export function useGetAllSubmissionsOfUserQuery(
+    baseOptions?: ReactApolloHooks.QueryHookOptions<
+        GetAllSubmissionsOfUserQueryVariables
+    >
+) {
+    return ReactApolloHooks.useQuery<
+        GetAllSubmissionsOfUserQuery,
+        GetAllSubmissionsOfUserQueryVariables
+    >(GetAllSubmissionsOfUserDocument, baseOptions)
+}
 export const EmployeeSubmissionsDocument = gql`
     query EmployeeSubmissions {
         AllSubmissions {
@@ -1175,6 +1411,24 @@ export function useEmployeeSubmissionsQuery(
         EmployeeSubmissionsQuery,
         EmployeeSubmissionsQueryVariables
     >(EmployeeSubmissionsDocument, baseOptions)
+}
+export const GetAllUsersDocument = gql`
+    query GetAllUsers {
+        AllUsers {
+            Id
+            UserName
+            Type
+        }
+    }
+`
+
+export function useGetAllUsersQuery(
+    baseOptions?: ReactApolloHooks.QueryHookOptions<GetAllUsersQueryVariables>
+) {
+    return ReactApolloHooks.useQuery<
+        GetAllUsersQuery,
+        GetAllUsersQueryVariables
+    >(GetAllUsersDocument, baseOptions)
 }
 export interface IntrospectionResultData {
     __schema: {
