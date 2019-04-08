@@ -1,20 +1,9 @@
 import moment from "moment"
 import React from "react"
-import {
-    ActivityIndicator,
-    FlatList,
-    StyleProp,
-    View,
-    ViewStyle
-} from "react-native"
+import {FlatList, StyleProp, View, ViewStyle} from "react-native"
 import {Badge, Button, Card, ListItem} from "react-native-elements"
 import {WithHeader} from "../components"
-import {
-    EmployeeSubmissionsAll,
-    // useRemoveSubmissionMutation
-    SubmissionsItem,
-    useEmployeeSubmissions
-} from "../graphql"
+import {Submission, useEmployeeSubmissionsQuery} from "../graphql"
 import {colors} from "../theme"
 
 // TODO: Auto reload page when we switch tabs
@@ -43,7 +32,7 @@ function SubmissionItemEntry({
 function SubmissionEntry({
     submission: {Items, Submitted}
 }: {
-    submission: EmployeeSubmissionsAll
+    submission: Submission
 }) {
     return (
         //card holds one entire submission
@@ -91,11 +80,7 @@ function SubmissionEntry({
 }
 
 function SubmissionList({style}: {style?: StyleProp<ViewStyle>}) {
-    const {data, loading, refetch} = useEmployeeSubmissions()
-
-    if (loading) {
-        return <ActivityIndicator />
-    }
+    const {data, loading, refetch} = useEmployeeSubmissionsQuery()
 
     return (
         <View style={[style, {backgroundColor: colors.background}]}>

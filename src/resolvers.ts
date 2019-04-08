@@ -1,47 +1,36 @@
-import gql from "graphql-tag"
-import {IResolvers} from "./graphql"
+import {
+    IResolvers,
+    ItemsDocument,
+    ItemsQuery,
+    SelectedCountFragment,
+    SelectedCountFragmentDoc
+} from "./graphql"
 
 export const defaults = {}
 
 export const resolvers: IResolvers = {
     ItemType: {
         SelectedCount: ({Id}, _, {cache}) => {
-            const count =
-                cache.readFragment<number>({
-                    id: Id,
-                    fragment: gql`
-                        fragment SelectedCount on ItemType {
-                            SelectedCount @client
-                        }
-                    `
-                }) || 0
+            const {SelectedCount} = cache.readFragment<SelectedCountFragment>({
+                id: Id,
+                fragment: SelectedCountFragmentDoc
+            }) || {SelectedCount: 0}
 
-            return count
+            return SelectedCount
         }
     },
     Mutation: {
         ResetItemSelectedCounts: (_, __, {cache}) => {
-            const {
-                Item: {All: items}
-            } = cache.readQuery({
-                query: gql`
-                    query GetAllItems {
-                        Item {
-                            All {
-                                Id
-                            }
-                        }
-                    }
-                `
+            const items = cache.readQuery<ItemsQuery>({
+                query: ItemsDocument
             })
-            for (const {Id} of items) {
-                cache.writeFragment({
+            if (!items) {
+                return true
+            }
+            for (const {Id} of items.Items) {
+                cache.writeFragment<SelectedCountFragment>({
                     id: Id,
-                    fragment: gql`
-                        fragment SelectedCount on ItemType {
-                            SelectedCount @client
-                        }
-                    `,
+                    fragment: SelectedCountFragmentDoc,
                     data: {
                         __typename: "ItemType",
                         SelectedCount: 0
@@ -52,13 +41,9 @@ export const resolvers: IResolvers = {
         },
 
         UpdateItemSelectedCount: (_, {Id, SelectedCount}, {cache}) => {
-            cache.writeFragment({
+            cache.writeFragment<SelectedCountFragment>({
                 id: Id,
-                fragment: gql`
-                    fragment SelectedCount on ItemType {
-                        SelectedCount @client
-                    }
-                `,
+                fragment: SelectedCountFragmentDoc,
                 data: {
                     __typename: "ItemType",
                     SelectedCount

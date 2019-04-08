@@ -8,31 +8,43 @@ import {onError} from "apollo-link-error"
 import {HttpLink} from "apollo-link-http"
 import React, {useEffect} from "react"
 import {ApolloProvider} from "react-apollo-hooks"
-import {ActivityIndicator, AsyncStorage, StatusBar, View} from "react-native"
-import {Icon, ThemeProvider} from "react-native-elements"
+import {ActivityIndicator, Alert, StatusBar, View} from "react-native"
+import {Icon, Text, ThemeProvider} from "react-native-elements"
 import {
     createAppContainer,
     createBottomTabNavigator,
+    createMaterialTopTabNavigator,
+    createStackNavigator as createStackNavigatorImported,
     createSwitchNavigator,
+    NavigationContainer,
+    NavigationInjectedProps,
+    NavigationRoute,
+    NavigationRouteConfigMap,
     NavigationScreenProp,
-    NavigationScreenProps
+    NavigationScreenProps,
+    StackNavigatorConfig
 } from "react-navigation"
-import {useNavigation} from "react-navigation-hooks"
 import introspectionQueryResultData, {
     MyInformationDocument,
     MyInformationQuery,
     UserType
 } from "./graphql"
 import {
-    EmployeeSubmissions,
+    ChangeMyPassword,
+    ChangeUserPassword,
+    ChangeUserZipCode,
+    DeleteMyAccount,
     Login,
     ProfilePage as Profile,
     Register,
+    SingleUserActions,
     Submissions,
-    Submit
+    Submit,
+    UserList
 } from "./pages"
 import {resolvers} from "./resolvers"
-import {tokenExpired} from "./util"
+import {colors} from "./theme"
+import {getToken, tokenExpired} from "./util"
 
 function makeClient(token?: string) {
     return new ApolloClient({
@@ -41,16 +53,17 @@ function makeClient(token?: string) {
             onError(({graphQLErrors, networkError}) => {
                 if (graphQLErrors)
                     graphQLErrors.map(({message, locations, path}) =>
-                        console.log(
-                            `[GraphQL error]: Message: ${message}, Location: ${locations}, Path: ${path}`
+                        Alert.alert(
+                            "GraphQL Error",
+                            `Message: ${message}, Location: ${locations}, Path: ${path}`
                         )
                     )
                 if (networkError) {
-                    console.log(`[Network error]: ${networkError}`)
+                    Alert.alert("GraphQL Network Error", `${networkError}`)
                 }
             }),
             new HttpLink({
-                uri: "http://192.168.0.117:5000/graphql",
+                uri: "http://155.138.160.132:5000/graphql",
                 credentials: "include",
 
                 headers: {
@@ -69,89 +82,385 @@ function makeClient(token?: string) {
     })
 }
 
+function createStackNavigator(
+    routeConfigMap: NavigationRouteConfigMap,
+    stackConfig?: StackNavigatorConfig | undefined
+): NavigationContainer {
+    return createStackNavigatorImported(routeConfigMap, {
+        ...(stackConfig || {}),
+        headerLayoutPreset: "center",
+        defaultNavigationOptions: {
+            headerStyle: {backgroundColor: "green"},
+            headerTintColor: "white"
+        }
+    })
+}
+
 const AuthNavigator = createBottomTabNavigator(
     {
         Login: {
             screen: Login,
             navigationOptions: {
                 title: "Login",
-                tabBarIcon: <Icon type="font-awesome" name="sign-in" />
+                tabBarIcon: ({focused}) => (
+                    <Icon
+                        iconStyle={{color: focused ? "white" : "black"}}
+                        type="font-awesome"
+                        name="sign-in"
+                    />
+                )
             }
         },
         Register: {
             screen: Register,
             navigationOptions: {
                 title: "Register",
-                tabBarIcon: <Icon type="font-awesome" name="user-plus" />
+                tabBarIcon: ({focused}) => (
+                    <Icon
+                        iconStyle={{color: focused ? "white" : "black"}}
+                        type="font-awesome"
+                        name="user-plus"
+                    />
+                )
             }
         }
     },
     {
-        initialRouteName: "Login"
+        initialRouteName: "Login",
+        tabBarOptions: {
+            activeTintColor: "white",
+            activeBackgroundColor: "rgba(0, 128, 0, .45)"
+        }
     }
 )
 
-const AppNavigator = createBottomTabNavigator(
+const SubmitNavigator = createStackNavigator({
+    Submit: {
+        screen: Submit,
+        navigationOptions: {
+            title: "Submit"
+        }
+    }
+})
+
+const SubmissionsNavigator = createStackNavigator({
+    Submissions: {
+        screen: Submissions,
+        navigationOptions: {
+            title: "Submissions"
+        }
+    },
+    EditSubmissions: {
+        screen: Submit,
+        navigationOptions: {title: "Edit Submission"}
+    }
+})
+
+const ProfileNavigator = createStackNavigator(
     {
-        Submit: {
-            screen: Submit,
-            navigationOptions: {
-                title: "Submit",
-                tabBarIcon: <Icon type="font-awesome" name="cart-plus" />
-            }
-        },
-        Submissions: {
-            screen: Submissions,
-            navigationOptions: {
-                title: "History",
-                tabBarIcon: <Icon type="font-awesome" name="list-alt" />
-            }
-        },
         Profile: {
             screen: Profile,
             navigationOptions: {
-                title: "Profile",
-                tabBarIcon: <Icon type="font-awesome" name="user" />
+                title: "Profile"
+            }
+        },
+        ChangePassword: {
+            screen: ChangeMyPassword,
+            navigationOptions: {
+                title: "Change Password"
+            }
+        },
+        DeleteMyAccount: {
+            screen: DeleteMyAccount,
+            navigationOptions: {
+                title: "Delete My Account"
             }
         }
     },
     {
-        initialRouteName: "Submit"
+        mode: "modal"
+    }
+)
+
+const UserListNavigator = (activeUserType: UserType) =>
+    createStackNavigator({
+        UserList: {
+            screen: UserList,
+            navigationOptions: ({
+                navigation
+            }: {
+                navigation: NavigationScreenProp<NavigationRoute>
+            }) => {
+                navigation.state.params = {activeUserType}
+
+                return {
+                    title: "User List"
+                }
+            }
+        },
+        SingleUserActions: {
+            screen: SingleUserActions,
+            navigationOptions: ({
+                navigation
+            }: {
+                navigation: NavigationScreenProp<NavigationRoute>
+            }) => {
+                return {
+                    title: `Modify ${navigation.getParam("type") ||
+                        UserType.Visitor}: ${navigation.getParam("name")}`
+                }
+            }
+        },
+        ViewSubmissions: {
+            screen: Submissions,
+            navigationOptions: ({
+                navigation
+            }: {
+                navigation: NavigationScreenProp<NavigationRoute>
+            }) => {
+                return {
+                    title: `Submission Log: ${navigation.getParam("name")}`
+                }
+            }
+        },
+        EditSubmissions: {
+            screen: Submit,
+            navigationOptions: {title: "Edit Submission"}
+        },
+        ChangeUserZipCode: {
+            screen: ChangeUserZipCode,
+            navigationOptions: {
+                title: "Change User Zip Code"
+            }
+        },
+        ChangeUserPassword: {
+            screen: ChangeUserPassword,
+            navigationOptions: {
+                title: "Change Password"
+            }
+        }
+    })
+
+const RegisterAccountEmployeeNavigator = createStackNavigator({
+    CreateAccount: {
+        screen: Register,
+        navigationOptions: ({
+            navigation
+        }: {
+            navigation: NavigationScreenProp<NavigationRoute>
+        }) => {
+            navigation.state.params = {targetUserType: UserType.Visitor}
+            return {
+                title: "Register Visitor Account",
+                tabBarIcon: ({focused}) => (
+                    <Icon
+                        iconStyle={{color: focused ? "white" : "black"}}
+                        type="font-awesome"
+                        name="user"
+                    />
+                )
+            }
+        }
+    }
+})
+
+const RegisterAccountAdminNavigator = createStackNavigator({
+    CreateAccount: {
+        screen: Register,
+        navigationOptions: ({
+            navigation
+        }: {
+            navigation: NavigationScreenProp<NavigationRoute>
+        }) => {
+            navigation.state.params = {targetUserType: UserType.Employee} //TODO: hacky; fix
+            return {
+                title: "Register Employee Account",
+                tabBarIcon: ({focused}) => (
+                    <Icon
+                        iconStyle={{color: focused ? "white" : "black"}}
+                        type="font-awesome"
+                        name="user"
+                    />
+                )
+            }
+        }
+    }
+})
+
+const UserEmployeeNavigator = createMaterialTopTabNavigator(
+    {
+        UserList: {
+            screen: UserListNavigator(UserType.Employee),
+            navigationOptions: {
+                title: "User List"
+            }
+        },
+        CreateAccount: {
+            screen: RegisterAccountEmployeeNavigator,
+            navigationOptions: {
+                title: "Register New Visitor"
+            }
+        }
+    },
+    {
+        tabBarOptions: {
+            style: {backgroundColor: colors.primary}
+        }
+    }
+)
+
+const UserAdminNavigator = createMaterialTopTabNavigator(
+    {
+        UserList: {
+            screen: UserListNavigator(UserType.Administrator),
+            navigationOptions: {
+                title: "User List"
+            }
+        },
+        CreateAccount: {
+            screen: RegisterAccountAdminNavigator,
+            navigationOptions: {
+                title: "Register New Employee"
+            }
+        }
+    },
+    {
+        tabBarOptions: {
+            style: {backgroundColor: colors.primary}
+        }
+    }
+)
+
+// FIXME: If start page is Submissions, then manually navigating to the Submit page causes errors
+const AppNavigator = createBottomTabNavigator(
+    {
+        Submit: {
+            screen: SubmitNavigator,
+            navigationOptions: {
+                title: "Submit",
+                tabBarIcon: ({focused}) => (
+                    <Icon
+                        iconStyle={{color: focused ? "white" : "black"}}
+                        type="font-awesome"
+                        name="cart-plus"
+                    />
+                )
+            }
+        },
+        Submissions: {
+            screen: SubmissionsNavigator,
+            navigationOptions: {
+                title: "History",
+                tabBarIcon: ({focused}) => (
+                    <Icon
+                        iconStyle={{color: focused ? "white" : "black"}}
+                        type="font-awesome"
+                        name="list-alt"
+                    />
+                )
+            }
+        },
+        Profile: {
+            screen: ProfileNavigator,
+            navigationOptions: {
+                title: "Profile",
+                tabBarIcon: ({focused}) => (
+                    <Icon
+                        iconStyle={{color: focused ? "white" : "black"}}
+                        type="font-awesome"
+                        name="user"
+                    />
+                )
+            }
+        }
+    },
+    {
+        initialRouteName: "Submit",
+        tabBarOptions: {
+            activeTintColor: "white",
+            activeBackgroundColor: "rgba(0, 128, 0, .45)"
+        }
     }
 )
 
 const EmployeeAppNavigator = createBottomTabNavigator(
     {
-        Submissions: {
-            screen: EmployeeSubmissions,
+        User: {
+            screen: UserEmployeeNavigator,
             navigationOptions: {
-                title: "History",
-                tabBarIcon: <Icon type="font-awesome" name="list-alt" />
-            }
-        },
-        Submit: {
-            screen: Submit,
-            navigationOptions: {
-                title: "Submit",
-                tabBarIcon: <Icon type="font-awesome" name="cart-plus" />
+                title: "User Management",
+                tabBarIcon: ({focused}) => (
+                    <Icon
+                        iconStyle={{color: focused ? "white" : "black"}}
+                        type="font-awesome"
+                        name="server"
+                    />
+                )
             }
         },
         Profile: {
-            screen: Profile,
+            screen: ProfileNavigator,
             navigationOptions: {
                 title: "Profile",
-                tabBarIcon: <Icon type="font-awesome" name="user" />
+                tabBarIcon: ({focused}) => (
+                    <Icon
+                        iconStyle={{color: focused ? "white" : "black"}}
+                        type="font-awesome"
+                        name="user"
+                    />
+                )
             }
         }
     },
     {
-        initialRouteName: "Submissions"
+        initialRouteName: "User",
+        tabBarOptions: {
+            activeTintColor: "white",
+            activeBackgroundColor: "rgba(0, 128, 0, .45)"
+        }
+    }
+)
+
+const AdminAppNavigator = createBottomTabNavigator(
+    {
+        User: {
+            screen: UserAdminNavigator,
+            navigationOptions: {
+                title: "User Management",
+                tabBarIcon: ({focused}) => (
+                    <Icon
+                        iconStyle={{color: focused ? "white" : "black"}}
+                        type="font-awesome"
+                        name="server"
+                    />
+                )
+            }
+        },
+        Profile: {
+            screen: ProfileNavigator,
+            navigationOptions: {
+                title: "Profile",
+                tabBarIcon: ({focused}) => (
+                    <Icon
+                        iconStyle={{color: focused ? "white" : "black"}}
+                        type="font-awesome"
+                        name="user"
+                    />
+                )
+            }
+        }
+    },
+    {
+        initialRouteName: "User",
+        tabBarOptions: {
+            activeTintColor: "white",
+            activeBackgroundColor: "rgba(0, 128, 0, .45)"
+        }
     }
 )
 
 async function clientEffect(navigation: NavigationScreenProp<{}>) {
-    // const identityToken = ""
-    const identityToken = await AsyncStorage.getItem("Token")
+    const identityToken = await getToken()
     console.log({identityToken})
 
     if (!identityToken || tokenExpired(identityToken)) {
@@ -168,31 +477,42 @@ async function clientEffect(navigation: NavigationScreenProp<{}>) {
 
         // TODO: Wait for loading to finish?
 
-        if (errors || !data.User.Me) {
+        if (errors || !data.MyUser) {
             navigation.navigate("Auth", {client})
-        } else if (
-            data.User.Me.Type === UserType.Employee ||
-            data.User.Me.Type === UserType.Administrator
-        ) {
-            alert(`Logged in as employee ${data.User.Me.UserName}`)
+        } else if (data.MyUser.Type === UserType.Administrator) {
+            // Alert.alert(
+            //     "Login Success",
+            //     `Logged in as administrator ${data.MyUser.UserName}`
+            // )
+            navigation.navigate("AdminApp", {client})
+        } else if (data.MyUser.Type === UserType.Employee) {
+            // Alert.alert(
+            //     "Login Success",
+            //     `Logged in as employee ${data.MyUser.UserName}`
+            // )
             navigation.navigate("EmployeeApp", {client})
         } else {
-            alert(`Logged in as visitor ${data.User.Me.UserName}`)
+            // Alert.alert(
+            //     "Login Success",
+            //     `Logged in as visitor ${data.MyUser.UserName}`
+            // )
             navigation.navigate("App", {client})
         }
     }
 }
 
-function useClientEffect() {
-    const navigation = useNavigation()
-
+function useClientEffect(navigation: NavigationScreenProps["navigation"]) {
     useEffect(() => {
         clientEffect(navigation)
-    })
+    }, [])
 }
 
-function AuthLoadingScreen() {
-    useClientEffect()
+export interface AuthLoadingScreenProps {}
+
+export const AuthLoadingScreen: React.FC<
+    AuthLoadingScreenProps & NavigationInjectedProps
+> = ({navigation}) => {
+    useClientEffect(navigation)
 
     return (
         <View>
@@ -204,7 +524,10 @@ function AuthLoadingScreen() {
 
 function AuthWrapper(props: NavigationScreenProps) {
     return (
-        <ApolloProvider client={props.navigation.state.params.client}>
+        <ApolloProvider
+            client={
+                (props.navigation.state.params || {client: undefined}).client
+            }>
             <AuthNavigator {...props} />
         </ApolloProvider>
     )
@@ -229,12 +552,22 @@ function EmployeeAppWrapper(props: NavigationScreenProps) {
 }
 EmployeeAppWrapper.router = EmployeeAppNavigator.router
 
+function AdminAppWrapper(props: NavigationScreenProps) {
+    return (
+        <ApolloProvider client={props.navigation.state.params.client}>
+            <AdminAppNavigator {...props} />
+        </ApolloProvider>
+    )
+}
+AdminAppWrapper.router = AdminAppNavigator.router
+
 const TabNavigatorContainer = createAppContainer(
     createSwitchNavigator(
         {
             AuthLoading: AuthLoadingScreen,
             App: AppWrapper,
             EmployeeApp: EmployeeAppWrapper,
+            AdminApp: AdminAppWrapper,
             Auth: AuthWrapper
         },
         {
@@ -245,13 +578,15 @@ const TabNavigatorContainer = createAppContainer(
 
 export function App() {
     return (
-        <ThemeProvider
-            theme={{
-                colors: {
-                    primary: "green"
-                }
-            }}>
-            <TabNavigatorContainer />
-        </ThemeProvider>
+        <React.Suspense fallback={<Text>Loading...</Text>}>
+            <ThemeProvider
+                theme={{
+                    colors: {
+                        primary: "green"
+                    }
+                }}>
+                <TabNavigatorContainer />
+            </ThemeProvider>
+        </React.Suspense>
     )
 }

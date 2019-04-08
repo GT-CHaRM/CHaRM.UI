@@ -1,56 +1,141 @@
-import React, {useState} from "react"
-import {ScrollView, View} from "react-native"
-import {Button, Icon, Image} from "react-native-elements"
-import {useNavigation} from "react-navigation-hooks"
-import {WithHeader} from "../components"
+import React, {useRef, useState} from "react"
+import {Alert, View} from "react-native"
+import {Button, Icon, Image, Input} from "react-native-elements"
+import {ScrollView} from "react-native-gesture-handler"
+import {
+    NavigationInjectedProps,
+    NavigationRoute,
+    NavigationScreenProp
+} from "react-navigation"
 import {FormInput} from "../components/FormInput"
-import {useLogin} from "../graphql"
+import {useLoginMutation} from "../graphql"
 import {saveToken} from "../util"
 
-async function loginAsGuest(zipCode: string) {
-    // alert(`sup guest ${zipCode}`)
-}
-export function Login() {
-    const [username, setUsername] = useState("")
-    const [password, setPassword] = useState("")
-    const [zipCode, setZipCode] = useState("")
-    const [guestMode, setGuestMode] = useState(false)
-    const {navigate} = useNavigation()
-    const login = useLogin()
+const useLogin = (
+    navigation: NavigationScreenProp<
+        NavigationRoute<LoginNavigationProps>,
+        LoginNavigationProps
+    >
+) => {
+    const login = useLoginMutation({
+        fetchPolicy: "no-cache"
+    })
 
-    const tryLogin = async () => {
+    return async (guestMode: boolean, username?: string, password?: string) => {
         if (guestMode) {
             await saveToken("")
-            navigate("Submit")
+            navigation.navigate("Submit")
         } else {
             if (!username || !password) {
-                alert("Username and password fields cannot be empty!")
+                Alert.alert(
+                    "Error",
+                    "Username and password fields cannot be empty!"
+                )
                 return
             }
 
             try {
-                const {
-                    data: {
-                        User: {Login: token}
-                    }
-                } = await login({
+                const {data} = await login({
                     variables: {
                         Username: username,
                         Password: password
                     }
                 })
-                await saveToken(token)
-                navigate("AuthLoading")
-                // alert(`Your token is ${Login}`)
+                if (!data || !data.LoginUser) {
+                    await saveToken("")
+                    return
+                }
+                await saveToken(data.LoginUser)
+                navigation.navigate("AuthLoading")
+                // Alert.alert(`Your token is ${Login}`)
             } catch {
-                alert(
+                Alert.alert(
+                    "Error",
                     "The provivded username and password combination could not be found."
                 )
             }
         }
     }
+}
+export interface LoginNavigationProps {
+    tryLogin: (
+        guestMode: boolean,
+        username?: string | undefined,
+        password?: string | undefined
+    ) => Promise<void>
+}
+
+export interface LoginAsGustProps {
+    tryLogin: (
+        guestMode: boolean,
+        username?: string | undefined,
+        password?: string | undefined
+    ) => Promise<void>
+}
+
+export const LoginAsGuest: React.FC<LoginAsGustProps> = ({tryLogin}) => {
+    const [zipCode, setZipCode] = useState("")
+
     return (
-        <WithHeader>
+        <FormInput
+            value={zipCode}
+            setValue={setZipCode}
+            keyboardType="numbers-and-punctuation"
+            placeholder="Zip Code"
+            iconName="map-marker"
+            onSubmitEditing={() => tryLogin(true)}
+        />
+    )
+}
+
+export interface LoginAsVisitorProps {
+    tryLogin: (
+        guestMode: boolean,
+        username?: string | undefined,
+        password?: string | undefined
+    ) => Promise<void>
+}
+
+export const LoginAsVisitor: React.FC<LoginAsVisitorProps> = ({tryLogin}) => {
+    const passwordRef = useRef<Input | null>(null)
+
+    const [username, setUsername] = useState("")
+    const [password, setPassword] = useState("")
+
+    return (
+        <View>
+            <FormInput
+                value={username}
+                setValue={setUsername}
+                placeholder="Username"
+                iconName="user"
+                onSubmitEditing={() => passwordRef.current!.focus()}
+            />
+
+            <FormInput
+                value={password}
+                setValue={setPassword}
+                inputRef={passwordRef}
+                secureTextEntry
+                placeholder="Password"
+                iconName="key"
+                onSubmitEditing={() => tryLogin(false, username, password)}
+            />
+        </View>
+    )
+}
+
+export interface LoginNavigationProps {}
+export const Login: React.FC<NavigationInjectedProps<LoginNavigationProps>> = ({
+    navigation
+}) => {
+    const [guestMode, setGuestMode] = useState(false)
+
+    const tryLogin = useLogin(navigation)
+
+    return (
+        <View style={{flex: 1}}>
+            <View style={{flex: 1}} />
             <ScrollView>
                 <Image
                     style={{
@@ -64,48 +149,21 @@ export function Login() {
                     }}
                 />
 
-                <View style={{flex: 1}} />
+                <Button
+                    onPress={() => setGuestMode(!guestMode)}
+                    title={guestMode ? "Go Back to Login" : "Continue as Guest"}
+                    containerStyle={{
+                        marginTop: 10,
+                        marginBottom: 10
+                    }}
+                />
 
                 {guestMode ? (
-                    <FormInput
-                        value={zipCode}
-                        setValue={setZipCode}
-                        keyboardType="numbers-and-punctuation"
-                        placeholder="Zip Code"
-                        iconName="map-marker"
-                        onSubmitEditing={tryLogin}
-                    />
+                    <LoginAsGuest tryLogin={tryLogin} />
                 ) : (
-                    <View>
-                        <FormInput
-                            value={username}
-                            setValue={setUsername}
-                            placeholder="Username"
-                            iconName="user"
-                        />
-
-                        <FormInput
-                            value={password}
-                            setValue={setPassword}
-                            secureTextEntry
-                            placeholder="Password"
-                            iconName="key"
-                            onSubmitEditing={tryLogin}
-                        />
-                    </View>
+                    <LoginAsVisitor tryLogin={tryLogin} />
                 )}
             </ScrollView>
-
-            <View style={{flex: 1}} />
-
-            <Button
-                onPress={() => setGuestMode(!guestMode)}
-                title={guestMode ? "Go Back to Login" : "Continue as Guest"}
-                containerStyle={{
-                    marginTop: 10,
-                    marginBottom: 10
-                }}
-            />
             <Button
                 icon={
                     <Icon
@@ -117,8 +175,8 @@ export function Login() {
                 }
                 iconRight
                 title="Submit"
-                onPress={tryLogin}
+                onPress={() => {}}
             />
-        </WithHeader>
+        </View>
     )
 }

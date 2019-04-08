@@ -1,4 +1,4 @@
-import React from "react"
+import React, {MutableRefObject} from "react"
 import {
     KeyboardTypeOptions,
     NativeSyntheticEvent,
@@ -7,6 +7,7 @@ import {
 } from "react-native"
 import {Icon, Input} from "react-native-elements"
 export interface FormInputProps {
+    inputRef?: MutableRefObject<Input | null>
     style?: ViewStyle
     placeholder: string
     iconName: string
@@ -14,11 +15,13 @@ export interface FormInputProps {
     setValue: React.Dispatch<React.SetStateAction<string>>
     keyboardType?: KeyboardTypeOptions
     secureTextEntry?: boolean
+    onFocus?: () => void
     onSubmitEditing?: (
         event: NativeSyntheticEvent<TextInputSubmitEditingEventData>
     ) => void
 }
 export const FormInput: React.FC<FormInputProps> = ({
+    inputRef,
     style,
     placeholder,
     iconName,
@@ -26,11 +29,14 @@ export const FormInput: React.FC<FormInputProps> = ({
     setValue,
     keyboardType,
     secureTextEntry,
-    onSubmitEditing
+    onSubmitEditing,
+    onFocus
 }) => {
     return (
         <Input
+            ref={inputRef}
             value={value}
+            onFocus={onFocus}
             onChangeText={setValue}
             inputContainerStyle={{
                 borderBottomWidth: 0

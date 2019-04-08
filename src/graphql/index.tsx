@@ -1,4 +1,256 @@
-export type Maybe<T> = T | null
+type Maybe<T> = T | null
+/** All built-in and custom scalars, mapped to their actual values */
+export type Scalars = {
+    ID: string
+    String: string
+    Boolean: boolean
+    Int: number
+    Float: number
+    /** The `DateTimeOffset` scalar type represents a date, time and offset from UTC.
+     * `DateTimeOffset` expects timestamps to be formatted in accordance with the
+     * [ISO-8601](https://en.wikipedia.org/wiki/ISO_8601) standard.
+     */
+    DateTimeOffset: any
+    /** The `Date` scalar type represents a year, month and day in accordance with the
+     * [ISO-8601](https://en.wikipedia.org/wiki/ISO_8601) standard.
+     */
+    Date: Date
+    /** The `DateTime` scalar type represents a date and time. `DateTime` expects
+     * timestamps to be formatted in accordance with the
+     * [ISO-8601](https://en.wikipedia.org/wiki/ISO_8601) standard.
+     */
+    DateTime: any
+    Decimal: number
+    /** The `Milliseconds` scalar type represents a period of time represented as the total number of milliseconds. */
+    Milliseconds: number
+    Object: any
+    /** The `Seconds` scalar type represents a period of time represented as the total number of seconds. */
+    Seconds: number
+}
+
+/** A type that represents a unique submission for a specific item, including the item id and the count submitted. */
+export type ItemSubmissionBatch = {
+    /** The count of the item that was submitted. */
+    readonly Count: Scalars["Int"]
+    /** The item batch's unique GUID */
+    readonly Id: Scalars["ID"]
+    /** The item submitted */
+    readonly Item: ItemType
+}
+
+/** A type that represents a specific acceptable item in our database. */
+export type ItemType = {
+    /** The item's description */
+    readonly Description: Scalars["String"]
+    /** The item's unique GUID */
+    readonly Id: Scalars["ID"]
+    /** The item's name */
+    readonly Name: Scalars["String"]
+    readonly SelectedCount: Scalars["Int"]
+}
+
+/** The mutations accepted in this GraphQL API. */
+export type Mutation = {
+    /** Changes the zip code of the current user */
+    readonly ChangeMyPassword?: Maybe<User>
+    /** Changes the zip code of the current user */
+    readonly ChangeMyZipCode?: Maybe<User>
+    /** Changes the zip code of the current user */
+    readonly ChangeUserPassword?: Maybe<User>
+    /** Changes the zip code of the current user */
+    readonly ChangeUserZipCode?: Maybe<User>
+    /** Creates an employee account */
+    readonly CreateEmployeeAccount?: Maybe<Scalars["String"]>
+    /** Adds a new item that can be submitted */
+    readonly CreateItem?: Maybe<ItemType>
+    /** Adds a new submission for the current user */
+    readonly CreateSubmissionSelf?: Maybe<Submission>
+    /** Deletes the current account */
+    readonly DeleteAccount?: Maybe<User>
+    /** Deletes the current account */
+    readonly DeleteMyAccount?: Maybe<User>
+    /** Attempts to login with the provided username and password and returns a JSON web token (JWT) on success. */
+    readonly LoginUser?: Maybe<Scalars["String"]>
+    /** Modifies an existing item that can be submitted */
+    readonly ModifyItem?: Maybe<ItemType>
+    /** Modifies the contents of an existing submission */
+    readonly ModifySubmission?: Maybe<Submission>
+    /** Attempts to register with the provided information and returns a JSON web token (JWT) on success. */
+    readonly RegisterUser?: Maybe<Scalars["String"]>
+    /** Removes an existing submission */
+    readonly RemoveSubmission?: Maybe<Submission>
+    readonly ResetItemSelectedCounts: Scalars["Boolean"]
+    readonly UpdateItemSelectedCount: Scalars["Int"]
+}
+
+/** The mutations accepted in this GraphQL API. */
+export type MutationChangeMyPasswordArgs = {
+    OldPassword: Scalars["String"]
+    NewPassword: Scalars["String"]
+}
+
+/** The mutations accepted in this GraphQL API. */
+export type MutationChangeMyZipCodeArgs = {
+    ZipCode: Scalars["String"]
+}
+
+/** The mutations accepted in this GraphQL API. */
+export type MutationChangeUserPasswordArgs = {
+    Id: Scalars["ID"]
+    NewPassword: Scalars["String"]
+}
+
+/** The mutations accepted in this GraphQL API. */
+export type MutationChangeUserZipCodeArgs = {
+    Id: Scalars["ID"]
+    ZipCode: Scalars["String"]
+}
+
+/** The mutations accepted in this GraphQL API. */
+export type MutationCreateEmployeeAccountArgs = {
+    Username: Scalars["String"]
+    Email: Scalars["String"]
+    Password: Scalars["String"]
+}
+
+/** The mutations accepted in this GraphQL API. */
+export type MutationCreateItemArgs = {
+    Name: Scalars["String"]
+    Description: Scalars["String"]
+}
+
+/** The mutations accepted in this GraphQL API. */
+export type MutationCreateSubmissionSelfArgs = {
+    Items: ReadonlyArray<Scalars["ID"]>
+    ZipCode: Scalars["String"]
+}
+
+/** The mutations accepted in this GraphQL API. */
+export type MutationDeleteAccountArgs = {
+    Id: Scalars["ID"]
+}
+
+/** The mutations accepted in this GraphQL API. */
+export type MutationDeleteMyAccountArgs = {
+    Password: Scalars["String"]
+}
+
+/** The mutations accepted in this GraphQL API. */
+export type MutationLoginUserArgs = {
+    Username: Scalars["String"]
+    Password: Scalars["String"]
+}
+
+/** The mutations accepted in this GraphQL API. */
+export type MutationModifyItemArgs = {
+    Id: Scalars["ID"]
+    Name: Scalars["String"]
+    Description: Scalars["String"]
+}
+
+/** The mutations accepted in this GraphQL API. */
+export type MutationModifySubmissionArgs = {
+    Id: Scalars["ID"]
+    Time: Scalars["DateTimeOffset"]
+    Items: ReadonlyArray<Scalars["ID"]>
+    ZipCode: Scalars["String"]
+}
+
+/** The mutations accepted in this GraphQL API. */
+export type MutationRegisterUserArgs = {
+    Username: Scalars["String"]
+    Email: Scalars["String"]
+    Password: Scalars["String"]
+    ZipCode: Scalars["String"]
+}
+
+/** The mutations accepted in this GraphQL API. */
+export type MutationRemoveSubmissionArgs = {
+    Id: Scalars["ID"]
+}
+
+/** The mutations accepted in this GraphQL API. */
+export type MutationUpdateItemSelectedCountArgs = {
+    Id: Scalars["ID"]
+    SelectedCount: Scalars["Int"]
+}
+
+/** The queries accepted in this GraphQL API. */
+export type Query = {
+    /** List all submissions in the system */
+    readonly AllSubmissions: ReadonlyArray<Submission>
+    /** List of all users */
+    readonly AllUsers?: Maybe<ReadonlyArray<User>>
+    /** List all submissions in the system */
+    readonly GetAllSubmissionsFromUser?: Maybe<ReadonlyArray<Submission>>
+    /** A single item identified by its GUID */
+    readonly Item?: Maybe<ItemType>
+    /** List of items available to submit */
+    readonly Items: ReadonlyArray<ItemType>
+    /** A single submission by the current user identified by its GUID */
+    readonly MySubmission?: Maybe<Submission>
+    /** List of all submissions by the current user */
+    readonly MySubmissions: ReadonlyArray<Submission>
+    /** The current user */
+    readonly MyUser?: Maybe<User>
+    /** A single submission identified by its GUID */
+    readonly Submission?: Maybe<Submission>
+    /** A single user */
+    readonly User?: Maybe<User>
+}
+
+/** The queries accepted in this GraphQL API. */
+export type QueryGetAllSubmissionsFromUserArgs = {
+    UserId: Scalars["ID"]
+}
+
+/** The queries accepted in this GraphQL API. */
+export type QueryItemArgs = {
+    Id: Scalars["ID"]
+}
+
+/** The queries accepted in this GraphQL API. */
+export type QueryMySubmissionArgs = {
+    Id: Scalars["ID"]
+}
+
+/** The queries accepted in this GraphQL API. */
+export type QuerySubmissionArgs = {
+    Id: Scalars["ID"]
+}
+
+/** The queries accepted in this GraphQL API. */
+export type QueryUserArgs = {
+    Id: Scalars["ID"]
+}
+
+/** The list of items submitted in a single visit to CHaRM */
+export type Submission = {
+    /** The unique id of this submission */
+    readonly Id: Scalars["ID"]
+    /** The list of items (+ counts) submitted */
+    readonly Items: ReadonlyArray<ItemSubmissionBatch>
+    /** The date of submission */
+    readonly Submitted: Scalars["DateTimeOffset"]
+    /** The visitor who performed the submission */
+    readonly Visitor: User
+    /** The zip code of the visitor who performed the submission. */
+    readonly ZipCode?: Maybe<Scalars["String"]>
+}
+
+/** A user registered with CHaRM */
+export type User = {
+    /** The user's email */
+    readonly Email: Scalars["String"]
+    /** The ID of the user */
+    readonly Id: Scalars["ID"]
+    /** The type of the user */
+    readonly Type: UserType
+    /** The user's unique username */
+    readonly UserName: Scalars["String"]
+    /** The user's zip code */
+    readonly ZipCode: Scalars["String"]
+}
 
 /** A specific type of user */
 export enum UserType {
@@ -6,766 +258,348 @@ export enum UserType {
     Employee = "Employee",
     Administrator = "Administrator"
 }
+export type SelectedCountFragment = {readonly __typename?: "ItemType"} & Pick<
+    ItemType,
+    "SelectedCount"
+>
 
-/** The `DateTimeOffset` scalar type represents a date, time and offset from UTC. `DateTimeOffset` expects timestamps to be formatted in accordance with the [ISO-8601](https://en.wikipedia.org/wiki/ISO_8601) standard. */
-export type DateTimeOffset = any
-
-/** The `Date` scalar type represents a year, month and day in accordance with the [ISO-8601](https://en.wikipedia.org/wiki/ISO_8601) standard. */
-
-/** The `DateTime` scalar type represents a date and time. `DateTime` expects timestamps to be formatted in accordance with the [ISO-8601](https://en.wikipedia.org/wiki/ISO_8601) standard. */
-export type DateTime = any
-
-export type Decimal = number
-
-/** The `Milliseconds` scalar type represents a period of time represented as the total number of milliseconds. */
-export type Milliseconds = number
-
-/** The `Seconds` scalar type represents a period of time represented as the total number of seconds. */
-export type Seconds = number
-
-// ====================================================
-// Documents
-// ====================================================
-
-export type LoginVariables = {
-    Username: string
-    Password: string
+export type LoginMutationVariables = {
+    Username: Scalars["String"]
+    Password: Scalars["String"]
 }
 
-export type LoginMutation = {
-    __typename?: "Mutation"
+export type LoginMutation = {readonly __typename?: "Mutation"} & Pick<
+    Mutation,
+    "LoginUser"
+>
 
-    User: LoginUser
+export type RegisterMutationVariables = {
+    Username: Scalars["String"]
+    Password: Scalars["String"]
+    Email: Scalars["String"]
+    ZipCode: Scalars["String"]
 }
 
-export type LoginUser = {
-    __typename?: "UserMutation"
+export type RegisterMutation = {readonly __typename?: "Mutation"} & Pick<
+    Mutation,
+    "RegisterUser"
+>
 
-    Login: Maybe<string>
+export type RegisterEmployeeMutationVariables = {
+    Username: Scalars["String"]
+    Password: Scalars["String"]
+    Email: Scalars["String"]
 }
 
-export type RegisterVariables = {
-    Username: string
-    Password: string
-    Email: string
-}
+export type RegisterEmployeeMutation = {
+    readonly __typename?: "Mutation"
+} & Pick<Mutation, "CreateEmployeeAccount">
 
-export type RegisterMutation = {
-    __typename?: "Mutation"
-
-    User: RegisterUser
-}
-
-export type RegisterUser = {
-    __typename?: "UserMutation"
-
-    Register: Maybe<string>
-}
-
-export type ResetItemSelectedCountsVariables = {}
+export type ResetItemSelectedCountsMutationVariables = {}
 
 export type ResetItemSelectedCountsMutation = {
-    __typename?: "Mutation"
+    readonly __typename?: "Mutation"
+} & Pick<Mutation, "ResetItemSelectedCounts">
 
-    ResetItemSelectedCounts: boolean
+export type SubmitItemsMutationVariables = {
+    Items: ReadonlyArray<Scalars["ID"]>
+    ZipCode: Scalars["String"]
 }
 
-export type SubmitItemsVariables = {
-    Items: string[]
-    ZipCode: string
+export type SubmitItemsMutation = {readonly __typename?: "Mutation"} & {
+    readonly CreateSubmissionSelf: Maybe<
+        {readonly __typename?: "Submission"} & Pick<
+            Submission,
+            "Id" | "Submitted"
+        > & {
+                readonly Items: ReadonlyArray<
+                    {readonly __typename?: "ItemSubmissionBatch"} & Pick<
+                        ItemSubmissionBatch,
+                        "Count"
+                    > & {
+                            readonly Item: {
+                                readonly __typename?: "ItemType"
+                            } & Pick<ItemType, "Id" | "Name" | "Description">
+                        }
+                >
+            }
+    >
 }
 
-export type SubmitItemsMutation = {
-    __typename?: "Mutation"
-
-    Submission: SubmitItemsSubmission
-}
-
-export type SubmitItemsSubmission = {
-    __typename?: "SubmissionMutation"
-
-    CreateSelf: Maybe<SubmitItemsCreateSelf>
-}
-
-export type SubmitItemsCreateSelf = {
-    __typename?: "Submission"
-
-    Items: SubmitItemsItems[]
-}
-
-export type SubmitItemsItems = {
-    __typename?: "ItemSubmissionBatch"
-
-    Count: number
-}
-
-export type UpdateItemSelectedCountVariables = {
-    Id: string
-    SelectedCount: number
+export type UpdateItemSelectedCountMutationVariables = {
+    Id: Scalars["ID"]
+    SelectedCount: Scalars["Int"]
 }
 
 export type UpdateItemSelectedCountMutation = {
-    __typename?: "Mutation"
+    readonly __typename?: "Mutation"
+} & Pick<Mutation, "UpdateItemSelectedCount">
 
-    UpdateItemSelectedCount: number
+export type RemoveSubmissionMutationVariables = {
+    Id: Scalars["ID"]
 }
 
-export type RemoveSubmissionVariables = {
-    Id: string
-}
-
-export type RemoveSubmissionMutation = {
-    __typename?: "Mutation"
-
-    Submission: RemoveSubmissionSubmission
-}
-
-export type RemoveSubmissionSubmission = {
-    __typename?: "SubmissionMutation"
-
-    Remove: Maybe<RemoveSubmissionRemove>
-}
-
-export type RemoveSubmissionRemove = {
-    __typename?: "Submission"
-
-    Id: string
-}
-
-export type MyUsernameVariables = {}
-
-export type MyUsernameQuery = {
-    __typename?: "Query"
-
-    User: MyUsernameUser
-}
-
-export type MyUsernameUser = {
-    __typename?: "UserQuery"
-
-    Me: Maybe<MyUsernameMe>
-}
-
-export type MyUsernameMe = {
-    __typename?: "User"
-
-    UserName: string
-}
-
-export type MyZipCodeVariables = {}
-
-export type MyZipCodeQuery = {
-    __typename?: "Query"
-
-    User: MyZipCodeUser
-}
-
-export type MyZipCodeUser = {
-    __typename?: "UserQuery"
-
-    Me: Maybe<MyZipCodeMe>
-}
-
-export type MyZipCodeMe = {
-    __typename?: "User"
-
-    ZipCode: Maybe<string>
-}
-
-export type MyUserTypeVariables = {}
-
-export type MyUserTypeQuery = {
-    __typename?: "Query"
-
-    User: MyUserTypeUser
-}
-
-export type MyUserTypeUser = {
-    __typename?: "UserQuery"
-
-    Me: Maybe<MyUserTypeMe>
-}
-
-export type MyUserTypeMe = {
-    __typename?: "User"
-
-    Type: UserType
-}
-
-export type MyInformationVariables = {}
-
-export type MyInformationQuery = {
-    __typename?: "Query"
-
-    User: MyInformationUser
-}
-
-export type MyInformationUser = {
-    __typename?: "UserQuery"
-
-    Me: Maybe<MyInformationMe>
-}
-
-export type MyInformationMe = {
-    __typename?: "User"
-
-    UserName: string
-
-    Type: UserType
-}
-
-export type ItemsVariables = {}
-
-export type ItemsQuery = {
-    __typename?: "Query"
-
-    Item: ItemsItem
-}
-
-export type ItemsItem = {
-    __typename?: "ItemQuery"
-
-    All: ItemsAll[]
-}
-
-export type ItemsAll = {
-    __typename?: "ItemType"
-
-    Id: string
-
-    Name: string
-
-    SelectedCount: number
-}
-
-export type SubmissionsVariables = {}
-
-export type SubmissionsQuery = {
-    __typename?: "Query"
-
-    Submission: SubmissionsSubmission
-}
-
-export type SubmissionsSubmission = {
-    __typename?: "SubmissionQuery"
-
-    AllMine: SubmissionsAllMine[]
-}
-
-export type SubmissionsAllMine = {
-    __typename?: "Submission"
-
-    Id: string
-
-    Items: SubmissionsItems[]
-
-    Submitted: DateTimeOffset
-}
-
-export type SubmissionsItems = {
-    __typename?: "ItemSubmissionBatch"
-
-    Count: number
-
-    Item: SubmissionsItem
-}
-
-export type SubmissionsItem = {
-    __typename?: "ItemType"
-
-    Id: string
-
-    Name: string
-}
-
-export type EmployeeSubmissionsVariables = {}
-
-export type EmployeeSubmissionsQuery = {
-    __typename?: "Query"
-
-    Submission: EmployeeSubmissionsSubmission
-}
-
-export type EmployeeSubmissionsSubmission = {
-    __typename?: "SubmissionQuery"
-
-    All: EmployeeSubmissionsAll[]
-}
-
-export type EmployeeSubmissionsAll = {
-    __typename?: "Submission"
-
-    Id: string
-
-    Items: EmployeeSubmissionsItems[]
-
-    Visitor: EmployeeSubmissionsVisitor
-
-    Submitted: DateTimeOffset
-}
-
-export type EmployeeSubmissionsItems = {
-    __typename?: "ItemSubmissionBatch"
-
-    Count: number
-
-    Item: EmployeeSubmissionsItem
-}
-
-export type EmployeeSubmissionsItem = {
-    __typename?: "ItemType"
-
-    Id: string
-
-    Name: string
-}
-
-export type EmployeeSubmissionsVisitor = {
-    __typename?: "User"
-
-    UserName: string
-}
-
-import gql from "graphql-tag"
-import * as ReactApolloHooks from "react-apollo-hooks"
-
-// ====================================================
-// Components
-// ====================================================
-
-export const LoginDocument = gql`
-    mutation Login($Username: String!, $Password: String!) {
-        User {
-            Login(Username: $Username, Password: $Password)
-        }
-    }
-`
-export function useLogin(
-    baseOptions?: ReactApolloHooks.MutationHookOptions<
-        LoginMutation,
-        LoginVariables
+export type RemoveSubmissionMutation = {readonly __typename?: "Mutation"} & {
+    readonly RemoveSubmission: Maybe<
+        {readonly __typename?: "Submission"} & Pick<Submission, "Id">
     >
-) {
-    return ReactApolloHooks.useMutation<LoginMutation, LoginVariables>(
-        LoginDocument,
-        baseOptions
-    )
 }
-export const RegisterDocument = gql`
-    mutation Register($Username: String!, $Password: String!, $Email: String!) {
-        User {
-            Register(Username: $Username, Password: $Password, Email: $Email)
-        }
-    }
-`
-export function useRegister(
-    baseOptions?: ReactApolloHooks.MutationHookOptions<
-        RegisterMutation,
-        RegisterVariables
+
+export type ChangeMyZipMutationVariables = {
+    ZipCode: Scalars["String"]
+}
+
+export type ChangeMyZipMutation = {readonly __typename?: "Mutation"} & {
+    readonly ChangeMyZipCode: Maybe<
+        {readonly __typename?: "User"} & Pick<User, "ZipCode">
     >
-) {
-    return ReactApolloHooks.useMutation<RegisterMutation, RegisterVariables>(
-        RegisterDocument,
-        baseOptions
-    )
 }
-export const ResetItemSelectedCountsDocument = gql`
-    mutation ResetItemSelectedCounts {
-        ResetItemSelectedCounts @client
-    }
-`
-export function useResetItemSelectedCounts(
-    baseOptions?: ReactApolloHooks.MutationHookOptions<
-        ResetItemSelectedCountsMutation,
-        ResetItemSelectedCountsVariables
+
+export type ChangeMyPasswordMutationVariables = {
+    OldPassword: Scalars["String"]
+    NewPassword: Scalars["String"]
+}
+
+export type ChangeMyPasswordMutation = {readonly __typename?: "Mutation"} & {
+    readonly ChangeMyPassword: Maybe<
+        {readonly __typename?: "User"} & Pick<User, "Id">
     >
-) {
-    return ReactApolloHooks.useMutation<
-        ResetItemSelectedCountsMutation,
-        ResetItemSelectedCountsVariables
-    >(ResetItemSelectedCountsDocument, baseOptions)
 }
-export const SubmitItemsDocument = gql`
-    mutation SubmitItems($Items: [ID!]!, $ZipCode: String!) {
-        Submission {
-            CreateSelf(Items: $Items, ZipCode: $ZipCode) {
-                Items {
-                    Count
+
+export type UpdateExistingSubmissionMutationVariables = {
+    Id: Scalars["ID"]
+    Items: ReadonlyArray<Scalars["ID"]>
+    Time: Scalars["DateTimeOffset"]
+    ZipCode: Scalars["String"]
+}
+
+export type UpdateExistingSubmissionMutation = {
+    readonly __typename?: "Mutation"
+} & {
+    readonly ModifySubmission: Maybe<
+        {readonly __typename?: "Submission"} & Pick<
+            Submission,
+            "Id" | "Submitted" | "ZipCode"
+        > & {
+                readonly Items: ReadonlyArray<
+                    {readonly __typename?: "ItemSubmissionBatch"} & Pick<
+                        ItemSubmissionBatch,
+                        "Id" | "Count"
+                    > & {
+                            readonly Item: {
+                                readonly __typename?: "ItemType"
+                            } & Pick<ItemType, "Id" | "Description" | "Name">
+                        }
+                >
+            }
+    >
+}
+
+export type DeleteMyAccountMutationVariables = {
+    Password: Scalars["String"]
+}
+
+export type DeleteMyAccountMutation = {readonly __typename?: "Mutation"} & {
+    readonly DeleteMyAccount: Maybe<
+        {readonly __typename?: "User"} & Pick<User, "Id">
+    >
+}
+
+export type ChangeUserPasswordMutationVariables = {
+    Id: Scalars["ID"]
+    NewPassword: Scalars["String"]
+}
+
+export type ChangeUserPasswordMutation = {readonly __typename?: "Mutation"} & {
+    readonly ChangeUserPassword: Maybe<
+        {readonly __typename?: "User"} & Pick<User, "Id">
+    >
+}
+
+export type ChangeUserZipCodeMutationVariables = {
+    Id: Scalars["ID"]
+    ZipCode: Scalars["String"]
+}
+
+export type ChangeUserZipCodeMutation = {readonly __typename?: "Mutation"} & {
+    readonly ChangeUserZipCode: Maybe<
+        {readonly __typename?: "User"} & Pick<User, "Id" | "ZipCode">
+    >
+}
+
+export type DeleteUserMutationVariables = {
+    Id: Scalars["ID"]
+}
+
+export type DeleteUserMutation = {readonly __typename?: "Mutation"} & {
+    readonly DeleteAccount: Maybe<
+        {readonly __typename?: "User"} & Pick<User, "Id">
+    >
+}
+
+export type MyUsernameQueryVariables = {}
+
+export type MyUsernameQuery = {readonly __typename?: "Query"} & {
+    readonly MyUser: Maybe<
+        {readonly __typename?: "User"} & Pick<User, "UserName">
+    >
+}
+
+export type MyZipCodeQueryVariables = {}
+
+export type MyZipCodeQuery = {readonly __typename?: "Query"} & {
+    readonly MyUser: Maybe<
+        {readonly __typename?: "User"} & Pick<User, "ZipCode">
+    >
+}
+
+export type MyUserTypeQueryVariables = {}
+
+export type MyUserTypeQuery = {readonly __typename?: "Query"} & {
+    readonly MyUser: Maybe<{readonly __typename?: "User"} & Pick<User, "Type">>
+}
+
+export type MyInformationQueryVariables = {}
+
+export type MyInformationQuery = {readonly __typename?: "Query"} & {
+    readonly MyUser: Maybe<
+        {readonly __typename?: "User"} & Pick<User, "UserName" | "Type">
+    >
+}
+
+export type UserZipCodeQueryVariables = {
+    Id: Scalars["ID"]
+}
+
+export type UserZipCodeQuery = {readonly __typename?: "Query"} & {
+    readonly User: Maybe<{readonly __typename?: "User"} & Pick<User, "ZipCode">>
+}
+
+export type ItemsQueryVariables = {}
+
+export type ItemsQuery = {readonly __typename?: "Query"} & {
+    readonly Items: ReadonlyArray<
+        {readonly __typename?: "ItemType"} & Pick<
+            ItemType,
+            "Id" | "Name" | "Description" | "SelectedCount"
+        >
+    >
+}
+
+export type SubmissionsQueryVariables = {}
+
+export type SubmissionsQuery = {readonly __typename?: "Query"} & {
+    readonly MySubmissions: ReadonlyArray<
+        {readonly __typename?: "Submission"} & Pick<
+            Submission,
+            "Id" | "Submitted"
+        > & {
+                readonly Items: ReadonlyArray<
+                    {readonly __typename?: "ItemSubmissionBatch"} & Pick<
+                        ItemSubmissionBatch,
+                        "Count"
+                    > & {
+                            readonly Item: {
+                                readonly __typename?: "ItemType"
+                            } & Pick<ItemType, "Id" | "Name" | "Description">
+                        }
+                >
+            }
+    >
+}
+
+export type SubmissionQueryVariables = {
+    Id: Scalars["ID"]
+}
+
+export type SubmissionQuery = {readonly __typename?: "Query"} & {
+    readonly MySubmission: Maybe<
+        {readonly __typename?: "Submission"} & Pick<
+            Submission,
+            "Id" | "Submitted"
+        > & {
+                readonly Items: ReadonlyArray<
+                    {readonly __typename?: "ItemSubmissionBatch"} & Pick<
+                        ItemSubmissionBatch,
+                        "Count"
+                    > & {
+                            readonly Item: {
+                                readonly __typename?: "ItemType"
+                            } & Pick<ItemType, "Id" | "Name" | "Description">
+                        }
+                >
+            }
+    >
+}
+
+export type GetAllSubmissionsOfUserQueryVariables = {
+    Id: Scalars["ID"]
+}
+
+export type GetAllSubmissionsOfUserQuery = {readonly __typename?: "Query"} & {
+    readonly GetAllSubmissionsFromUser: Maybe<
+        ReadonlyArray<
+            {readonly __typename?: "Submission"} & Pick<
+                Submission,
+                "Id" | "Submitted"
+            > & {
+                    readonly Items: ReadonlyArray<
+                        {readonly __typename?: "ItemSubmissionBatch"} & Pick<
+                            ItemSubmissionBatch,
+                            "Count"
+                        > & {
+                                readonly Item: {
+                                    readonly __typename?: "ItemType"
+                                } & Pick<
+                                    ItemType,
+                                    "Id" | "Name" | "Description"
+                                >
+                            }
+                    >
                 }
-            }
-        }
-    }
-`
-export function useSubmitItems(
-    baseOptions?: ReactApolloHooks.MutationHookOptions<
-        SubmitItemsMutation,
-        SubmitItemsVariables
+        >
     >
-) {
-    return ReactApolloHooks.useMutation<
-        SubmitItemsMutation,
-        SubmitItemsVariables
-    >(SubmitItemsDocument, baseOptions)
 }
-export const UpdateItemSelectedCountDocument = gql`
-    mutation UpdateItemSelectedCount($Id: ID!, $SelectedCount: Int!) {
-        UpdateItemSelectedCount(Id: $Id, SelectedCount: $SelectedCount) @client
-    }
-`
-export function useUpdateItemSelectedCount(
-    baseOptions?: ReactApolloHooks.MutationHookOptions<
-        UpdateItemSelectedCountMutation,
-        UpdateItemSelectedCountVariables
+
+export type EmployeeSubmissionsQueryVariables = {}
+
+export type EmployeeSubmissionsQuery = {readonly __typename?: "Query"} & {
+    readonly AllSubmissions: ReadonlyArray<
+        {readonly __typename?: "Submission"} & Pick<
+            Submission,
+            "Id" | "Submitted"
+        > & {
+                readonly Items: ReadonlyArray<
+                    {readonly __typename?: "ItemSubmissionBatch"} & Pick<
+                        ItemSubmissionBatch,
+                        "Count"
+                    > & {
+                            readonly Item: {
+                                readonly __typename?: "ItemType"
+                            } & Pick<ItemType, "Id" | "Name">
+                        }
+                >
+                readonly Visitor: {readonly __typename?: "User"} & Pick<
+                    User,
+                    "UserName"
+                >
+            }
     >
-) {
-    return ReactApolloHooks.useMutation<
-        UpdateItemSelectedCountMutation,
-        UpdateItemSelectedCountVariables
-    >(UpdateItemSelectedCountDocument, baseOptions)
 }
-export const RemoveSubmissionDocument = gql`
-    mutation RemoveSubmission($Id: ID!) {
-        Submission {
-            Remove(Id: $Id) {
-                Id
-            }
-        }
-    }
-`
-export function useRemoveSubmission(
-    baseOptions?: ReactApolloHooks.MutationHookOptions<
-        RemoveSubmissionMutation,
-        RemoveSubmissionVariables
+
+export type GetAllUsersQueryVariables = {}
+
+export type GetAllUsersQuery = {readonly __typename?: "Query"} & {
+    readonly AllUsers: Maybe<
+        ReadonlyArray<
+            {readonly __typename?: "User"} & Pick<
+                User,
+                "Id" | "UserName" | "Type"
+            >
+        >
     >
-) {
-    return ReactApolloHooks.useMutation<
-        RemoveSubmissionMutation,
-        RemoveSubmissionVariables
-    >(RemoveSubmissionDocument, baseOptions)
 }
-export const MyUsernameDocument = gql`
-    query MyUsername {
-        User {
-            Me {
-                UserName
-            }
-        }
-    }
-`
-export function useMyUsername(
-    baseOptions?: ReactApolloHooks.QueryHookOptions<MyUsernameVariables>
-) {
-    return ReactApolloHooks.useQuery<MyUsernameQuery, MyUsernameVariables>(
-        MyUsernameDocument,
-        baseOptions
-    )
-}
-export const MyZipCodeDocument = gql`
-    query MyZipCode {
-        User {
-            Me {
-                ZipCode
-            }
-        }
-    }
-`
-export function useMyZipCode(
-    baseOptions?: ReactApolloHooks.QueryHookOptions<MyZipCodeVariables>
-) {
-    return ReactApolloHooks.useQuery<MyZipCodeQuery, MyZipCodeVariables>(
-        MyZipCodeDocument,
-        baseOptions
-    )
-}
-export const MyUserTypeDocument = gql`
-    query MyUserType {
-        User {
-            Me {
-                Type
-            }
-        }
-    }
-`
-export function useMyUserType(
-    baseOptions?: ReactApolloHooks.QueryHookOptions<MyUserTypeVariables>
-) {
-    return ReactApolloHooks.useQuery<MyUserTypeQuery, MyUserTypeVariables>(
-        MyUserTypeDocument,
-        baseOptions
-    )
-}
-export const MyInformationDocument = gql`
-    query MyInformation {
-        User {
-            Me {
-                UserName
-                Type
-            }
-        }
-    }
-`
-export function useMyInformation(
-    baseOptions?: ReactApolloHooks.QueryHookOptions<MyInformationVariables>
-) {
-    return ReactApolloHooks.useQuery<
-        MyInformationQuery,
-        MyInformationVariables
-    >(MyInformationDocument, baseOptions)
-}
-export const ItemsDocument = gql`
-    query Items {
-        Item {
-            All {
-                Id
-                Name
-                SelectedCount @client
-            }
-        }
-    }
-`
-export function useItems(
-    baseOptions?: ReactApolloHooks.QueryHookOptions<ItemsVariables>
-) {
-    return ReactApolloHooks.useQuery<ItemsQuery, ItemsVariables>(
-        ItemsDocument,
-        baseOptions
-    )
-}
-export const SubmissionsDocument = gql`
-    query Submissions {
-        Submission {
-            AllMine {
-                Id
-                Items {
-                    Count
-                    Item {
-                        Id
-                        Name
-                    }
-                }
-                Submitted
-            }
-        }
-    }
-`
-export function useSubmissions(
-    baseOptions?: ReactApolloHooks.QueryHookOptions<SubmissionsVariables>
-) {
-    return ReactApolloHooks.useQuery<SubmissionsQuery, SubmissionsVariables>(
-        SubmissionsDocument,
-        baseOptions
-    )
-}
-export const EmployeeSubmissionsDocument = gql`
-    query EmployeeSubmissions {
-        Submission {
-            All {
-                Id
-                Items {
-                    Count
-                    Item {
-                        Id
-                        Name
-                    }
-                }
-                Visitor {
-                    UserName
-                }
-                Submitted
-            }
-        }
-    }
-`
-export function useEmployeeSubmissions(
-    baseOptions?: ReactApolloHooks.QueryHookOptions<
-        EmployeeSubmissionsVariables
-    >
-) {
-    return ReactApolloHooks.useQuery<
-        EmployeeSubmissionsQuery,
-        EmployeeSubmissionsVariables
-    >(EmployeeSubmissionsDocument, baseOptions)
-}
-
-// ====================================================
-// Scalars
-// ====================================================
-
-// ====================================================
-// Types
-// ====================================================
-
-/** The queriesss accepted in this GraphQL API. */
-export interface Query {
-    Item: ItemQuery
-
-    Submission: SubmissionQuery
-
-    User: UserQuery
-}
-
-export interface ItemQuery {
-    /** List of items available to submit */
-    All: ItemType[]
-    /** A single item identified by its GUID */
-    Single?: Maybe<ItemType>
-}
-
-/** A type that represents a specific acceptable item in our database. */
-export interface ItemType {
-    /** The item's unique GUID */
-    Id: string
-    /** The item's name */
-    Name: string
-
-    SelectedCount: number
-}
-
-export interface SubmissionQuery {
-    /** List all submissions in the system */
-    All: Submission[]
-    /** List of all submissions by the current user */
-    AllMine: Submission[]
-    /** A single submission identified by its GUID */
-    Get?: Maybe<Submission>
-    /** A single submission by the current user identified by its GUID */
-    GetMine?: Maybe<Submission>
-}
-
-/** The list of items submitted in a single visit to CHaRM */
-export interface Submission {
-    /** The unique id of this submission */
-    Id: string
-    /** The list of items (+ counts) submitted */
-    Items: ItemSubmissionBatch[]
-    /** The date of submission */
-    Submitted: DateTimeOffset
-    /** The visitor who performed the submission */
-    Visitor: User
-    /** The zip code of the visitor who performed the submission. */
-    ZipCode?: Maybe<string>
-}
-
-/** A type that represents a unique submission for a specific item, including the item id and the count submitted. */
-export interface ItemSubmissionBatch {
-    /** The count of the item that was submitted. */
-    Count: number
-    /** The item batch's unique GUID */
-    Id: string
-    /** The item submitted */
-    Item: ItemType
-}
-
-/** A user registered with CHaRM */
-export interface User {
-    /** The user's email */
-    Email: string
-    /** The type of the user */
-    Type: UserType
-    /** The user's unique username */
-    UserName: string
-    /** The user's zip code */
-    ZipCode?: Maybe<string>
-}
-
-export interface UserQuery {
-    /** The current user */
-    Me?: Maybe<User>
-}
-
-/** The mutations accepted in this GraphQL API. */
-export interface Mutation {
-    Item: ItemMutation
-
-    Submission: SubmissionMutation
-
-    User: UserMutation
-
-    ResetItemSelectedCounts: boolean
-
-    UpdateItemSelectedCount: number
-}
-
-export interface ItemMutation {
-    /** Adds a new item that can be submitted */
-    Create?: Maybe<ItemType>
-}
-
-export interface SubmissionMutation {
-    /** Adds a new submission for the current user */
-    CreateSelf?: Maybe<Submission>
-    /** Modifies the contents of an existing submission */
-    Modify?: Maybe<Submission>
-    /** Removes an existing submission */
-    Remove?: Maybe<Submission>
-}
-
-export interface UserMutation {
-    /** Attempts to login with the provided username and password and returns a JSON web token (JWT) on success. */
-    Login?: Maybe<string>
-    /** Attempts to register with the provided information and returns a JSON web token (JWT) on success. */
-    Register?: Maybe<string>
-}
-
-// ====================================================
-// Arguments
-// ====================================================
-
-export interface SingleItemQueryArgs {
-    /** The GUID of the item */
-    Id: string
-}
-export interface GetSubmissionQueryArgs {
-    /** The GUID of the submission */
-    Id: string
-}
-export interface GetMineSubmissionQueryArgs {
-    /** The GUID of the submission */
-    Id: string
-}
-export interface UpdateItemSelectedCountMutationArgs {
-    Id: string
-
-    SelectedCount: number
-}
-export interface CreateItemMutationArgs {
-    /** The name of the item */
-    Name: string
-}
-export interface CreateSelfSubmissionMutationArgs {
-    /** The list of the GUIDs of the items being submitted */
-    Items: string[]
-    /** The zip code of the visitor */
-    ZipCode: string
-}
-export interface ModifySubmissionMutationArgs {
-    /** The Id of the initial submission */
-    Id: string
-    /** The new list of the GUIDs for the submission */
-    Items: string[]
-    /** The new time of submission */
-    Time: DateTimeOffset
-    /** The new zip code of the visitor for the submission */
-    ZipCode: string
-}
-export interface RemoveSubmissionMutationArgs {
-    /** The Id of the submission */
-    Id: string
-}
-export interface LoginUserMutationArgs {
-    /** The user's password */
-    Password: string
-    /** The user's uesrname */
-    Username: string
-}
-export interface RegisterUserMutationArgs {
-    /** The user's email */
-    Email: string
-    /** The user's password */
-    Password: string
-    /** The user's username */
-    Username: string
-}
+import {GraphQLContext} from "./context"
 
 import {
     GraphQLResolveInfo,
@@ -773,566 +607,829 @@ import {
     GraphQLScalarTypeConfig
 } from "graphql"
 
-import {GraphQLContext} from "./context"
-
-export type Resolver<Result, Parent = {}, TContext = {}, Args = {}> = (
-    parent: Parent,
-    args: Args,
+export type ResolverFn<TResult, TParent, TContext, TArgs> = (
+    parent: TParent,
+    args: TArgs,
     context: TContext,
     info: GraphQLResolveInfo
-) => Promise<Result> | Result
+) => Promise<TResult> | TResult
 
-export interface ISubscriptionResolverObject<Result, Parent, TContext, Args> {
-    subscribe<R = Result, P = Parent>(
-        parent: P,
-        args: Args,
-        context: TContext,
-        info: GraphQLResolveInfo
-    ): AsyncIterator<R | Result> | Promise<AsyncIterator<R | Result>>
-    resolve?<R = Result, P = Parent>(
-        parent: P,
-        args: Args,
-        context: TContext,
-        info: GraphQLResolveInfo
-    ): R | Result | Promise<R | Result>
+export type StitchingResolver<TResult, TParent, TContext, TArgs> = {
+    fragment: string
+    resolve: ResolverFn<TResult, TParent, TContext, TArgs>
 }
 
-export type SubscriptionResolver<
-    Result,
-    Parent = {},
-    TContext = {},
-    Args = {}
-> =
-    | ((
-          ...args: any[]
-      ) => ISubscriptionResolverObject<Result, Parent, TContext, Args>)
-    | ISubscriptionResolverObject<Result, Parent, TContext, Args>
+export type Resolver<TResult, TParent = {}, TContext = {}, TArgs = {}> =
+    | ResolverFn<TResult, TParent, TContext, TArgs>
+    | StitchingResolver<TResult, TParent, TContext, TArgs>
 
-export type TypeResolveFn<Types, Parent = {}, TContext = {}> = (
-    parent: Parent,
+export type SubscriptionSubscribeFn<TResult, TParent, TContext, TArgs> = (
+    parent: TParent,
+    args: TArgs,
     context: TContext,
     info: GraphQLResolveInfo
-) => Maybe<Types>
+) => AsyncIterator<TResult> | Promise<AsyncIterator<TResult>>
 
-export type NextResolverFn<T> = () => Promise<T>
-
-export type DirectiveResolverFn<TResult, TArgs = {}, TContext = {}> = (
-    next: NextResolverFn<TResult>,
-    source: any,
+export type SubscriptionResolveFn<TResult, TParent, TContext, TArgs> = (
+    parent: TParent,
     args: TArgs,
     context: TContext,
     info: GraphQLResolveInfo
 ) => TResult | Promise<TResult>
 
-/** The queriesss accepted in this GraphQL API. */
-export interface QueryResolvers<TContext = GraphQLContext, TypeParent = {}> {
-    Item?: QueryItemResolver<ItemQuery, TypeParent, TContext>
-
-    Submission?: QuerySubmissionResolver<SubmissionQuery, TypeParent, TContext>
-
-    User?: QueryUserResolver<UserQuery, TypeParent, TContext>
+export interface SubscriptionResolverObject<TResult, TParent, TContext, TArgs> {
+    subscribe: SubscriptionSubscribeFn<TResult, TParent, TContext, TArgs>
+    resolve?: SubscriptionResolveFn<TResult, TParent, TContext, TArgs>
 }
 
-export type QueryItemResolver<
-    R = ItemQuery,
-    Parent = {},
-    TContext = GraphQLContext
-> = Resolver<R, Parent, TContext>
-export type QuerySubmissionResolver<
-    R = SubmissionQuery,
-    Parent = {},
-    TContext = GraphQLContext
-> = Resolver<R, Parent, TContext>
-export type QueryUserResolver<
-    R = UserQuery,
-    Parent = {},
-    TContext = GraphQLContext
-> = Resolver<R, Parent, TContext>
+export type SubscriptionResolver<
+    TResult,
+    TParent = {},
+    TContext = {},
+    TArgs = {}
+> =
+    | ((
+          ...args: any[]
+      ) => SubscriptionResolverObject<TResult, TParent, TContext, TArgs>)
+    | SubscriptionResolverObject<TResult, TParent, TContext, TArgs>
 
-export interface ItemQueryResolvers<
-    TContext = GraphQLContext,
-    TypeParent = ItemQuery
-> {
-    /** List of items available to submit */
-    All?: ItemQueryAllResolver<ItemType[], TypeParent, TContext>
-    /** A single item identified by its GUID */
-    Single?: ItemQuerySingleResolver<Maybe<ItemType>, TypeParent, TContext>
+export type TypeResolveFn<TTypes, TParent = {}, TContext = {}> = (
+    parent: TParent,
+    context: TContext,
+    info: GraphQLResolveInfo
+) => Maybe<TTypes>
+
+export type NextResolverFn<T> = () => Promise<T>
+
+export type DirectiveResolverFn<
+    TResult = {},
+    TParent = {},
+    TContext = {},
+    TArgs = {}
+> = (
+    next: NextResolverFn<TResult>,
+    parent: TParent,
+    args: TArgs,
+    context: TContext,
+    info: GraphQLResolveInfo
+) => TResult | Promise<TResult>
+
+export interface DateScalarConfig
+    extends GraphQLScalarTypeConfig<Scalars["Date"], any> {
+    name: "Date"
 }
 
-export type ItemQueryAllResolver<
-    R = ItemType[],
-    Parent = ItemQuery,
-    TContext = GraphQLContext
-> = Resolver<R, Parent, TContext>
-export type ItemQuerySingleResolver<
-    R = Maybe<ItemType>,
-    Parent = ItemQuery,
-    TContext = GraphQLContext
-> = Resolver<R, Parent, TContext, ItemQuerySingleArgs>
-export interface ItemQuerySingleArgs {
-    /** The GUID of the item */
-    Id: string
-}
-
-/** A type that represents a specific acceptable item in our database. */
-export interface ItemTypeResolvers<
-    TContext = GraphQLContext,
-    TypeParent = ItemType
-> {
-    /** The item's unique GUID */
-    Id?: ItemTypeIdResolver<string, TypeParent, TContext>
-    /** The item's name */
-    Name?: ItemTypeNameResolver<string, TypeParent, TContext>
-
-    SelectedCount?: ItemTypeSelectedCountResolver<number, TypeParent, TContext>
-}
-
-export type ItemTypeIdResolver<
-    R = string,
-    Parent = ItemType,
-    TContext = GraphQLContext
-> = Resolver<R, Parent, TContext>
-export type ItemTypeNameResolver<
-    R = string,
-    Parent = ItemType,
-    TContext = GraphQLContext
-> = Resolver<R, Parent, TContext>
-export type ItemTypeSelectedCountResolver<
-    R = number,
-    Parent = ItemType,
-    TContext = GraphQLContext
-> = Resolver<R, Parent, TContext>
-
-export interface SubmissionQueryResolvers<
-    TContext = GraphQLContext,
-    TypeParent = SubmissionQuery
-> {
-    /** List all submissions in the system */
-    All?: SubmissionQueryAllResolver<Submission[], TypeParent, TContext>
-    /** List of all submissions by the current user */
-    AllMine?: SubmissionQueryAllMineResolver<Submission[], TypeParent, TContext>
-    /** A single submission identified by its GUID */
-    Get?: SubmissionQueryGetResolver<Maybe<Submission>, TypeParent, TContext>
-    /** A single submission by the current user identified by its GUID */
-    GetMine?: SubmissionQueryGetMineResolver<
-        Maybe<Submission>,
-        TypeParent,
-        TContext
-    >
-}
-
-export type SubmissionQueryAllResolver<
-    R = Submission[],
-    Parent = SubmissionQuery,
-    TContext = GraphQLContext
-> = Resolver<R, Parent, TContext>
-export type SubmissionQueryAllMineResolver<
-    R = Submission[],
-    Parent = SubmissionQuery,
-    TContext = GraphQLContext
-> = Resolver<R, Parent, TContext>
-export type SubmissionQueryGetResolver<
-    R = Maybe<Submission>,
-    Parent = SubmissionQuery,
-    TContext = GraphQLContext
-> = Resolver<R, Parent, TContext, SubmissionQueryGetArgs>
-export interface SubmissionQueryGetArgs {
-    /** The GUID of the submission */
-    Id: string
-}
-
-export type SubmissionQueryGetMineResolver<
-    R = Maybe<Submission>,
-    Parent = SubmissionQuery,
-    TContext = GraphQLContext
-> = Resolver<R, Parent, TContext, SubmissionQueryGetMineArgs>
-export interface SubmissionQueryGetMineArgs {
-    /** The GUID of the submission */
-    Id: string
-}
-
-/** The list of items submitted in a single visit to CHaRM */
-export interface SubmissionResolvers<
-    TContext = GraphQLContext,
-    TypeParent = Submission
-> {
-    /** The unique id of this submission */
-    Id?: SubmissionIdResolver<string, TypeParent, TContext>
-    /** The list of items (+ counts) submitted */
-    Items?: SubmissionItemsResolver<ItemSubmissionBatch[], TypeParent, TContext>
-    /** The date of submission */
-    Submitted?: SubmissionSubmittedResolver<
-        DateTimeOffset,
-        TypeParent,
-        TContext
-    >
-    /** The visitor who performed the submission */
-    Visitor?: SubmissionVisitorResolver<User, TypeParent, TContext>
-    /** The zip code of the visitor who performed the submission. */
-    ZipCode?: SubmissionZipCodeResolver<Maybe<string>, TypeParent, TContext>
-}
-
-export type SubmissionIdResolver<
-    R = string,
-    Parent = Submission,
-    TContext = GraphQLContext
-> = Resolver<R, Parent, TContext>
-export type SubmissionItemsResolver<
-    R = ItemSubmissionBatch[],
-    Parent = Submission,
-    TContext = GraphQLContext
-> = Resolver<R, Parent, TContext>
-export type SubmissionSubmittedResolver<
-    R = DateTimeOffset,
-    Parent = Submission,
-    TContext = GraphQLContext
-> = Resolver<R, Parent, TContext>
-export type SubmissionVisitorResolver<
-    R = User,
-    Parent = Submission,
-    TContext = GraphQLContext
-> = Resolver<R, Parent, TContext>
-export type SubmissionZipCodeResolver<
-    R = Maybe<string>,
-    Parent = Submission,
-    TContext = GraphQLContext
-> = Resolver<R, Parent, TContext>
-/** A type that represents a unique submission for a specific item, including the item id and the count submitted. */
-export interface ItemSubmissionBatchResolvers<
-    TContext = GraphQLContext,
-    TypeParent = ItemSubmissionBatch
-> {
-    /** The count of the item that was submitted. */
-    Count?: ItemSubmissionBatchCountResolver<number, TypeParent, TContext>
-    /** The item batch's unique GUID */
-    Id?: ItemSubmissionBatchIdResolver<string, TypeParent, TContext>
-    /** The item submitted */
-    Item?: ItemSubmissionBatchItemResolver<ItemType, TypeParent, TContext>
-}
-
-export type ItemSubmissionBatchCountResolver<
-    R = number,
-    Parent = ItemSubmissionBatch,
-    TContext = GraphQLContext
-> = Resolver<R, Parent, TContext>
-export type ItemSubmissionBatchIdResolver<
-    R = string,
-    Parent = ItemSubmissionBatch,
-    TContext = GraphQLContext
-> = Resolver<R, Parent, TContext>
-export type ItemSubmissionBatchItemResolver<
-    R = ItemType,
-    Parent = ItemSubmissionBatch,
-    TContext = GraphQLContext
-> = Resolver<R, Parent, TContext>
-/** A user registered with CHaRM */
-export interface UserResolvers<TContext = GraphQLContext, TypeParent = User> {
-    /** The user's email */
-    Email?: UserEmailResolver<string, TypeParent, TContext>
-    /** The type of the user */
-    Type?: UserTypeResolver<UserType, TypeParent, TContext>
-    /** The user's unique username */
-    UserName?: UserUserNameResolver<string, TypeParent, TContext>
-    /** The user's zip code */
-    ZipCode?: UserZipCodeResolver<Maybe<string>, TypeParent, TContext>
-}
-
-export type UserEmailResolver<
-    R = string,
-    Parent = User,
-    TContext = GraphQLContext
-> = Resolver<R, Parent, TContext>
-export type UserTypeResolver<
-    R = UserType,
-    Parent = User,
-    TContext = GraphQLContext
-> = Resolver<R, Parent, TContext>
-export type UserUserNameResolver<
-    R = string,
-    Parent = User,
-    TContext = GraphQLContext
-> = Resolver<R, Parent, TContext>
-export type UserZipCodeResolver<
-    R = Maybe<string>,
-    Parent = User,
-    TContext = GraphQLContext
-> = Resolver<R, Parent, TContext>
-
-export interface UserQueryResolvers<
-    TContext = GraphQLContext,
-    TypeParent = UserQuery
-> {
-    /** The current user */
-    Me?: UserQueryMeResolver<Maybe<User>, TypeParent, TContext>
-}
-
-export type UserQueryMeResolver<
-    R = Maybe<User>,
-    Parent = UserQuery,
-    TContext = GraphQLContext
-> = Resolver<R, Parent, TContext>
-/** The mutations accepted in this GraphQL API. */
-export interface MutationResolvers<TContext = GraphQLContext, TypeParent = {}> {
-    Item?: MutationItemResolver<ItemMutation, TypeParent, TContext>
-
-    Submission?: MutationSubmissionResolver<
-        SubmissionMutation,
-        TypeParent,
-        TContext
-    >
-
-    User?: MutationUserResolver<UserMutation, TypeParent, TContext>
-
-    ResetItemSelectedCounts?: MutationResetItemSelectedCountsResolver<
-        boolean,
-        TypeParent,
-        TContext
-    >
-
-    UpdateItemSelectedCount?: MutationUpdateItemSelectedCountResolver<
-        number,
-        TypeParent,
-        TContext
-    >
-}
-
-export type MutationItemResolver<
-    R = ItemMutation,
-    Parent = {},
-    TContext = GraphQLContext
-> = Resolver<R, Parent, TContext>
-export type MutationSubmissionResolver<
-    R = SubmissionMutation,
-    Parent = {},
-    TContext = GraphQLContext
-> = Resolver<R, Parent, TContext>
-export type MutationUserResolver<
-    R = UserMutation,
-    Parent = {},
-    TContext = GraphQLContext
-> = Resolver<R, Parent, TContext>
-export type MutationResetItemSelectedCountsResolver<
-    R = boolean,
-    Parent = {},
-    TContext = GraphQLContext
-> = Resolver<R, Parent, TContext>
-export type MutationUpdateItemSelectedCountResolver<
-    R = number,
-    Parent = {},
-    TContext = GraphQLContext
-> = Resolver<R, Parent, TContext, MutationUpdateItemSelectedCountArgs>
-export interface MutationUpdateItemSelectedCountArgs {
-    Id: string
-
-    SelectedCount: number
-}
-
-export interface ItemMutationResolvers<
-    TContext = GraphQLContext,
-    TypeParent = ItemMutation
-> {
-    /** Adds a new item that can be submitted */
-    Create?: ItemMutationCreateResolver<Maybe<ItemType>, TypeParent, TContext>
-}
-
-export type ItemMutationCreateResolver<
-    R = Maybe<ItemType>,
-    Parent = ItemMutation,
-    TContext = GraphQLContext
-> = Resolver<R, Parent, TContext, ItemMutationCreateArgs>
-export interface ItemMutationCreateArgs {
-    /** The name of the item */
-    Name: string
-}
-
-export interface SubmissionMutationResolvers<
-    TContext = GraphQLContext,
-    TypeParent = SubmissionMutation
-> {
-    /** Adds a new submission for the current user */
-    CreateSelf?: SubmissionMutationCreateSelfResolver<
-        Maybe<Submission>,
-        TypeParent,
-        TContext
-    >
-    /** Modifies the contents of an existing submission */
-    Modify?: SubmissionMutationModifyResolver<
-        Maybe<Submission>,
-        TypeParent,
-        TContext
-    >
-    /** Removes an existing submission */
-    Remove?: SubmissionMutationRemoveResolver<
-        Maybe<Submission>,
-        TypeParent,
-        TContext
-    >
-}
-
-export type SubmissionMutationCreateSelfResolver<
-    R = Maybe<Submission>,
-    Parent = SubmissionMutation,
-    TContext = GraphQLContext
-> = Resolver<R, Parent, TContext, SubmissionMutationCreateSelfArgs>
-export interface SubmissionMutationCreateSelfArgs {
-    /** The list of the GUIDs of the items being submitted */
-    Items: string[]
-    /** The zip code of the visitor */
-    ZipCode: string
-}
-
-export type SubmissionMutationModifyResolver<
-    R = Maybe<Submission>,
-    Parent = SubmissionMutation,
-    TContext = GraphQLContext
-> = Resolver<R, Parent, TContext, SubmissionMutationModifyArgs>
-export interface SubmissionMutationModifyArgs {
-    /** The Id of the initial submission */
-    Id: string
-    /** The new list of the GUIDs for the submission */
-    Items: string[]
-    /** The new time of submission */
-    Time: DateTimeOffset
-    /** The new zip code of the visitor for the submission */
-    ZipCode: string
-}
-
-export type SubmissionMutationRemoveResolver<
-    R = Maybe<Submission>,
-    Parent = SubmissionMutation,
-    TContext = GraphQLContext
-> = Resolver<R, Parent, TContext, SubmissionMutationRemoveArgs>
-export interface SubmissionMutationRemoveArgs {
-    /** The Id of the submission */
-    Id: string
-}
-
-export interface UserMutationResolvers<
-    TContext = GraphQLContext,
-    TypeParent = UserMutation
-> {
-    /** Attempts to login with the provided username and password and returns a JSON web token (JWT) on success. */
-    Login?: UserMutationLoginResolver<Maybe<string>, TypeParent, TContext>
-    /** Attempts to register with the provided information and returns a JSON web token (JWT) on success. */
-    Register?: UserMutationRegisterResolver<Maybe<string>, TypeParent, TContext>
-}
-
-export type UserMutationLoginResolver<
-    R = Maybe<string>,
-    Parent = UserMutation,
-    TContext = GraphQLContext
-> = Resolver<R, Parent, TContext, UserMutationLoginArgs>
-export interface UserMutationLoginArgs {
-    /** The user's password */
-    Password: string
-    /** The user's uesrname */
-    Username: string
-}
-
-export type UserMutationRegisterResolver<
-    R = Maybe<string>,
-    Parent = UserMutation,
-    TContext = GraphQLContext
-> = Resolver<R, Parent, TContext, UserMutationRegisterArgs>
-export interface UserMutationRegisterArgs {
-    /** The user's email */
-    Email: string
-    /** The user's password */
-    Password: string
-    /** The user's username */
-    Username: string
-}
-
-/** Directs the executor to skip this field or fragment when the `if` argument is true. */
-export type SkipDirectiveResolver<Result> = DirectiveResolverFn<
-    Result,
-    SkipDirectiveArgs,
-    GraphQLContext
->
-export interface SkipDirectiveArgs {
-    /** Skipped when true. */
-    if: boolean
-}
-
-/** Directs the executor to include this field or fragment only when the `if` argument is true. */
-export type IncludeDirectiveResolver<Result> = DirectiveResolverFn<
-    Result,
-    IncludeDirectiveArgs,
-    GraphQLContext
->
-export interface IncludeDirectiveArgs {
-    /** Included when true. */
-    if: boolean
-}
-
-/** Marks an element of a GraphQL schema as no longer supported. */
-export type DeprecatedDirectiveResolver<Result> = DirectiveResolverFn<
-    Result,
-    DeprecatedDirectiveArgs,
-    GraphQLContext
->
-export interface DeprecatedDirectiveArgs {
-    /** Explains why this element was deprecated, usually also including a suggestion for how to access supported similar data. Formatted using the Markdown syntax (as specified by [CommonMark](https://commonmark.org/). */
-    reason?: string
+export interface DateTimeScalarConfig
+    extends GraphQLScalarTypeConfig<Scalars["DateTime"], any> {
+    name: "DateTime"
 }
 
 export interface DateTimeOffsetScalarConfig
-    extends GraphQLScalarTypeConfig<DateTimeOffset, any> {
+    extends GraphQLScalarTypeConfig<Scalars["DateTimeOffset"], any> {
     name: "DateTimeOffset"
 }
-export interface DateScalarConfig extends GraphQLScalarTypeConfig<Date, any> {
-    name: "Date"
-}
-export interface DateTimeScalarConfig
-    extends GraphQLScalarTypeConfig<DateTime, any> {
-    name: "DateTime"
-}
+
 export interface DecimalScalarConfig
-    extends GraphQLScalarTypeConfig<Decimal, any> {
+    extends GraphQLScalarTypeConfig<Scalars["Decimal"], any> {
     name: "Decimal"
 }
+
+export type ItemSubmissionBatchResolvers<
+    Context = GraphQLContext,
+    ParentType = ItemSubmissionBatch
+> = {
+    Count?: Resolver<Scalars["Int"], ParentType, Context>
+    Id?: Resolver<Scalars["ID"], ParentType, Context>
+    Item?: Resolver<ItemType, ParentType, Context>
+}
+
+export type ItemTypeResolvers<
+    Context = GraphQLContext,
+    ParentType = ItemType
+> = {
+    Description?: Resolver<Scalars["String"], ParentType, Context>
+    Id?: Resolver<Scalars["ID"], ParentType, Context>
+    Name?: Resolver<Scalars["String"], ParentType, Context>
+    SelectedCount?: Resolver<Scalars["Int"], ParentType, Context>
+}
+
 export interface MillisecondsScalarConfig
-    extends GraphQLScalarTypeConfig<Milliseconds, any> {
+    extends GraphQLScalarTypeConfig<Scalars["Milliseconds"], any> {
     name: "Milliseconds"
 }
+
+export type MutationResolvers<
+    Context = GraphQLContext,
+    ParentType = Mutation
+> = {
+    ChangeMyPassword?: Resolver<
+        Maybe<User>,
+        ParentType,
+        Context,
+        MutationChangeMyPasswordArgs
+    >
+    ChangeMyZipCode?: Resolver<
+        Maybe<User>,
+        ParentType,
+        Context,
+        MutationChangeMyZipCodeArgs
+    >
+    ChangeUserPassword?: Resolver<
+        Maybe<User>,
+        ParentType,
+        Context,
+        MutationChangeUserPasswordArgs
+    >
+    ChangeUserZipCode?: Resolver<
+        Maybe<User>,
+        ParentType,
+        Context,
+        MutationChangeUserZipCodeArgs
+    >
+    CreateEmployeeAccount?: Resolver<
+        Maybe<Scalars["String"]>,
+        ParentType,
+        Context,
+        MutationCreateEmployeeAccountArgs
+    >
+    CreateItem?: Resolver<
+        Maybe<ItemType>,
+        ParentType,
+        Context,
+        MutationCreateItemArgs
+    >
+    CreateSubmissionSelf?: Resolver<
+        Maybe<Submission>,
+        ParentType,
+        Context,
+        MutationCreateSubmissionSelfArgs
+    >
+    DeleteAccount?: Resolver<
+        Maybe<User>,
+        ParentType,
+        Context,
+        MutationDeleteAccountArgs
+    >
+    DeleteMyAccount?: Resolver<
+        Maybe<User>,
+        ParentType,
+        Context,
+        MutationDeleteMyAccountArgs
+    >
+    LoginUser?: Resolver<
+        Maybe<Scalars["String"]>,
+        ParentType,
+        Context,
+        MutationLoginUserArgs
+    >
+    ModifyItem?: Resolver<
+        Maybe<ItemType>,
+        ParentType,
+        Context,
+        MutationModifyItemArgs
+    >
+    ModifySubmission?: Resolver<
+        Maybe<Submission>,
+        ParentType,
+        Context,
+        MutationModifySubmissionArgs
+    >
+    RegisterUser?: Resolver<
+        Maybe<Scalars["String"]>,
+        ParentType,
+        Context,
+        MutationRegisterUserArgs
+    >
+    RemoveSubmission?: Resolver<
+        Maybe<Submission>,
+        ParentType,
+        Context,
+        MutationRemoveSubmissionArgs
+    >
+    ResetItemSelectedCounts?: Resolver<Scalars["Boolean"], ParentType, Context>
+    UpdateItemSelectedCount?: Resolver<
+        Scalars["Int"],
+        ParentType,
+        Context,
+        MutationUpdateItemSelectedCountArgs
+    >
+}
+
+export interface ObjectScalarConfig
+    extends GraphQLScalarTypeConfig<Scalars["Object"], any> {
+    name: "Object"
+}
+
+export type QueryResolvers<Context = GraphQLContext, ParentType = Query> = {
+    AllSubmissions?: Resolver<ReadonlyArray<Submission>, ParentType, Context>
+    AllUsers?: Resolver<Maybe<ReadonlyArray<User>>, ParentType, Context>
+    GetAllSubmissionsFromUser?: Resolver<
+        Maybe<ReadonlyArray<Submission>>,
+        ParentType,
+        Context,
+        QueryGetAllSubmissionsFromUserArgs
+    >
+    Item?: Resolver<Maybe<ItemType>, ParentType, Context, QueryItemArgs>
+    Items?: Resolver<ReadonlyArray<ItemType>, ParentType, Context>
+    MySubmission?: Resolver<
+        Maybe<Submission>,
+        ParentType,
+        Context,
+        QueryMySubmissionArgs
+    >
+    MySubmissions?: Resolver<ReadonlyArray<Submission>, ParentType, Context>
+    MyUser?: Resolver<Maybe<User>, ParentType, Context>
+    Submission?: Resolver<
+        Maybe<Submission>,
+        ParentType,
+        Context,
+        QuerySubmissionArgs
+    >
+    User?: Resolver<Maybe<User>, ParentType, Context, QueryUserArgs>
+}
+
 export interface SecondsScalarConfig
-    extends GraphQLScalarTypeConfig<Seconds, any> {
+    extends GraphQLScalarTypeConfig<Scalars["Seconds"], any> {
     name: "Seconds"
 }
 
-export type IResolvers<TContext = GraphQLContext> = {
-    Query?: QueryResolvers<TContext>
-    ItemQuery?: ItemQueryResolvers<TContext>
-    ItemType?: ItemTypeResolvers<TContext>
-    SubmissionQuery?: SubmissionQueryResolvers<TContext>
-    Submission?: SubmissionResolvers<TContext>
-    ItemSubmissionBatch?: ItemSubmissionBatchResolvers<TContext>
-    User?: UserResolvers<TContext>
-    UserQuery?: UserQueryResolvers<TContext>
-    Mutation?: MutationResolvers<TContext>
-    ItemMutation?: ItemMutationResolvers<TContext>
-    SubmissionMutation?: SubmissionMutationResolvers<TContext>
-    UserMutation?: UserMutationResolvers<TContext>
-    DateTimeOffset?: GraphQLScalarType
-    Date?: GraphQLScalarType
-    DateTime?: GraphQLScalarType
-    Decimal?: GraphQLScalarType
-    Milliseconds?: GraphQLScalarType
-    Seconds?: GraphQLScalarType
-} & {
-    [typeName: string]: {
-        [fieldName: string]:
-            | Resolver<any, any, TContext, any>
-            | SubscriptionResolver<any, any, TContext, any>
-    }
+export type SubmissionResolvers<
+    Context = GraphQLContext,
+    ParentType = Submission
+> = {
+    Id?: Resolver<Scalars["ID"], ParentType, Context>
+    Items?: Resolver<ReadonlyArray<ItemSubmissionBatch>, ParentType, Context>
+    Submitted?: Resolver<Scalars["DateTimeOffset"], ParentType, Context>
+    Visitor?: Resolver<User, ParentType, Context>
+    ZipCode?: Resolver<Maybe<Scalars["String"]>, ParentType, Context>
 }
 
-export type IDirectiveResolvers<Result, TContext = GraphQLContext> = {
-    skip?: SkipDirectiveResolver<Result>
-    include?: IncludeDirectiveResolver<Result>
-    deprecated?: DeprecatedDirectiveResolver<Result>
-} & {[directiveName: string]: DirectiveResolverFn<any, any, TContext>}
+export type UserResolvers<Context = GraphQLContext, ParentType = User> = {
+    Email?: Resolver<Scalars["String"], ParentType, Context>
+    Id?: Resolver<Scalars["ID"], ParentType, Context>
+    Type?: Resolver<UserType, ParentType, Context>
+    UserName?: Resolver<Scalars["String"], ParentType, Context>
+    ZipCode?: Resolver<Scalars["String"], ParentType, Context>
+}
 
+export type Resolvers<Context = GraphQLContext> = {
+    Date?: GraphQLScalarType
+    DateTime?: GraphQLScalarType
+    DateTimeOffset?: GraphQLScalarType
+    Decimal?: GraphQLScalarType
+    ItemSubmissionBatch?: ItemSubmissionBatchResolvers<Context>
+    ItemType?: ItemTypeResolvers<Context>
+    Milliseconds?: GraphQLScalarType
+    Mutation?: MutationResolvers<Context>
+    Object?: GraphQLScalarType
+    Query?: QueryResolvers<Context>
+    Seconds?: GraphQLScalarType
+    Submission?: SubmissionResolvers<Context>
+    User?: UserResolvers<Context>
+}
+
+/**
+ * @deprecated
+ * Use "Resolvers" root object instead. If you wish to get "IResolvers", add "typesPrefix: I" to your config.
+ */
+export type IResolvers<Context = GraphQLContext> = Resolvers<Context>
+
+import gql from "graphql-tag"
+import * as ReactApolloHooks from "./apollo-hooks"
+export const SelectedCountFragmentDoc = gql`
+    fragment SelectedCount on ItemType {
+        SelectedCount @client
+    }
+`
+export const LoginDocument = gql`
+    mutation Login($Username: String!, $Password: String!) {
+        LoginUser(Username: $Username, Password: $Password)
+    }
+`
+
+export function useLoginMutation(
+    baseOptions?: ReactApolloHooks.MutationHookOptions<
+        LoginMutation,
+        LoginMutationVariables
+    >
+) {
+    return ReactApolloHooks.useMutation<LoginMutation, LoginMutationVariables>(
+        LoginDocument,
+        baseOptions
+    )
+}
+export const RegisterDocument = gql`
+    mutation Register(
+        $Username: String!
+        $Password: String!
+        $Email: String!
+        $ZipCode: String!
+    ) {
+        RegisterUser(
+            Username: $Username
+            Password: $Password
+            Email: $Email
+            ZipCode: $ZipCode
+        )
+    }
+`
+
+export function useRegisterMutation(
+    baseOptions?: ReactApolloHooks.MutationHookOptions<
+        RegisterMutation,
+        RegisterMutationVariables
+    >
+) {
+    return ReactApolloHooks.useMutation<
+        RegisterMutation,
+        RegisterMutationVariables
+    >(RegisterDocument, baseOptions)
+}
+export const RegisterEmployeeDocument = gql`
+    mutation RegisterEmployee(
+        $Username: String!
+        $Password: String!
+        $Email: String!
+    ) {
+        CreateEmployeeAccount(
+            Username: $Username
+            Password: $Password
+            Email: $Email
+        )
+    }
+`
+
+export function useRegisterEmployeeMutation(
+    baseOptions?: ReactApolloHooks.MutationHookOptions<
+        RegisterEmployeeMutation,
+        RegisterEmployeeMutationVariables
+    >
+) {
+    return ReactApolloHooks.useMutation<
+        RegisterEmployeeMutation,
+        RegisterEmployeeMutationVariables
+    >(RegisterEmployeeDocument, baseOptions)
+}
+export const ResetItemSelectedCountsDocument = gql`
+    mutation ResetItemSelectedCounts {
+        ResetItemSelectedCounts @client
+    }
+`
+
+export function useResetItemSelectedCountsMutation(
+    baseOptions?: ReactApolloHooks.MutationHookOptions<
+        ResetItemSelectedCountsMutation,
+        ResetItemSelectedCountsMutationVariables
+    >
+) {
+    return ReactApolloHooks.useMutation<
+        ResetItemSelectedCountsMutation,
+        ResetItemSelectedCountsMutationVariables
+    >(ResetItemSelectedCountsDocument, baseOptions)
+}
+export const SubmitItemsDocument = gql`
+    mutation SubmitItems($Items: [ID!]!, $ZipCode: String!) {
+        CreateSubmissionSelf(Items: $Items, ZipCode: $ZipCode) {
+            Id
+            Items {
+                Count
+                Item {
+                    Id
+                    Name
+                    Description
+                }
+            }
+            Submitted
+        }
+    }
+`
+
+export function useSubmitItemsMutation(
+    baseOptions?: ReactApolloHooks.MutationHookOptions<
+        SubmitItemsMutation,
+        SubmitItemsMutationVariables
+    >
+) {
+    return ReactApolloHooks.useMutation<
+        SubmitItemsMutation,
+        SubmitItemsMutationVariables
+    >(SubmitItemsDocument, baseOptions)
+}
+export const UpdateItemSelectedCountDocument = gql`
+    mutation UpdateItemSelectedCount($Id: ID!, $SelectedCount: Int!) {
+        UpdateItemSelectedCount(Id: $Id, SelectedCount: $SelectedCount) @client
+    }
+`
+
+export function useUpdateItemSelectedCountMutation(
+    baseOptions?: ReactApolloHooks.MutationHookOptions<
+        UpdateItemSelectedCountMutation,
+        UpdateItemSelectedCountMutationVariables
+    >
+) {
+    return ReactApolloHooks.useMutation<
+        UpdateItemSelectedCountMutation,
+        UpdateItemSelectedCountMutationVariables
+    >(UpdateItemSelectedCountDocument, baseOptions)
+}
+export const RemoveSubmissionDocument = gql`
+    mutation RemoveSubmission($Id: ID!) {
+        RemoveSubmission(Id: $Id) {
+            Id
+        }
+    }
+`
+
+export function useRemoveSubmissionMutation(
+    baseOptions?: ReactApolloHooks.MutationHookOptions<
+        RemoveSubmissionMutation,
+        RemoveSubmissionMutationVariables
+    >
+) {
+    return ReactApolloHooks.useMutation<
+        RemoveSubmissionMutation,
+        RemoveSubmissionMutationVariables
+    >(RemoveSubmissionDocument, baseOptions)
+}
+export const ChangeMyZipDocument = gql`
+    mutation ChangeMyZip($ZipCode: String!) {
+        ChangeMyZipCode(ZipCode: $ZipCode) {
+            ZipCode
+        }
+    }
+`
+
+export function useChangeMyZipMutation(
+    baseOptions?: ReactApolloHooks.MutationHookOptions<
+        ChangeMyZipMutation,
+        ChangeMyZipMutationVariables
+    >
+) {
+    return ReactApolloHooks.useMutation<
+        ChangeMyZipMutation,
+        ChangeMyZipMutationVariables
+    >(ChangeMyZipDocument, baseOptions)
+}
+export const ChangeMyPasswordDocument = gql`
+    mutation ChangeMyPassword($OldPassword: String!, $NewPassword: String!) {
+        ChangeMyPassword(OldPassword: $OldPassword, NewPassword: $NewPassword) {
+            Id
+        }
+    }
+`
+
+export function useChangeMyPasswordMutation(
+    baseOptions?: ReactApolloHooks.MutationHookOptions<
+        ChangeMyPasswordMutation,
+        ChangeMyPasswordMutationVariables
+    >
+) {
+    return ReactApolloHooks.useMutation<
+        ChangeMyPasswordMutation,
+        ChangeMyPasswordMutationVariables
+    >(ChangeMyPasswordDocument, baseOptions)
+}
+export const UpdateExistingSubmissionDocument = gql`
+    mutation UpdateExistingSubmission(
+        $Id: ID!
+        $Items: [ID!]!
+        $Time: DateTimeOffset!
+        $ZipCode: String!
+    ) {
+        ModifySubmission(
+            Id: $Id
+            Items: $Items
+            Time: $Time
+            ZipCode: $ZipCode
+        ) {
+            Id
+            Submitted
+            ZipCode
+            Items {
+                Id
+                Count
+                Item {
+                    Id
+                    Description
+                    Name
+                }
+            }
+        }
+    }
+`
+
+export function useUpdateExistingSubmissionMutation(
+    baseOptions?: ReactApolloHooks.MutationHookOptions<
+        UpdateExistingSubmissionMutation,
+        UpdateExistingSubmissionMutationVariables
+    >
+) {
+    return ReactApolloHooks.useMutation<
+        UpdateExistingSubmissionMutation,
+        UpdateExistingSubmissionMutationVariables
+    >(UpdateExistingSubmissionDocument, baseOptions)
+}
+export const DeleteMyAccountDocument = gql`
+    mutation DeleteMyAccount($Password: String!) {
+        DeleteMyAccount(Password: $Password) {
+            Id
+        }
+    }
+`
+
+export function useDeleteMyAccountMutation(
+    baseOptions?: ReactApolloHooks.MutationHookOptions<
+        DeleteMyAccountMutation,
+        DeleteMyAccountMutationVariables
+    >
+) {
+    return ReactApolloHooks.useMutation<
+        DeleteMyAccountMutation,
+        DeleteMyAccountMutationVariables
+    >(DeleteMyAccountDocument, baseOptions)
+}
+export const ChangeUserPasswordDocument = gql`
+    mutation ChangeUserPassword($Id: ID!, $NewPassword: String!) {
+        ChangeUserPassword(Id: $Id, NewPassword: $NewPassword) {
+            Id
+        }
+    }
+`
+
+export function useChangeUserPasswordMutation(
+    baseOptions?: ReactApolloHooks.MutationHookOptions<
+        ChangeUserPasswordMutation,
+        ChangeUserPasswordMutationVariables
+    >
+) {
+    return ReactApolloHooks.useMutation<
+        ChangeUserPasswordMutation,
+        ChangeUserPasswordMutationVariables
+    >(ChangeUserPasswordDocument, baseOptions)
+}
+export const ChangeUserZipCodeDocument = gql`
+    mutation ChangeUserZipCode($Id: ID!, $ZipCode: String!) {
+        ChangeUserZipCode(Id: $Id, ZipCode: $ZipCode) {
+            Id
+            ZipCode
+        }
+    }
+`
+
+export function useChangeUserZipCodeMutation(
+    baseOptions?: ReactApolloHooks.MutationHookOptions<
+        ChangeUserZipCodeMutation,
+        ChangeUserZipCodeMutationVariables
+    >
+) {
+    return ReactApolloHooks.useMutation<
+        ChangeUserZipCodeMutation,
+        ChangeUserZipCodeMutationVariables
+    >(ChangeUserZipCodeDocument, baseOptions)
+}
+export const DeleteUserDocument = gql`
+    mutation DeleteUser($Id: ID!) {
+        DeleteAccount(Id: $Id) {
+            Id
+        }
+    }
+`
+
+export function useDeleteUserMutation(
+    baseOptions?: ReactApolloHooks.MutationHookOptions<
+        DeleteUserMutation,
+        DeleteUserMutationVariables
+    >
+) {
+    return ReactApolloHooks.useMutation<
+        DeleteUserMutation,
+        DeleteUserMutationVariables
+    >(DeleteUserDocument, baseOptions)
+}
+export const MyUsernameDocument = gql`
+    query MyUsername {
+        MyUser {
+            UserName
+        }
+    }
+`
+
+export function useMyUsernameQuery(
+    baseOptions?: ReactApolloHooks.QueryHookOptions<MyUsernameQueryVariables>
+) {
+    return ReactApolloHooks.useQuery<MyUsernameQuery, MyUsernameQueryVariables>(
+        MyUsernameDocument,
+        baseOptions
+    )
+}
+export const MyZipCodeDocument = gql`
+    query MyZipCode {
+        MyUser {
+            ZipCode
+        }
+    }
+`
+
+export function useMyZipCodeQuery(
+    baseOptions?: ReactApolloHooks.QueryHookOptions<MyZipCodeQueryVariables>
+) {
+    return ReactApolloHooks.useQuery<MyZipCodeQuery, MyZipCodeQueryVariables>(
+        MyZipCodeDocument,
+        baseOptions
+    )
+}
+export const MyUserTypeDocument = gql`
+    query MyUserType {
+        MyUser {
+            Type
+        }
+    }
+`
+
+export function useMyUserTypeQuery(
+    baseOptions?: ReactApolloHooks.QueryHookOptions<MyUserTypeQueryVariables>
+) {
+    return ReactApolloHooks.useQuery<MyUserTypeQuery, MyUserTypeQueryVariables>(
+        MyUserTypeDocument,
+        baseOptions
+    )
+}
+export const MyInformationDocument = gql`
+    query MyInformation {
+        MyUser {
+            UserName
+            Type
+        }
+    }
+`
+
+export function useMyInformationQuery(
+    baseOptions?: ReactApolloHooks.QueryHookOptions<MyInformationQueryVariables>
+) {
+    return ReactApolloHooks.useQuery<
+        MyInformationQuery,
+        MyInformationQueryVariables
+    >(MyInformationDocument, baseOptions)
+}
+export const UserZipCodeDocument = gql`
+    query UserZipCode($Id: ID!) {
+        User(Id: $Id) {
+            ZipCode
+        }
+    }
+`
+
+export function useUserZipCodeQuery(
+    baseOptions?: ReactApolloHooks.QueryHookOptions<UserZipCodeQueryVariables>
+) {
+    return ReactApolloHooks.useQuery<
+        UserZipCodeQuery,
+        UserZipCodeQueryVariables
+    >(UserZipCodeDocument, baseOptions)
+}
+export const ItemsDocument = gql`
+    query Items {
+        Items {
+            Id
+            Name
+            Description
+            SelectedCount @client
+        }
+    }
+`
+
+export function useItemsQuery(
+    baseOptions?: ReactApolloHooks.QueryHookOptions<ItemsQueryVariables>
+) {
+    return ReactApolloHooks.useQuery<ItemsQuery, ItemsQueryVariables>(
+        ItemsDocument,
+        baseOptions
+    )
+}
+export const SubmissionsDocument = gql`
+    query Submissions {
+        MySubmissions {
+            Id
+            Items {
+                Count
+                Item {
+                    Id
+                    Name
+                    Description
+                }
+            }
+            Submitted
+        }
+    }
+`
+
+export function useSubmissionsQuery(
+    baseOptions?: ReactApolloHooks.QueryHookOptions<SubmissionsQueryVariables>
+) {
+    return ReactApolloHooks.useQuery<
+        SubmissionsQuery,
+        SubmissionsQueryVariables
+    >(SubmissionsDocument, baseOptions)
+}
+export const SubmissionDocument = gql`
+    query Submission($Id: ID!) {
+        MySubmission(Id: $Id) {
+            Id
+            Items {
+                Count
+                Item {
+                    Id
+                    Name
+                    Description
+                }
+            }
+            Submitted
+        }
+    }
+`
+
+export function useSubmissionQuery(
+    baseOptions?: ReactApolloHooks.QueryHookOptions<SubmissionQueryVariables>
+) {
+    return ReactApolloHooks.useQuery<SubmissionQuery, SubmissionQueryVariables>(
+        SubmissionDocument,
+        baseOptions
+    )
+}
+export const GetAllSubmissionsOfUserDocument = gql`
+    query GetAllSubmissionsOfUser($Id: ID!) {
+        GetAllSubmissionsFromUser(UserId: $Id) {
+            Id
+            Items {
+                Count
+                Item {
+                    Id
+                    Name
+                    Description
+                }
+            }
+            Submitted
+        }
+    }
+`
+
+export function useGetAllSubmissionsOfUserQuery(
+    baseOptions?: ReactApolloHooks.QueryHookOptions<
+        GetAllSubmissionsOfUserQueryVariables
+    >
+) {
+    return ReactApolloHooks.useQuery<
+        GetAllSubmissionsOfUserQuery,
+        GetAllSubmissionsOfUserQueryVariables
+    >(GetAllSubmissionsOfUserDocument, baseOptions)
+}
+export const EmployeeSubmissionsDocument = gql`
+    query EmployeeSubmissions {
+        AllSubmissions {
+            Id
+            Items {
+                Count
+                Item {
+                    Id
+                    Name
+                }
+            }
+            Visitor {
+                UserName
+            }
+            Submitted
+        }
+    }
+`
+
+export function useEmployeeSubmissionsQuery(
+    baseOptions?: ReactApolloHooks.QueryHookOptions<
+        EmployeeSubmissionsQueryVariables
+    >
+) {
+    return ReactApolloHooks.useQuery<
+        EmployeeSubmissionsQuery,
+        EmployeeSubmissionsQueryVariables
+    >(EmployeeSubmissionsDocument, baseOptions)
+}
+export const GetAllUsersDocument = gql`
+    query GetAllUsers {
+        AllUsers {
+            Id
+            UserName
+            Type
+        }
+    }
+`
+
+export function useGetAllUsersQuery(
+    baseOptions?: ReactApolloHooks.QueryHookOptions<GetAllUsersQueryVariables>
+) {
+    return ReactApolloHooks.useQuery<
+        GetAllUsersQuery,
+        GetAllUsersQueryVariables
+    >(GetAllUsersDocument, baseOptions)
+}
 export interface IntrospectionResultData {
     __schema: {
         types: {

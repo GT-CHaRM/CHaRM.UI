@@ -1,0 +1,3 @@
+fragment SelectedCount on ItemType {
+    SelectedCount @client
+}

@@ -1,6 +1,6 @@
 import React from "react"
 import {View} from "react-native"
-import {Header as RNHeader} from "react-native-elements"
+import {Header as RNHeader, HeaderSubComponent} from "react-native-elements"
 import {useNavigationState} from "react-navigation-hooks"
 import {colors} from "../theme"
 
@@ -15,7 +15,11 @@ function resolveTitle(routeName: string) {
     }
 }
 
-function Header() {
+interface HeaderProps {
+    right?: HeaderSubComponent
+}
+
+const Header: React.FC<HeaderProps> = ({right}) => {
     const {routeName} = useNavigationState()
 
     return (
@@ -28,14 +32,19 @@ function Header() {
                     color: "#fff"
                 }
             }}
+            rightComponent={right}
         />
     )
 }
 
-export function WithHeader({children}) {
+export interface WithHeaderProps {
+    right?: HeaderSubComponent
+}
+
+export const WithHeader: React.FC<WithHeaderProps> = ({children, right}) => {
     return (
         <View style={{flex: 1}}>
-            <Header />
+            <Header right={right} />
             {children}
         </View>
     )
