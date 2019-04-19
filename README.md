@@ -36,3 +36,6 @@ Crash when trying to change user's password or zipcode
 _Due to the nature of the admin account's privileges and security, credentials will be handed off to client via a non-public method._
 
 ...
+
+#For Information on Running the Database Backend Server
+https://github.com/GT-CHaRM/CHaRM.Backend
