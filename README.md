@@ -51,30 +51,54 @@ https://github.com/GT-CHaRM/CHaRM.Backend
 ## FULL CHANGELOG
 
 ### Version 0.1.0
+
 Added Feature: Log Items (as visitor)
+
 Added Feature: Log Items (as guest)
+
 Added Feature: View Submission History (as guest)
+
 ### Version 0.2.0
+
 Added Feature: Create Account (as visitor)
+
 Added Feature: Login (as visitor)
+
 Added Feature: Login (as guest)
+
 Fixed Bug: N/A
+
 ### Version 0.3.0
 Added Feature: View item logs (as employee)
+
 Added Feature: Modify item log (as employee)
+
 Added Feature: Remove item log (as employee)
+
 Fixed Bug:  UI styling error when upgrading react native versions
+
 ### Version 0.4.0
 Added Feature: Change own preferences (as user)
+
 Added Feature: Change user preferences (as employee)
+
 Added Feature: Register new user (as employee)
+
 Added Feature: Delete user (as admin)
+
 Added Feature: Delete own account (as user)
+
 Added Feature: Create/Modify/Delete employee accounts (as admin)
+
 Fixed Bug:  Crash when trying to change user's password or zipcode
+
 ### Version 1.0.0
+
 Added Feature: Add dashboard for displaying submission data in table format (as employee)
+
 Export data to excel option from dashboard (as employee)
+
 Fixed Bug: N/A
+
 Known Bugs: No Known Bugs
 
