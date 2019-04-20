@@ -12,19 +12,19 @@ Account Management
 
 *   Ability to change user preferences
 
-*   Ability to Log Items that are able to be handed off the the CHaRM facility to be recycled.
+*   Ability to Log Items that are acceptdd by the CHaRM facility for recycling
 
-*   Ability to Edit log items entries.
+*   Ability to Edit log items entries
 
-*   Ability for employees to view previous submissions.
+*   Ability for employees to view previous submissions
 
-*   Export to Excel Functionality.
+*   Export to Excel Functionality
 
 ### Currently, No Known Defects or Bugs
 
 ### Previous Bugs - FIXED
 
--   UI styling error when upgrading react native versions.
+-   UI styling error when upgrading react native versions
 
 -   Crash when trying to change user's password or zipcode
 
