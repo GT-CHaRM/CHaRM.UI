@@ -126,20 +126,23 @@ export const ChangeMyZipConfigureComponent: React.FC<
             if (!data || !data.ChangeMyZipCode) {
                 return
             }
-            const result = cache.readQuery<MyZipCodeQuery>({
-                query: MyZipCodeDocument
-            })
-            if (!result || !result.MyUser) {
-                return
-            }
-            cache.writeQuery<MyZipCodeQuery>({
-                query: MyZipCodeDocument,
-                data: {
-                    MyUser: {
-                        ZipCode: data.ChangeMyZipCode.ZipCode
-                    }
+            try {
+                const result = cache.readQuery<MyZipCodeQuery>({
+                    query: MyZipCodeDocument
+                })
+                if (!result || !result.MyUser) {
+                    return
                 }
-            })
+                cache.writeQuery<MyZipCodeQuery>({
+                    query: MyZipCodeDocument,
+                    data: {
+                        MyUser: {
+                            __typename: "User",
+                            ZipCode: data.ChangeMyZipCode.ZipCode
+                        }
+                    }
+                })
+            } catch {}
         }
     })
 

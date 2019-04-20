@@ -480,22 +480,22 @@ async function clientEffect(navigation: NavigationScreenProp<{}>) {
         if (errors || !data.MyUser) {
             navigation.navigate("Auth", {client})
         } else if (data.MyUser.Type === UserType.Administrator) {
-            // Alert.alert(
-            //     "Login Success",
-            //     `Logged in as administrator ${data.MyUser.UserName}`
-            // )
+            Alert.alert(
+                "Login Success",
+                `Logged in as administrator ${data.MyUser.UserName}`
+            )
             navigation.navigate("AdminApp", {client})
         } else if (data.MyUser.Type === UserType.Employee) {
-            // Alert.alert(
-            //     "Login Success",
-            //     `Logged in as employee ${data.MyUser.UserName}`
-            // )
+            Alert.alert(
+                "Login Success",
+                `Logged in as employee ${data.MyUser.UserName}`
+            )
             navigation.navigate("EmployeeApp", {client})
         } else {
-            // Alert.alert(
-            //     "Login Success",
-            //     `Logged in as visitor ${data.MyUser.UserName}`
-            // )
+            Alert.alert(
+                "Login Success",
+                `Logged in as visitor ${data.MyUser.UserName}`
+            )
             navigation.navigate("App", {client})
         }
     }

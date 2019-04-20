@@ -44,6 +44,7 @@ export const ChangeUserPassword: React.FC<
     return (
         <View style={{flex: 1}}>
             <Input
+                secureTextEntry
                 placeholder="Password"
                 label="Password"
                 value={password}
@@ -52,9 +53,13 @@ export const ChangeUserPassword: React.FC<
             <View style={{flex: 1}} />
             <Button
                 title="Submit"
-                onPress={() =>
-                    changePassword({variables: {Id: id, NewPassword: password}})
-                }
+                onPress={async () => {
+                    await changePassword({
+                        variables: {Id: id, NewPassword: password}
+                    })
+                    Alert.alert("Success", "Password successfully changed.")
+                    navigation.pop()
+                }}
             />
         </View>
     )
@@ -116,9 +121,11 @@ export const ChangeUserZipCode: React.FC<
             <View style={{flex: 1}} />
             <Button
                 title="Submit"
-                onPress={() =>
-                    changeZipCode({variables: {Id: id, ZipCode: zipCode}})
-                }
+                onPress={async () => {
+                    await changeZipCode({variables: {Id: id, ZipCode: zipCode}})
+                    Alert.alert("Success", "Zip code successfully changed.")
+                    navigation.pop()
+                }}
             />
         </View>
     )
