@@ -42,8 +42,6 @@ Run the downloaded APK on your phone, prompting you to an app installation page.
 
 Find the app in your application list, click on the app to start it, and you should be prompted with the login page.
 
-
-
 ### For Information on Running the Database Backend Server
 
 https://github.com/GT-CHaRM/CHaRM.Backend
